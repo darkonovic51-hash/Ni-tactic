@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار المعلوماتية - Gojo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1325 100%);
+            font-family: 'Segoe UI', 'Tahoma', system-ui, -apple-system;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* خلفية شبكية بتقنية سايبر */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* جزيئات متحركة */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .quiz-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* بطاقة الترحيب */
+        .hero-card {
+            background: rgba(15, 25, 45, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 30px 35px;
+            margin-bottom: 35px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+
+        .hero-card h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .hero-card p {
+            color: #ccddee;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .gojo-badge {
+            display: inline-block;
+            background: rgba(0, 255, 255, 0.15);
+            padding: 8px 24px;
+            border-radius: 60px;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #0ff;
+            border: 1px solid #0ff;
+        }
+
+        /* نموذج الاسم */
+        .name-section {
+            background: rgba(10, 20, 35, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .name-field {
+            flex: 1;
+        }
+
+        .name-field label {
+            display: block;
+            color: #aaffff;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .name-field input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 28px;
+            border: 1px solid #2c3e66;
+            background: #0f1322;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .name-field input:focus {
+            border-color: #0ff;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
+        }
+
+        .start-btn {
+            background: linear-gradient(95deg, #00b4d8, #0077b6);
+            padding: 12px 32px;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px #0ff;
+        }
+
+        /* لوحة النتائج */
+        .score-panel {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 15px 25px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid #ff44cc88;
+        }
+
+        .score-box {
+            background: #00000066;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #0ff;
+        }
+
+        .reset-quiz {
+            background: #ff3366cc;
+            border: none;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* حاوية الأسئلة */
+        .questions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .question-card {
+            background: rgba(20, 28, 45, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 22px 28px;
+            border-left: 6px solid #0ff;
+            transition: 0.2s;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #f0f3ff;
+            margin-bottom: 18px;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .q-num {
+            background: #ff44cc;
+            padding: 4px 14px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 15px 0 8px;
+        }
+
+        .opt-btn {
+            background: #10162e;
+            padding: 10px 20px;
+            border-radius: 40px;
+            border: 1px solid #2a3f6e;
+            cursor: pointer;
+            color: #cfecff;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .opt-btn.selected {
+            background: linear-gradient(120deg, #00b4d8, #0077b6);
+            border-color: #0ff;
+            color: white;
+            box-shadow: 0 0 8px #0ff;
+        }
+
+        .opt-btn.disabled-opt {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .feedback {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #aaffdd;
+            border-top: 1px dashed #2f3f66;
+            padding-top: 8px;
+        }
+
+        .wrong-feedback {
+            color: #ffaa99;
+        }
+
+        .final-message {
+            margin-top: 35px;
+            background: #000000aa;
+            backdrop-filter: blur(16px);
+            border-radius: 32px;
+            padding: 22px;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 1px solid cyan;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #8f9bb5;
+        }
+
+        @media (max-width: 650px) {
+            .options { flex-direction: column; }
+            .question-card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-wrapper" id="quizApp">
+    <div class="hero-card">
+        <h1>⚡ اختبر نفسك ⚡</h1>
+        <p>Module Informatique avec Gojo — Promo EE</p>
+        <div class="gojo-badge">🧠 57 سؤالاً | كل سؤال نقطة واحدة 🧠</div>
+    </div>
+
+    <div class="name-section" id="nameSection">
+        <div class="name-field">
+            <label>📝 الاسم الكامل:</label>
+            <input type="text" id="studentName" placeholder="أدخل اسمك و لقبك">
+        </div>
+        <button class="start-btn" id="startExamBtn">🚀 ابدأ الاختبار 🚀</button>
+    </div>
+
+    <div id="examArea" style="display: none;">
+        <div class="score-panel">
+            <span class="score-box">⭐ مجموع النقاط: <span id="currentScore">0</span> / <span id="totalPoints">0</span></span>
+            <button class="reset-quiz" id="hardResetBtn">🔄 إعادة الاختبار بالكامل</button>
+        </div>
+        <div id="questionsRender" class="questions-container"></div>
+        <div class="final-message" id="finalMsg">📌 أجب على جميع الأسئلة لترى نتيجتك النهائية.</div>
+    </div>
+    <footer>🔒 لا يمكن تعديل الإجابة بعد اختيارها — راجع إجاباتك قبل النقر</footer>
+</div>
+
+<script>
+    // ---------------------------------------------
+    // الأسئلة المستخرجة من ملف PDF (57 سؤالاً فريداً)
+    // ---------------------------------------------
+    const rawQuestions = [
+        { text: "C’est un système d’exploitation ?", options: ["Linux", "Adobe Photoshop", "WhatsApp"], correct: 0 },
+        { text: "Outil de visioconférence et de classe virtuelle :", options: ["Microsoft Teams", "Photoshop", "Excel"], correct: 0 },
+        { text: "Navigateur web développé par Apple :", options: ["Safari", "Firefox", "Opera"], correct: 0 },
+        { text: "Google Chrome est :", options: ["Un logiciel de retouche photo", "Un navigateur web développé par Google", "Un système d’exploitation"], correct: 1 },
+        { text: "L’imprimante :", options: ["Un appareil permettant d’afficher des documents sur papier", "Un outil de programmation", "Un logiciel de dessin"], correct: 0 },
+        { text: "La méthode APA :", options: ["Une méthode de citation", "Un langage de programmation", "Un logiciel de traitement de texte"], correct: 0 },
+        { text: "La Bibliographie :", options: ["Une liste de références utilisées dans un travail", "Un logiciel de gestion de projets"], correct: 0 },
+        { text: "Le Microsoft PowerPoint, est un logiciel de :", options: ["Gestion de bases de données", "Création de présentations", "Programmation"], correct: 1 },
+        { text: "L’apprentissage automatique (ML) c’est :", options: ["Une branche de l’intelligence artificielle", "Un langage de programmation", "Un outil de visioconférence"], correct: 0 },
+        { text: "Le Machine Learning (ML) est un sous-ensemble de l'IA :", options: ["Vrai", "Faux"], correct: 0 },
+        { text: "Apprentissage automatique composé de :", options: ["Apprentissage supervisé et non supervisé", "Apprentissage manuel", "Apprentissage par essais et erreurs"], correct: 0 },
+        { text: "DL est le :", options: ["Deep Learning", "Data Learning", "Digital Learning"], correct: 0 },
+        { text: "AlphaFold utilisé pour :", options: ["Prédire la structure des protéines", "Analyser des images satellites", "Gérer des bases de données"], correct: 0 },
+        { text: "Dans la classification ADN/ARN on utilise les algorithmes de :", options: ["Machines à Vecteurs de Support (SVM)", "Réseaux neuronaux convolutifs", "Algorithmes de compression"], correct: 0 },
+        { text: "Dans la détection de mutations génétiques on utilise les algorithmes :", options: ["Forêts aléatoires", "Algorithmes de tri", "Logiciels de dessin"], correct: 0 },
+        { text: "MS-Office est un :", options: ["Logiciel de montage vidéo", "Navigateur web", "Suite bureautique propriété de la société Microsoft"], correct: 2 },
+        { text: "On utilise les algorithmes Réseaux de neurones pour :", options: ["Analyser des images médicales", "Créer des présentations", "Programmer des jeux vidéo"], correct: 0 },
+        { text: "Un système d’exploitation mobile populaire :", options: ["Android", "Microsoft Word", "PowerPoint"], correct: 0 },
+        { text: "Un logiciel de traitement de texte :", options: ["WordPad", "Excel", "PowerPoint"], correct: 0 },
+        { text: "L’extension des fichiers Excel :", options: ["*.xlsx", "*.pdf", "*.jpg"], correct: 0 },
+        { text: "Un outil de stockage en ligne :", options: ["Google Drive", "PowerPoint", "Paint"], correct: 0 },
+        { text: "Un logiciel de messagerie électronique :", options: ["Outlook", "Photoshop", "Word"], correct: 0 },
+        { text: "Un langage de programmation :", options: ["Python", "PowerPoint", "Excel"], correct: 0 },
+        { text: "Un système d’exploitation mobile populaire :", options: ["iOS", "Microsoft Excel", "Google Docs"], correct: 0 },
+        { text: "Un logiciel de traitement de texte :", options: ["LibreOffice Writer", "Adobe Premiere", "MATLAB"], correct: 0 },
+        { text: "Quel est l’extension des fichiers WORD :", options: ["*.txt", "*.docx", "*.mp3"], correct: 1 },
+        { text: "L’extension des fichiers Excel :", options: ["*.csv", "*.pptx", "*.mp4"], correct: 0 },
+        { text: "Un outil de stockage en ligne :", options: ["Dropbox", "Microsoft Access", "Blender"], correct: 0 },
+        { text: "Le scanner :", options: ["Un appareil permettant de numériser des documents", "Un périphérique de stockage", "Un logiciel de messagerie"], correct: 0 },
+        { text: "Un logiciel de messagerie électronique :", options: ["Thunderbird", "AutoCAD", "SPSS"], correct: 0 },
+        { text: "Un langage de programmation :", options: ["Java", "Microsoft Teams", "WordPress"], correct: 0 },
+        { text: "Un logiciel de conception graphique :", options: ["CorelDRAW", "MySQL", "PowerPoint"], correct: 0 },
+        { text: "Un outil de gestion de bases de données :", options: ["Oracle", "TikTok", "Google Slides"], correct: 0 },
+        { text: "Un logiciel de montage vidéo :", options: ["DaVinci Resolve", "Microsoft Word", "Zoom"], correct: 0 },
+        { text: "Un langage utilisé pour créer des pages web :", options: ["CSS", "Excel", "Python"], correct: 0 },
+        { text: "Un logiciel de statistiques :", options: ["SPSS", "Photoshop", "PowerPoint"], correct: 0 },
+        { text: "Un outil de collaboration en ligne :", options: ["Slack", "MATLAB", "Paint"], correct: 0 },
+        { text: "Un logiciel de modélisation 3D :", options: ["SketchUp", "Google Chrome", "WordPad"], correct: 0 },
+        { text: "Un système d’exploitation open-source :", options: ["Ubuntu", "Microsoft Office", "iMovie"], correct: 0 },
+        { text: "Un outil de virtualisation :", options: ["VirtualBox", "Adobe Acrobat", "Safari"], correct: 0 },
+        { text: "On utilise les algorithmes Réseaux de neurones pour :", options: ["Traiter des données de séquençage génomique", "Éditer des vidéos", "Gérer des fichiers texte"], correct: 0 },
+        { text: "Un logiciel de cartographie mentale :", options: ["XMind", "AutoCAD", "Zoom"], correct: 0 },
+        { text: "Un outil de développement intégré (IDE) :", options: ["Eclipse", "Google Docs", "Photoshop"], correct: 0 },
+        { text: "Un logiciel de reconnaissance vocale :", options: ["Dragon NaturallySpeaking", "Microsoft Excel", "PowerPoint"], correct: 0 },
+        { text: "Un outil de sauvegarde automatique :", options: ["Time Machine (macOS)", "Google Meet", "WordPress"], correct: 0 },
+        { text: "Un logiciel de simulation mathématique :", options: ["Mathematica", "Google Chrome", "Adobe Illustrator"], correct: 0 },
+        { text: "Un outil d’analyse de données :", options: ["Tableau", "Paint", "Safari"], correct: 0 },
+        { text: "Un logiciel de retouche photo :", options: ["GIMP", "Excel", "PowerPoint"], correct: 0 },
+        { text: "Un protocole de réseau sécurisé :", options: ["VPN", "JPEG", "MP4"], correct: 0 },
+        { text: "L’intelligence artificielle (IA) inclut :", options: ["Le Machine Learning", "Le traitement de texte", "La gestion de fichiers"], correct: 0 },
+        { text: "Un algorithme d’apprentissage supervisé :", options: ["Régression linéaire", "Clustering hiérarchique", "Réseaux de neurones non supervisés"], correct: 0 },
+        { text: "Un exemple de Big Data :", options: ["Les données génomiques", "Un fichier texte de 1 Mo", "Une présentation PowerPoint"], correct: 0 },
+        { text: "Un outil pour visualiser des données biologiques :", options: ["PyMOL", "Microsoft Word", "Google Drive"], correct: 0 },
+        { text: "Un logiciel pour aligner des séquences ADN :", options: ["BLAST", "Excel", "PowerPoint"], correct: 0 },
+        { text: "Une base de données biologiques :", options: ["GenBank", "Google Sheets", "Photoshop"], correct: 0 },
+        { text: "Un outil pour prédire des structures protéiques :", options: ["SWISS-MODEL", "Microsoft Edge", "Zoom"], correct: 0 },
+        { text: "Le Cloud Computing permet :", options: ["Le stockage distant", "L’édition de texte hors ligne", "La programmation sans Internet"], correct: 0 }
+    ];
+
+    // خلط خيارات كل سؤال مع تذكر الإجابة الصحيحة الجديدة
+    function shuffleOptionsPerQuestion(questions) {
+        return questions.map(q => {
+            const paired = q.options.map((opt, idx) => ({ opt, isCorrect: idx === q.correct }));
+            for (let i = paired.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [paired[i], paired[j]] = [paired[j], paired[i]];
+            }
+            const newOptions = paired.map(p => p.opt);
+            const newCorrectIndex = paired.findIndex(p => p.isCorrect === true);
+            return { text: q.text, options: newOptions, correct: newCorrectIndex };
+        });
+    }
+
+    let shuffledQuestions = shuffleOptionsPerQuestion(rawQuestions);
+    const TOTAL_QS = shuffledQuestions.length;
+    let userSelections = new Array(TOTAL_QS).fill(null);   // index المختار
+    let answerLocked = new Array(TOTAL_QS).fill(false);    // منع التعديل
+    let examStarted = false;
+
+    function computeScore() {
+        let score = 0;
+        for (let i = 0; i < TOTAL_QS; i++) {
+            if (userSelections[i] !== null && userSelections[i] === shuffledQuestions[i].correct) {
+                score++;
+            }
+        }
+        return score;
+    }
+
+    function updateUIAfterAnswer() {
+        const current = computeScore();
+        document.getElementById("currentScore").innerText = current;
+        document.getElementById("totalPoints").innerHTML = TOTAL_QS;
+        const finalDiv = document.getElementById("finalMsg");
+        finalDiv.innerHTML = `📊 النتيجة الحالية: ${current}/${TOTAL_QS} نقطة. ${current === TOTAL_QS ? "🎉 إتقان رائع 🎉" : "أكمل بقية الأسئلة"}`;
+        renderQuestions(); // إعادة عرض لتحديث التظليل وحالة التعطيل
+    }
+
+    function handleSelectOption(qIndex, optIndex) {
+        if (!examStarted) return;
+        if (answerLocked[qIndex]) return; // لا يمكن التعديل بعد الاختيار الأول
+        // منع تعديل الإجابة: نختار أول مرة ثم نقفل
+        userSelections[qIndex] = optIndex;
+        answerLocked[qIndex] = true;
+        updateUIAfterAnswer();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById("questionsRender");
+        if (!container) return;
+        container.innerHTML = "";
+        shuffledQuestions.forEach((q, idx) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            const qDiv = document.createElement("div");
+            qDiv.className = "question-text";
+            qDiv.innerHTML = `<span class="q-num">${idx+1}</span> ${q.text}`;
+            card.appendChild(qDiv);
+            const optsDiv = document.createElement("div");
+            optsDiv.className = "options";
+            q.options.forEach((opt, optIdx) => {
+                const btn = document.createElement("div");
+                btn.className = "opt-btn";
+                if (userSelections[idx] === optIdx) btn.classList.add("selected");
+                if (answerLocked[idx]) btn.classList.add("disabled-opt");
+                btn.innerText = opt;
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    if (answerLocked[idx]) return;
+                    handleSelectOption(idx, optIdx);
+                });
+                optsDiv.appendChild(btn);
+            });
+            card.appendChild(optsDiv);
+            const feedback = document.createElement("div");
+            feedback.className = "feedback";
+            if (userSelections[idx] !== null) {
+                const isCorrect = (userSelections[idx] === q.correct);
+                feedback.innerHTML = isCorrect ? "✅ إجابة صحيحة" : `❌ خطأ. الإجابة الصحيحة: ${q.options[q.correct]}`;
+                if (!isCorrect) feedback.classList.add("wrong-feedback");
+            } else {
+                feedback.innerHTML = "⚡ لم تُجب بعد";
+            }
+            card.appendChild(feedback);
+            container.appendChild(card);
+        });
+    }
+
+    function startExam() {
+        const nameInput = document.getElementById("studentName");
+        const nameVal = nameInput.value.trim();
+        if (nameVal === "") {
+            alert("الرجاء إدخال الاسم واللقب قبل البدء");
+            return;
+        }
+        examStarted = true;
+        document.getElementById("nameSection").style.display = "none";
+        document.getElementById("examArea").style.display = "block";
+        // إعادة ضبط التقدم (عند البدء لأول مرة يكون الكل فارغ)
+        userSelections.fill(null);
+        answerLocked.fill(false);
+        shuffledQuestions = shuffleOptionsPerQuestion(rawQuestions);
+        renderQuestions();
+        document.getElementById("currentScore").innerText = "0";
+        document.getElementById("totalPoints").innerHTML = TOTAL_QS;
+        document.getElementById("finalMsg").innerHTML = "✨ اختر إجاباتك بحذر، لا يمكن التعديل بعد الاختيار. ✨";
+    }
+
+    function fullReset() {
+        if (!examStarted) {
+            // قبل البدء نظف الحقول
+            document.getElementById("studentName").value = "";
+            document.getElementById("nameSection").style.display = "flex";
+            document.getElementById("examArea").style.display = "none";
+            return;
+        }
+        // اعادة تعيين كاملة
+        examStarted = false;
+        userSelections.fill(null);
+        answerLocked.fill(false);
+        document.getElementById("nameSection").style.display = "flex";
+        document.getElementById("examArea").style.display = "none";
+        document.getElementById("studentName").value = "";
+    }
+
+    document.getElementById("startExamBtn").addEventListener("click", startExam);
+    document.getElementById("hardResetBtn").addEventListener("click", fullReset);
+    // تحضير أولي
+    document.getElementById("totalPoints").innerHTML = TOTAL_QS;
+</script>
+</body>
+</html>
