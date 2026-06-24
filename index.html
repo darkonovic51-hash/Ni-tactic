@@ -1,438 +1,2240 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>أكاديمية كرة القدم</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>أكاديمية تيكنو | Techno Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    
+    <!-- jsPDF لإنشاء ملفات PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Tahoma',sans-serif; }
+        /* ===== الألوان ===== */
+        :root {
+            --primary-blue: #04185C;
+            --primary-blue-dark: #090A28;
+            --primary-gold: #D4A017;
+            --secondary-gold: #B8860B;
+            --white: #FFFFFF;
+            --light-gray: #A09DA3;
+            --dark-gray: #5A5B66;
+            --shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --radius: 24px;
+            --transition: 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --border-card: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            min-height:100vh; padding:20px;
-            display:flex; justify-content:center; align-items:center;
+            font-family: 'Inter', 'Cairo', sans-serif;
+            background: #0A0A0F;
+            color: #E8F0E8;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
-        .container {
-            max-width:1200px; width:100%;
-            background: rgba(255,255,255,0.95);
-            border-radius:30px; padding:30px;
-            box-shadow:0 15px 35px rgba(0,0,0,0.3);
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--primary-blue-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 10px; }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 20px; }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+            border: none;
+            padding: 12px 30px;
+            border-radius: 60px;
+            font-weight: 700;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-decoration: none;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
         }
-        h1, h2 { text-align:center; color:#1e3c72; margin-bottom:20px; }
-        h1 i { color:#f1c40f; }
-        .form-section, .dashboard-section {
-            background:white; border-radius:20px; padding:25px; margin-bottom:30px;
-            box-shadow:0 5px 15px rgba(0,0,0,0.1);
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(212, 160, 23, 0.3); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-gold);
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #FFFFFF;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-block;
+            text-decoration: none;
         }
-        .form-row { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:20px; }
-        .form-group { flex:1 1 200px; display:flex; flex-direction:column; }
-        .form-group label { font-weight:bold; margin-bottom:5px; color:#2c3e50; }
-        .form-group input {
-            padding:12px 15px; border:2px solid #ddd; border-radius:10px;
-            font-size:16px; transition:0.3s;
+        .btn-outline:hover { background: var(--primary-gold); transform: translateY(-2px); }
+
+        .btn-success { background: #2ecc71; border: none; color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-success:hover { background: #27ae60; transform: scale(1.05); }
+        .btn-danger { background: #e74c3c; border: none; color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-danger:hover { background: #c0392b; transform: scale(1.05); }
+        .btn-warning { background: #f39c12; border: none; color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-warning:hover { background: #e67e22; transform: scale(1.05); }
+
+        /* ===== TYPOGRAPHY ===== */
+        .section-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 40px;
+            color: #FFFFFF;
         }
-        .form-group input:focus {
-            border-color:#2a5298; outline:none; box-shadow:0 0 10px rgba(42,82,152,0.3);
+        .section-title span { color: var(--primary-gold); }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 70px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--primary-blue));
+            margin: 12px auto 0;
+            border-radius: 5px;
         }
-        .file-upload {
-            position:relative; display:inline-block; cursor:pointer;
-            padding:12px 20px; background:#2a5298; color:white;
-            border-radius:10px; transition:0.3s; text-align:center;
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--light-gray);
+            max-width: 700px;
+            margin: -25px auto 40px;
+            font-size: 1.05rem;
+            opacity: 0.8;
         }
-        .file-upload:hover { background:#1e3c72; }
-        .file-upload input[type="file"] {
-            position:absolute; left:0; top:0; opacity:0;
-            width:100%; height:100%; cursor:pointer;
+
+        /* ===== HEADER ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 10px 30px;
+            background: transparent;
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .file-upload i { margin-left:10px; }
-        #fileName { margin-right:15px; color:#555; }
-        .preview-img {
-            margin-top:10px; max-width:100px; max-height:100px;
-            border-radius:10px; border:2px solid #2a5298; display:none;
+        .navbar.scrolled {
+            background: rgba(9, 10, 40, 0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(212, 160, 23, 0.2);
+            padding: 8px 30px;
         }
-        .btn {
-            padding:14px 30px; border:none; border-radius:30px; font-size:18px;
-            font-weight:bold; background:#27ae60; color:white; cursor:pointer;
-            transition:0.3s; display:inline-block;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .btn:hover { background:#1e8449; transform:scale(1.02); }
-        .btn-danger { background:#e74c3c; }
-        .btn-danger:hover { background:#c0392b; }
-        .table-responsive { overflow-x:auto; margin-top:20px; }
-        table { width:100%; border-collapse:collapse; background:white; border-radius:15px; overflow:hidden; }
-        th { background:#1e3c72; color:white; padding:15px; text-align:center; }
-        td { padding:12px; text-align:center; border-bottom:1px solid #eee; }
-        tr:hover { background:#f1f9ff; }
-        .player-img { width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid #2a5298; }
-        .action-btn {
-            background:#2a5298; color:white; border:none; padding:8px 12px;
-            border-radius:8px; cursor:pointer; transition:0.3s; margin:0 5px;
+        .logo img { height: 45px; width: auto; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3)); }
+        .logo span {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.5px;
+            animation: wiggle 2s ease-in-out infinite;
         }
-        .action-btn:hover { background:#1e3c72; }
-        .action-btn i { margin-left:5px; }
-        .delete-btn { background:#e74c3c; }
-        .delete-btn:hover { background:#c0392b; }
-        #loading { text-align:center; color:#2a5298; font-size:18px; display:none; }
-        .toast {
-            position:fixed; bottom:20px; left:20px; background:#2ecc71; color:white;
-            padding:15px 25px; border-radius:30px; box-shadow:0 5px 15px rgba(0,0,0,0.3);
-            display:none; z-index:999;
+        .logo span .accent { color: var(--primary-gold); }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+            list-style: none;
+            align-items: center;
         }
-        .toast.error { background:#e74c3c; }
-        .login-overlay {
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background:rgba(0,0,0,0.7); display:flex; justify-content:center;
-            align-items:center; z-index:1000;
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: 0.2s;
+            padding: 4px 0;
+            border-bottom: 2px solid transparent;
         }
-        .login-box {
-            background:white; padding:40px; border-radius:20px; text-align:center;
-            max-width:400px; width:90%;
+        .nav-links a:hover { color: #FFFFFF; border-bottom-color: var(--primary-gold); }
+        .lang-switch {
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 30px;
+            padding: 3px 6px;
         }
-        .login-box h2 { margin-bottom:20px; color:#1e3c72; }
-        .login-box input {
-            width:100%; padding:12px; margin:10px 0; border:2px solid #ddd;
-            border-radius:10px; font-size:16px;
+        .lang-switch button {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .login-box button {
-            width:100%; padding:12px; background:#2a5298; color:white;
-            border:none; border-radius:10px; font-size:18px; cursor:pointer;
+        .lang-switch button.active { background: var(--primary-gold); color: #FFFFFF; }
+        .lang-switch button:hover { color: #FFFFFF; }
+        .menu-btn { display: none; font-size: 1.6rem; color: #FFFFFF; cursor: pointer; }
+
+        /* ===== HERO ===== */
+        .hero {
+            min-height: 90vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 50px;
+            overflow: hidden;
         }
-        .login-box button:hover { background:#1e3c72; }
-        .login-error { color:#e74c3c; margin-top:10px; display:none; }
-        @media (max-width:600px) { .form-group { flex:1 1 100%; } }
+        .hero-bg {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background: url('https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_0000000072e871f4ac3fd1c6f3928600.png') no-repeat center center/cover;
+            z-index: -2;
+            animation: heroSlide 15s ease-in-out infinite alternate;
+        }
+        @keyframes heroSlide {
+            0% { transform: scale(1.05) translateX(-3%); }
+            100% { transform: scale(1.05) translateX(3%); }
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(9, 10, 40, 0.75) 0%, rgba(4, 24, 92, 0.4) 100%);
+            z-index: -1;
+        }
+        .hero-overlay::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 40%;
+            background: linear-gradient(0deg, rgba(9, 10, 40, 0.9) 0%, transparent 100%);
+        }
+        .hero-content {
+            max-width: 850px;
+            position: relative;
+            z-index: 2;
+        }
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+            text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+        }
+        .hero h1 .highlight { color: var(--primary-gold); }
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+        /* ===== DIVIDER ===== */
+        .section-divider {
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-gold), var(--primary-blue));
+            position: relative;
+        }
+        .section-divider::after {
+            content: '⚡';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-gold);
+            font-size: 1rem;
+            background: #0A0A0F;
+            padding: 0 16px;
+        }
+
+        /* ===== SECTIONS ===== */
+        section { padding: 60px 0; }
+        .section-dark { background: var(--primary-blue-dark); }
+        .section-light { background: var(--primary-blue); }
+
+        /* ===== CARDS ===== */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(6px);
+            border-radius: var(--radius);
+            padding: 28px 20px;
+            text-align: center;
+            border: 1px solid var(--border-card);
+            transition: var(--transition);
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary-gold); box-shadow: var(--shadow); }
+        .card i { font-size: 2.4rem; color: var(--primary-gold); margin-bottom: 12px; }
+        .card h3 { font-size: 1.2rem; margin-bottom: 8px; color: #FFFFFF; }
+        .card p { color: var(--light-gray); opacity: 0.8; font-size: 0.95rem; }
+
+        /* ===== GALLERY ===== */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+        .gallery-item {
+            border-radius: 14px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-item .overlay {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%;
+            padding: 16px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.8), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-item:hover .overlay { opacity: 1; }
+        .gallery-item .overlay span { color: #FFFFFF; font-weight: 600; font-size: 0.95rem; }
+
+        /* ===== VIDEO ===== */
+        .video-wrapper {
+            max-width: 850px;
+            margin: 0 auto;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--primary-gold);
+        }
+        .video-wrapper video { width: 100%; display: block; background: #000; }
+
+        /* ===== COACH ===== */
+        .coach-single {
+            max-width: 380px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-card);
+            transition: var(--transition);
+            text-align: center;
+        }
+        .coach-single:hover { transform: translateY(-5px); border-color: var(--primary-gold); box-shadow: var(--shadow); }
+        .coach-single .coach-images {
+            position: relative;
+            height: 380px;
+            overflow: hidden;
+        }
+        .coach-single .coach-images img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .coach-single .coach-images img.active { opacity: 1; }
+        .coach-single .info { padding: 20px; }
+        .coach-single .info h4 { font-size: 1.3rem; color: #FFFFFF; margin-bottom: 4px; }
+        .coach-single .info .role { color: var(--primary-gold); font-weight: 600; font-size: 0.95rem; }
+        .coach-single .info .details { color: var(--light-gray); opacity: 0.7; font-size: 0.85rem; margin-top: 6px; }
+
+        /* ===== REGISTRATION ===== */
+        .registration-wrapper {
+            max-width: 750px;
+            margin: 0 auto;
+            background: rgba(212, 160, 23, 0.08);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius);
+            padding: 35px;
+            border: 2px solid var(--primary-gold);
+            box-shadow: 0 0 30px rgba(212, 160, 23, 0.2);
+            position: relative;
+        }
+        .registration-wrapper::before {
+            content: '⭐ التسجيل';
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-gold);
+            color: #000;
+            font-weight: 800;
+            padding: 4px 28px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(212, 160, 23, 0.3);
+        }
+        .registration-wrapper .form-group { margin-bottom: 16px; }
+        .registration-wrapper label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: #FFFFFF;
+            font-size: 0.95rem;
+        }
+        .registration-wrapper input,
+        .registration-wrapper select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 2px solid rgba(212, 160, 23, 0.25);
+            background: rgba(0,0,0,0.5);
+            color: #FFFFFF;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .registration-wrapper input:focus,
+        .registration-wrapper select:focus {
+            border-color: var(--primary-gold);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.15);
+        }
+        .registration-wrapper .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* ===== SCHEDULE ===== */
+        .schedule-wrapper {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 25px;
+            border: 1px solid var(--border-card);
+            overflow-x: auto;
+        }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+        .schedule-table th {
+            background: var(--primary-gold);
+            color: #000;
+            padding: 12px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+        .schedule-table td {
+            padding: 10px 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+        .schedule-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+        .schedule-table .category-cell { font-weight: 600; color: var(--primary-gold); }
+
+        /* ===== PLAYERS ===== */
+        .players-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .player-item {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid var(--border-card);
+        }
+        .player-item .name { font-weight: 600; color: #FFFFFF; font-size: 1rem; }
+        .player-item .position { color: var(--light-gray); font-size: 0.8rem; }
+        .player-item .category-badge {
+            display: inline-block;
+            background: var(--primary-gold);
+            color: #000;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* ===== CONTACT ===== */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+        }
+        .contact-info p {
+            margin: 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: var(--light-gray);
+        }
+        .contact-info i { color: var(--primary-gold); width: 22px; }
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-card);
+            background: rgba(0,0,0,0.3);
+            color: #FFFFFF;
+            font-size: 1rem;
+            margin-bottom: 14px;
+            transition: 0.2s;
+        }
+        .contact-form input:focus,
+        .contact-form textarea:focus { border-color: var(--primary-gold); outline: none; }
+        .contact-form textarea { min-height: 100px; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--primary-blue-dark);
+            padding: 50px 20px 25px;
+            border-top: 1px solid rgba(212, 160, 23, 0.15);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 35px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .footer-col h4 { color: #FFFFFF; margin-bottom: 14px; font-size: 1.05rem; }
+        .footer-col p, .footer-col a {
+            color: var(--light-gray);
+            opacity: 0.7;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .footer-col a:hover { color: var(--primary-gold); opacity: 1; }
+        .footer-social {
+            display: flex;
+            gap: 14px;
+            margin-top: 10px;
+        }
+        .footer-social a { color: var(--light-gray); font-size: 1.3rem; transition: 0.2s; }
+        .footer-social a:hover { color: var(--primary-gold); }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 25px;
+            margin-top: 35px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: var(--light-gray);
+            opacity: 0.5;
+            font-size: 0.8rem;
+        }
+
+        /* ===== ADMIN PANEL ===== */
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: rgba(212, 160, 23, 0.85);
+            border: none;
+            color: #FFFFFF;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            backdrop-filter: blur(4px);
+            transition: 0.3s;
+        }
+        .admin-toggle:hover { background: var(--primary-gold); }
+
+        .admin-panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .admin-panel-overlay.active { display: flex; }
+
+        .admin-panel {
+            background: #0A0A0F;
+            border-radius: 30px;
+            max-width: 1300px;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 30px;
+            border: 2px solid var(--primary-gold);
+            position: relative;
+        }
+        .admin-panel .close-admin {
+            position: sticky;
+            top: 0;
+            float: left;
+            background: var(--primary-gold);
+            border: none;
+            color: #000;
+            padding: 6px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .admin-panel h2 { color: #FFFFFF; margin-bottom: 20px; text-align: center; font-size: 1.8rem; }
+        .admin-panel .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .admin-panel .admin-stat {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+            border: 1px solid var(--border-card);
+        }
+        .admin-panel .admin-stat .num { font-size: 1.8rem; font-weight: 800; color: var(--primary-gold); }
+        .admin-panel .admin-stat .label { color: var(--light-gray); font-size: 0.8rem; }
+
+        .admin-panel .admin-section {
+            margin-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 20px;
+        }
+        .admin-panel .admin-section h3 {
+            color: #FFFFFF;
+            margin-bottom: 14px;
+            font-size: 1.2rem;
+        }
+        .admin-panel table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .admin-panel table th {
+            padding: 10px;
+            text-align: center;
+            font-weight: 700;
+            color: #fff;
+        }
+        .admin-panel table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .admin-panel table .del-btn {
+            background: #e74c3c;
+            border: none;
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .admin-panel table .del-btn:hover { background: #c0392b; }
+        .admin-panel table .approve-btn {
+            background: #2ecc71;
+            border: none;
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .admin-panel table .approve-btn:hover { background: #27ae60; }
+        .admin-panel table .status-badge {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .status-badge.pending { background: #f39c12; color: #000; }
+        .status-badge.approved { background: #2ecc71; color: #000; }
+        .status-badge.rejected { background: #e74c3c; color: #fff; }
+
+        .admin-panel .admin-form input,
+        .admin-panel .admin-form textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-card);
+            background: rgba(0,0,0,0.3);
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        .admin-panel .admin-form button {
+            background: var(--primary-gold);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            color: #000;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .admin-panel .admin-form button:hover { transform: scale(1.03); }
+
+        /* تنسيقات خاصة بلوحة التحكم: ألوان الخانات */
+        .admin-panel .table-gallery th { background: #8e44ad; }
+        .admin-panel .table-videos th { background: #2980b9; }
+        .admin-panel .table-schedule th { background: #27ae60; }
+        .admin-panel .table-matches th { background: #e67e22; }
+        .admin-panel .table-players th { background: #1abc9c; }
+        .admin-panel .table-registrations th { background: #e74c3c; }
+
+        .admin-panel .admin-table-wrap {
+            overflow-x: auto;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border-card);
+        }
+        .admin-panel .admin-table-wrap table { min-width: 700px; }
+
+        /* جدول الأسبوعي في لوحة التحكم */
+        .weekly-schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .weekly-schedule-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border-card);
+        }
+        .weekly-schedule-card .day-title {
+            font-weight: 700;
+            color: var(--primary-gold);
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .weekly-schedule-card .day-time {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .weekly-schedule-card .day-field {
+            color: #fff;
+            font-size: 0.85rem;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        /* ===== MATCHES DESIGN ===== */
+        .matches-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        .match-card {
+            background: linear-gradient(145deg, #1a1a2e, #0A0A0F);
+            border-radius: 24px;
+            padding: 25px 20px;
+            border: 2px solid var(--primary-gold);
+            box-shadow: 0 10px 30px rgba(212, 160, 23, 0.15);
+            text-align: center;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .match-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(212,160,23,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .match-card:hover { transform: translateY(-6px); box-shadow: 0 15px 40px rgba(212, 160, 23, 0.25); }
+        .match-card .vs {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-gold);
+            margin: 6px 0;
+        }
+        .match-card .opponent {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #FFFFFF;
+        }
+        .match-card .match-date {
+            color: var(--light-gray);
+            font-size: 0.95rem;
+            margin: 6px 0;
+        }
+        .match-card .match-location {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        .match-card .match-badge {
+            display: inline-block;
+            background: var(--primary-gold);
+            color: #000;
+            padding: 2px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            margin-top: 8px;
+        }
+        .match-card .academy-name {
+            color: var(--primary-gold);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* ===== PAYMENT MODAL ===== */
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .payment-modal.active { display: flex; }
+        .payment-modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #0A0A0F);
+            border: 2px solid var(--primary-gold);
+            border-radius: 30px;
+            padding: 35px 25px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(212, 160, 23, 0.2);
+            animation: modalPop 0.3s ease, shake 0.4s 0.3s ease;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.6); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-15px); }
+            40% { transform: translateX(15px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+        .payment-modal-content .icon { font-size: 3.5rem; color: var(--primary-gold); margin-bottom: 12px; }
+        .payment-modal-content h3 { color: #FFFFFF; font-size: 1.6rem; margin-bottom: 8px; }
+        .payment-modal-content p { color: var(--light-gray); font-size: 1rem; line-height: 1.7; margin-bottom: 20px; }
+        .payment-modal-content .close-modal {
+            background: var(--primary-gold);
+            border: none;
+            color: #000;
+            padding: 10px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .payment-modal-content .close-modal:hover { transform: scale(1.04); box-shadow: 0 0 20px rgba(212, 160, 23, 0.4); }
+
+        /* ===== ANIMATIONS خفيفة ===== */
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-1.5deg) scale(1); }
+            50% { transform: rotate(1.5deg) scale(1.02); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3rem; }
+            .section-title { font-size: 2rem; }
+        }
+        @media (max-width: 850px) {
+            .navbar { padding: 10px 16px; background: rgba(9, 10, 40, 0.95); }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+                padding: 16px 0;
+                gap: 12px;
+                background: rgba(9, 10, 40, 0.98);
+                position: absolute;
+                top: 100%; left: 0;
+                border-bottom: 1px solid rgba(212, 160, 23, 0.15);
+            }
+            .nav-links.show { display: flex; }
+            .menu-btn { display: block; }
+            .hero h1 { font-size: 2.2rem; }
+            .hero p { font-size: 1rem; }
+            .contact-grid { grid-template-columns: 1fr; }
+            .registration-wrapper { padding: 20px; }
+            .registration-wrapper .form-row { grid-template-columns: 1fr; }
+            section { padding: 40px 0; }
+            .section-title { font-size: 1.6rem; }
+            .admin-panel { padding: 16px; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.7rem; }
+            .btn-primary, .btn-outline { padding: 8px 20px; font-size: 0.85rem; }
+            .hero-buttons { gap: 8px; }
+        }
+
+        /* ===== تنسيق معاينة الصورة في نموذج التسجيل ===== */
+        .image-preview {
+            margin-top: 8px;
+            max-width: 120px;
+            max-height: 120px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px dashed var(--primary-gold);
+            display: none;
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
 
-    <!-- حماية لوحة التحكم - طبقة تسجيل الدخول -->
-    <div id="loginOverlay" class="login-overlay">
-        <div class="login-box">
-            <h2><i class="fas fa-lock"></i> كلمة المرور</h2>
-            <p>أدخل كلمة المرور للوصول إلى لوحة التحكم</p>
-            <input type="password" id="passwordInput" placeholder="كلمة المرور" />
-            <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> دخول</button>
-            <p id="loginError" class="login-error">كلمة المرور غير صحيحة</p>
+<!-- ===== HEADER ===== -->
+<header class="navbar" id="navbar">
+    <div class="logo">
+        <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/42aaf4132007f328e33d2aeaa0b05670a9e3f332/1000015229-removebg-preview.png" alt="شعار الأكاديمية">
+        <span>تيكنو <span class="accent">Academy</span></span>
+    </div>
+    <div class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></div>
+    <ul class="nav-links" id="navLinks">
+        <li><a href="#home">الرئيسية</a></li>
+        <li><a href="#about">عن الأكاديمية</a></li>
+        <li><a href="#coach">المدير الفني</a></li>
+        <li><a href="#gallery">المعرض</a></li>
+        <li><a href="#videos">الفيديوهات</a></li>
+        <li><a href="#kits">الأطقم</a></li>
+        <li><a href="#registration">التسجيل</a></li>
+        <li><a href="#schedule">جدول التدريبات</a></li>
+        <li><a href="#matches">المباريات</a></li>
+        <li><a href="#players">اللاعبون</a></li>
+        <li><a href="#contact">اتصل بنا</a></li>
+        <li>
+            <div class="lang-switch">
+                <button class="active">عربي</button>
+                <button>EN</button>
+            </div>
+        </li>
+    </ul>
+</header>
+
+<!-- ===== HERO ===== -->
+<section id="home" class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>أكاديمية <span class="highlight">تيكنو</span><br>لكرة القدم</h1>
+        <p>حيث تُصنع المواهب وتُكتب الأساطير. نعدّ الجيل القادم من أبطال كرة القدم.</p>
+        <div class="hero-buttons">
+            <a href="#registration" class="btn-primary">سجل الآن</a>
+            <a href="#about" class="btn-outline">اكتشف الأكاديمية</a>
         </div>
     </div>
+</section>
 
-    <div class="container" id="mainContainer">
-        <h1><i class="fas fa-futbol"></i> أكاديمية كرة القدم</h1>
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
 
-        <!-- استمارة التسجيل -->
-        <div class="form-section">
-            <h2>تسجيل جديد</h2>
+<!-- ===== ABOUT ===== -->
+<section id="about" class="section-dark">
+    <div class="container">
+        <h2 class="section-title">عن <span>الأكاديمية</span></h2>
+        <p class="section-subtitle">أكاديمية تيكنو – رؤية رياضية متكاملة لبناء جيل من الأبطال.</p>
+        <div class="card-grid">
+            <div class="card">
+                <i class="fas fa-eye"></i>
+                <h3>رؤيتنا</h3>
+                <p>تخريج جيل من اللاعبين المحترفين القادرين على تمثيل الأكاديمية والوطن في المحافل الدولية.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-bullhorn"></i>
+                <h3>رسالتنا</h3>
+                <p>توفير بيئة تدريبية عالمية المستوى وتطوير المهارات الفنية والبدنية والنفسية للاعبين.</p>
+            </div>
+            <div class="card">
+                <i class="fas fa-trophy"></i>
+                <h3>قيمنا</h3>
+                <p>الانضباط، العمل الجماعي، الاحترام، التميز، والشغف – أساس نجاح كل لاعب.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== COACH ===== -->
+<section id="coach" class="section-light">
+    <div class="container">
+        <h2 class="section-title">المدير <span>الفني</span></h2>
+        <p class="section-subtitle">قيادة فنية وخبرة عالية لبناء جيل من الأبطال.</p>
+        <div class="coach-single">
+            <div class="coach-images" id="coachImages">
+                <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_00000000a83071f4b07064e223ab137a.png" alt="المدير الفني 1" class="active">
+                <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_000000000bfc71f4a42e28bf294e7c60.png" alt="المدير الفني 2">
+            </div>
+            <div class="info">
+                <h4>المدير الفني</h4>
+                <div class="role">مدرب وطني معتمد – UEFA B</div>
+                <div class="details">خبرة 15 سنة في تدريب الفئات العمرية، درب أكثر من 200 لاعب، وقاد فرقاً للفوز ببطولات وطنية.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== GALLERY ===== -->
+<section id="gallery" class="section-dark">
+    <div class="container">
+        <h2 class="section-title">معرض <span>الصور</span></h2>
+        <p class="section-subtitle">لقطات من التدريبات، المباريات، والمناسبات التي تعكس روح الأكاديمية.</p>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== VIDEOS ===== -->
+<section id="videos" class="section-light">
+    <div class="container">
+        <h2 class="section-title">🎥 فيديوهات <span>الأكاديمية</span></h2>
+        <p class="section-subtitle">شاهد نبذة عن مقر تدريباتنا في برج الكيفان – تجربة حية لأجواء التدريب.</p>
+        <div class="video-wrapper" id="videoWrapper"></div>
+        <p style="text-align:center; color:var(--light-gray); margin-top:10px; font-size:0.85rem;">📍 فيديو تعريفي لمقر تدريبات فرع برج الكيفان – ملاعب مغطاة</p>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== KITS ===== -->
+<section id="kits" class="section-dark">
+    <div class="container">
+        <h2 class="section-title">الأطقم <span>الرسمية</span></h2>
+        <p class="section-subtitle">طقم أكاديمية تيكنو الرسمي – هوية الفريق.</p>
+        <div style="text-align:center;">
+            <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/69ae9be65ac8b6eaed6ba4e2f91e0da0a08be6ea/file_000000008d0c71f4a336c5c667ccc948.png" alt="الطقم الرسمي" style="max-width:100%; border-radius:var(--radius); box-shadow:var(--shadow);">
+        </div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== REGISTRATION ===== -->
+<section id="registration" class="section-light">
+    <div class="container">
+        <h2 class="section-title">سجل <span>الآن</span></h2>
+        <p class="section-subtitle">انضم إلى أكاديمية تيكنو وكن جزءاً من مستقبل كرة القدم.</p>
+        <div style="text-align:center; margin-bottom:25px; background:rgba(255,255,255,0.04); border-radius:18px; padding:16px;">
+            <h3 style="color:#FFFFFF; margin-bottom:10px; font-size:1.1rem;">📍 أكاديميتنا موجودة في:</h3>
+            <div style="display:flex; justify-content:center; gap:25px; flex-wrap:wrap; color:var(--light-gray); font-size:0.95rem;">
+                <div><strong style="color:var(--primary-gold);">باب الزوار:</strong> 05.52.47.41.40</div>
+                <div><strong style="color:var(--primary-gold);">برج الكيفان:</strong> 05.57.76.86.08</div>
+                <div><strong style="color:var(--primary-gold);">الخروبة:</strong> 07.91.96.16.63</div>
+            </div>
+        </div>
+        <div class="registration-wrapper">
             <form id="registrationForm">
                 <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="fas fa-user"></i> الاسم</label>
-                        <input type="text" id="firstName" placeholder="الاسم" required />
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-user-tag"></i> اللقب</label>
-                        <input type="text" id="lastName" placeholder="اللقب" required />
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-calendar-alt"></i> العمر</label>
-                        <input type="number" id="age" placeholder="العمر" required min="4" max="99" />
+                    <div class="form-group"><label>الاسم الشخصي</label><input type="text" id="regFirstName" placeholder="مثال: أحمد" required></div>
+                    <div class="form-group"><label>اللقب العائلي</label><input type="text" id="regLastName" placeholder="مثال: بن سليمان" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>رقم الهاتف</label><input type="tel" id="regPhone" placeholder="05XXXXXXXX" required></div>
+                    <div class="form-group"><label>الفئة العمرية</label>
+                        <select id="regCategory">
+                            <option value="U11">تحت 11 سنة (U11)</option>
+                            <option value="U12">تحت 12 سنة (U12)</option>
+                            <option value="U13">تحت 13 سنة (U13)</option>
+                            <option value="U14">تحت 14 سنة (U14)</option>
+                            <option value="U15">تحت 15 سنة (U15)</option>
+                            <option value="U16">تحت 16 سنة (U16)</option>
+                            <option value="U17">تحت 17 سنة (U17)</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="fas fa-phone"></i> رقم الهاتف</label>
-                        <input type="tel" id="phone" placeholder="رقم الهاتف" required />
+                    <div class="form-group"><label>المكان</label>
+                        <select id="regLocation">
+                            <option value="باب الزوار">باب الزوار</option>
+                            <option value="برج الكيفان">برج الكيفان</option>
+                            <option value="الخروبة">الخروبة</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-map-marker-alt"></i> المكان</label>
-                        <input type="text" id="location" placeholder="المدينة / الحي" required />
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-image"></i> الصورة الشخصية</label>
-                        <div class="file-upload">
-                            <i class="fas fa-cloud-upload-alt"></i> اختر صورة
-                            <input type="file" id="imageUpload" accept="image/*" />
+                        <label>صورة اللاعب (اختياري)</label>
+                        <input type="file" id="regImage" accept="image/*">
+                        <div class="image-preview" id="imagePreview">
+                            <img id="previewImg" src="#" alt="معاينة الصورة">
                         </div>
-                        <span id="fileName">لم يتم اختيار صورة</span>
-                        <img id="imagePreview" class="preview-img" alt="معاينة الصورة" />
                     </div>
                 </div>
-                <button type="submit" class="btn"><i class="fas fa-save"></i> تسجيل</button>
-                <div id="loading"><i class="fas fa-spinner fa-spin"></i> جاري الحفظ...</div>
+                <button type="submit" class="btn-primary" style="width:100%; padding:14px; font-size:1.05rem;">إرسال طلب التسجيل</button>
             </form>
         </div>
+    </div>
+</section>
 
-        <!-- لوحة التحكم (مخفية حتى تسجيل الدخول) -->
-        <div class="dashboard-section" id="dashboardSection" style="display:none;">
-            <h2><i class="fas fa-tachometer-alt"></i> لوحة التحكم - المسجلون</h2>
-            <div class="table-responsive">
-                <table id="playersTable">
-                    <thead>
-                        <tr>
-                            <th>الصورة</th>
-                            <th>الاسم الكامل</th>
-                            <th>العمر</th>
-                            <th>الهاتف</th>
-                            <th>المكان</th>
-                            <th>الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== SCHEDULE ===== -->
+<section id="schedule" class="section-dark">
+    <div class="container">
+        <h2 class="section-title">جدول <span>التدريبات</span></h2>
+        <p class="section-subtitle">جدول أسبوعي منظم لجميع الفئات العمرية.</p>
+        <div class="schedule-wrapper" id="scheduleWrapper"></div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== MATCHES ===== -->
+<section id="matches" class="section-light">
+    <div class="container">
+        <h2 class="section-title">المباريات <span>الودية</span></h2>
+        <p class="section-subtitle">جميع المباريات الودية للفرق.</p>
+        <div id="matchesContainer" style="min-height:100px;"></div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== PLAYERS ===== -->
+<section id="players" class="section-dark">
+    <div class="container">
+        <h2 class="section-title">قوائم <span>اللاعبين</span></h2>
+        <p class="section-subtitle">جميع لاعبي أكاديمية تيكنو حسب الفئات العمرية.</p>
+        <div id="playersContainer"></div>
+    </div>
+</section>
+
+<!-- ===== DIVIDER ===== -->
+<div class="section-divider"></div>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact" class="section-light">
+    <div class="container">
+        <h2 class="section-title">تواصل <span>معنا</span></h2>
+        <p class="section-subtitle">نحن هنا للإجابة على استفساراتكم. تواصلوا معنا عبر أي من القنوات التالية.</p>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3 style="color:#FFFFFF; margin-bottom:16px; font-size:1.2rem;">معلومات الاتصال</h3>
+                <p><i class="fas fa-map-marker-alt"></i> المركب الرياضي، برج الكيفان، الجزائر</p>
+                <p><i class="fas fa-phone-alt"></i> 05.52.47.41.40</p>
+                <p><i class="fas fa-envelope"></i> info@technoacademy.dz</p>
+                <p><i class="fab fa-facebook"></i> <a href="https://www.facebook.com/profile.php?id=100063920144998" target="_blank" style="color:var(--primary-gold); text-decoration:none;">تابعنا على فيسبوك</a></p>
+                <div style="display:flex; gap:14px; margin-top:16px;">
+                    <a href="https://www.facebook.com/profile.php?id=100063920144998" target="_blank" style="color:var(--light-gray); font-size:1.6rem; transition:0.2s;"><i class="fab fa-facebook"></i></a>
+                    <a href="#" style="color:var(--light-gray); font-size:1.6rem; transition:0.2s;"><i class="fab fa-instagram"></i></a>
+                    <a href="#" style="color:var(--light-gray); font-size:1.6rem; transition:0.2s;"><i class="fab fa-youtube"></i></a>
+                </div>
             </div>
-            <p id="noData" style="text-align:center; color:#888; margin-top:20px;">لا يوجد مسجلون حتى الآن</p>
+            <div class="contact-form">
+                <input type="text" placeholder="الاسم الكامل">
+                <input type="email" placeholder="البريد الإلكتروني">
+                <input type="tel" placeholder="رقم الهاتف">
+                <textarea placeholder="رسالتك..."></textarea>
+                <button class="btn-primary">إرسال الرسالة</button>
+            </div>
         </div>
     </div>
+</section>
 
-    <div id="toast" class="toast"></div>
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                <img src="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/42aaf4132007f328e33d2aeaa0b05670a9e3f332/1000015229-removebg-preview.png" alt="شعار" style="height:40px; width:auto;">
+                <span style="font-size:1.2rem; font-weight:800; color:#FFFFFF;">تيكنو <span style="color:var(--primary-gold);">Academy</span></span>
+            </div>
+            <p style="opacity:0.6; font-size:0.9rem;">أكاديمية كرة القدم الرائدة في الجزائر، نصنع النجوم ونبني المستقبل.</p>
+        </div>
+        <div class="footer-col">
+            <h4>روابط سريعة</h4>
+            <a href="#home">الرئيسية</a>
+            <a href="#about">عن الأكاديمية</a>
+            <a href="#registration">التسجيل</a>
+            <a href="#contact">اتصل بنا</a>
+        </div>
+        <div class="footer-col">
+            <h4>تواصل معنا</h4>
+            <p>📞 05.52.47.41.40</p>
+            <p>📧 info@technoacademy.dz</p>
+            <p>📍 برج الكيفان، الجزائر</p>
+            <div class="footer-social">
+                <a href="https://www.facebook.com/profile.php?id=100063920144998" target="_blank"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 أكاديمية تيكنو – جميع الحقوق محفوظة
+    </div>
+</footer>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
-    <!-- jsPDF & html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- ===== نافذة التنبيه ===== -->
+<div class="payment-modal" id="paymentModal">
+    <div class="payment-modal-content">
+        <div class="icon">⚠️</div>
+        <h3>تنبيه هام</h3>
+        <p>يجب عليك دفع مستحقات الموقع حتى تستلمه بالكامل.</p>
+        <button class="close-modal" id="closePaymentModal">✔️ تم الفهم</button>
+    </div>
+</div>
 
-    <script>
-        // =============== إعداد Firebase ===============
-        const firebaseConfig = {
-            apiKey: "AIzaSyCDrCtY7weMKAfWQq1k3Hx9hx1PPWa4XAE",
-            authDomain: "academy-al.firebaseapp.com",
-            databaseURL: "https://academy-al-default-rtdb.firebaseio.com",
-            projectId: "academy-al",
-            storageBucket: "academy-al.firebasestorage.app",
-            messagingSenderId: "205174400637",
-            appId: "1:205174400637:web:bf7a852ad18862cb4b3314"
-        };
+<!-- ===== ADMIN TOGGLE ===== -->
+<button class="admin-toggle" id="adminToggle"><i class="fas fa-cog"></i> إدارة</button>
+
+<!-- ===== ADMIN PANEL ===== -->
+<div class="admin-panel-overlay" id="adminPanel">
+    <div class="admin-panel">
+        <button class="close-admin" id="closeAdmin"><i class="fas fa-times"></i> إغلاق</button>
+        <h2>🔐 لوحة تحكم المسؤول</h2>
+        <div id="adminLogin" style="text-align:center; margin-bottom:20px;">
+            <input type="password" id="adminPassInput" placeholder="أدخل كلمة السر" style="padding:10px 20px; border-radius:60px; border:1px solid var(--primary-gold); background:rgba(0,0,0,0.3); color:#fff; width:240px; font-size:1rem;">
+            <button onclick="adminLogin()" style="background:var(--primary-gold); border:none; padding:10px 22px; border-radius:60px; color:#000; font-weight:700; cursor:pointer; font-size:1rem;">دخول</button>
+            <div id="adminLoginError" style="color:red; margin-top:8px; display:none;">❌ كلمة سر غير صحيحة</div>
+        </div>
+        <div id="adminContent" style="display:none;">
+            <div class="admin-stats" id="adminStats"></div>
+
+            <!-- ===== طلبات التسجيل ===== -->
+            <div class="admin-section">
+                <h3>📋 طلبات التسجيل</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-registrations">
+                        <thead><tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>اللقب</th>
+                            <th>الهاتف</th>
+                            <th>الفئة</th>
+                            <th>المكان</th>
+                            <th>التاريخ</th>
+                            <th>الصورة</th>
+                            <th>الحالة</th>
+                            <th>إجراء</th>
+                            <th>PDF</th>
+                        </tr></thead>
+                        <tbody id="adminRegistrations"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== قائمة اللاعبين المعتمدين ===== -->
+            <div class="admin-section">
+                <h3>👕 قائمة اللاعبين المعتمدين</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-players">
+                        <thead><tr><th>#</th><th>الاسم</th><th>اللقب</th><th>الفئة</th><th>الهاتف</th><th>الصورة</th><th>حذف</th></tr></thead>
+                        <tbody id="adminPlayersList"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ===== إدارة المعرض ===== -->
+            <div class="admin-section">
+                <h3>🖼️ إدارة المعرض</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-gallery">
+                        <thead><tr><th>#</th><th>العنوان</th><th>رابط الصورة</th><th>حذف</th></tr></thead>
+                        <tbody id="adminGalleryList"></tbody>
+                    </table>
+                </div>
+                <div class="admin-form" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <input type="text" id="newGalleryTitle" placeholder="عنوان الصورة" style="flex:1; min-width:150px;">
+                    <input type="text" id="newGalleryUrl" placeholder="رابط الصورة" style="flex:2; min-width:200px;">
+                    <button onclick="addGalleryItem()">إضافة صورة</button>
+                </div>
+            </div>
+
+            <!-- ===== إدارة الفيديوهات ===== -->
+            <div class="admin-section">
+                <h3>🎥 إدارة الفيديوهات</h3>
+                <div class="admin-table-wrap">
+                    <table class="table-videos">
+                        <thead><tr><th>#</th><th>العنوان</th><th>رابط الفيديو</th><th>حذف</th></tr></thead>
+                        <tbody id="adminVideoList"></tbody>
+                    </table>
+                </div>
+                <div class="admin-form" style="margin-top:12px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <input type="text" id="newVideoTitle" placeholder="عنوان الفيديو" style="flex:1; min-width:150px;">
+                    <input type="text" id="newVideoUrl" placeholder="رابط الفيديو" style="flex:2; min-width:200px;">
+                    <button onclick="addVideo()">إضافة فيديو</button>
+                </div>
+            </div>
+
+            <!-- ===== جدول التدريبات الأسبوعي ===== -->
+            <div class="admin-section">
+                <h3>📅 جدول التدريبات الأسبوعي</h3>
+                <div class="weekly-schedule-grid" id="adminScheduleContainer"></div>
+                <button onclick="addScheduleRow()" style="background:var(--primary-gold); border:none; padding:8px 18px; border-radius:30px; color:#000; font-weight:700; cursor:pointer; margin-top:12px;">+ إضافة صف</button>
+                <button onclick="saveScheduleAdmin()" style="background:var(--primary-blue); border:none; padding:8px 18px; border-radius:30px; color:#fff; font-weight:700; cursor:pointer; margin-top:12px; margin-right:8px;">💾 حفظ الجدول</button>
+            </div>
+
+            <!-- ===== إدارة المباريات ===== -->
+            <div class="admin-section">
+                <h3>⚽ إدارة المباريات الودية</h3>
+                <div id="adminMatchesContainer" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px;"></div>
+                <div class="admin-form" style="margin-top:14px; display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                    <input type="text" id="newMatchOpponent" placeholder="اسم الخصم" style="flex:1; min-width:120px;">
+                    <input type="text" id="newMatchDate" placeholder="التاريخ" style="flex:1; min-width:120px;">
+                    <input type="text" id="newMatchLocation" placeholder="المكان" style="flex:1; min-width:120px;">
+                    <button onclick="addMatch()">+ إضافة مباراة</button>
+                </div>
+                <button onclick="saveMatchesAdmin()" style="background:var(--primary-blue); border:none; padding:8px 18px; border-radius:30px; color:#fff; font-weight:700; cursor:pointer; margin-top:10px;">💾 حفظ المباريات</button>
+            </div>
+
+            <!-- ===== تغيير كلمة السر ===== -->
+            <div class="admin-section">
+                <h3>🔑 تغيير كلمة السر</h3>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <input type="password" id="newAdminPass" placeholder="كلمة سر جديدة" style="padding:10px; border-radius:12px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff; width:200px;">
+                    <button onclick="changeAdminPassword()" style="background:var(--primary-gold); border:none; padding:8px 20px; border-radius:30px; color:#000; font-weight:700; cursor:pointer;">تغيير</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // 1. إعدادات Firebase
+    // ================================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyCyNanQ-kKG70ThYujTYXHj6ySYFReSH0s",
+        authDomain: "academy-tecni.firebaseapp.com",
+        databaseURL: "https://academy-tecni-default-rtdb.firebaseio.com",
+        projectId: "academy-tecni",
+        storageBucket: "academy-tecni.firebasestorage.app",
+        messagingSenderId: "857198194842",
+        appId: "1:857198194842:web:f2c077424dca6bd9c5af23",
+        measurementId: "G-FDTN8JMB5R"
+    };
+
+    try {
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-        const playersCollection = db.collection('players');
+        console.log('✅ Firebase initialized');
+    } catch (e) {
+        console.error('❌ Firebase init error:', e);
+    }
+    const database = firebase.database();
 
-        // =============== عناصر DOM ===============
-        const loginOverlay = document.getElementById('loginOverlay');
-        const passwordInput = document.getElementById('passwordInput');
-        const loginBtn = document.getElementById('loginBtn');
-        const loginError = document.getElementById('loginError');
-        const dashboardSection = document.getElementById('dashboardSection');
+    // ================================================================
+    // 2. البيانات الافتراضية
+    // ================================================================
+    const defaultGallery = [
+        { id: 1, title: 'لاعبو الأكاديمية', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_0000000080887246a3ae03f9d509af06.png' },
+        { id: 2, title: 'معرض الأكاديمية 1', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_00000000bf50722f865fdd37161eb04e.png' },
+        { id: 3, title: 'معرض الأكاديمية 2', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/7b5f5a9c030c088f4af9797c2a1365727d7b3274/file_00000000464071f4b244348f594f097c.png' },
+        { id: 4, title: 'معرض الأكاديمية 3', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/ed7625f1c04b4c31a91a01fcafb72048fc1c5993/file_000000006e6471f48132a02c81c00658.png' },
+        { id: 5, title: 'تجديد عقد لاعب', url: 'https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_00000000c71471fd9f054dee930088ad.png' }
+    ];
+    const defaultVideos = [
+        { id: 1, title: 'فيديو تعريفي بالأكاديمية', url: 'https://raw.githubusercontent.com/darkonovic51-hash/Academy-Tecnho-football-/42aaf4132007f328e33d2aeaa0b05670a9e3f332/%E2%96%AA%EF%B8%8F%D9%86%D8%A8%D8%B0%D8%A9%20%D8%B9%D9%86%20%D9%85%D9%82%D8%B1%20%D8%AA%D8%AF%D8%B1%D9%8A%D8%A8%D8%A7%D8%AA%20%D8%A3%D9%83%D8%A7%D8%AF%D9%8A%D9%85%D9%8A%D8%AA%D9%86%D8%A7%20%D9%81%D8%B1%D8%B9%20_%20%D8%A8%D8%B1%D8%AC%20%D8%A7%D9%84%D9%83%D9%8A%D9%81%D8%A7%D9%86%20_%20%D9%81%D9%8A%20%D9%85%D9%84%D8%A7%D8%B9%D8%A8%20%D9%85%D8%BA%D8%B7%D8%A7%D8%A9%20%D8%8C%20%D8%A3%D9%85%D8%A7%D9%83%D9%86%20%D8%A7%D9%84%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%20%D8%AC%D8%AF%20.mp4' }
+    ];
+    const defaultSchedule = [
+        { id: 1, category: 'تحت 11 سنة (U11)', days: 'السبت - الأربعاء', time: '16:00 - 17:30', field: 'الملعب الرئيسي' },
+        { id: 2, category: 'تحت 12 سنة (U12)', days: 'الأحد - الخميس', time: '16:00 - 17:30', field: 'الملعب الرئيسي' },
+        { id: 3, category: 'تحت 13 سنة (U13)', days: 'الإثنين - الجمعة', time: '17:30 - 19:00', field: 'الملعب الثانوي' },
+        { id: 4, category: 'تحت 14 سنة (U14)', days: 'الثلاثاء - السبت', time: '17:30 - 19:00', field: 'الملعب الثانوي' },
+        { id: 5, category: 'تحت 15 سنة (U15)', days: 'الأحد - الأربعاء', time: '19:00 - 20:30', field: 'الملعب الرئيسي' },
+        { id: 6, category: 'تحت 16 سنة (U16)', days: 'الإثنين - الخميس', time: '19:00 - 20:30', field: 'الملعب الرئيسي' },
+        { id: 7, category: 'تحت 17 سنة (U17)', days: 'الثلاثاء - الجمعة', time: '20:30 - 22:00', field: 'الملعب الرئيسي' }
+    ];
+    const defaultMatches = [];
+    const defaultPlayers = [];
 
-        const form = document.getElementById('registrationForm');
-        const firstName = document.getElementById('firstName');
-        const lastName = document.getElementById('lastName');
-        const age = document.getElementById('age');
-        const phone = document.getElementById('phone');
-        const location = document.getElementById('location');
-        const imageUpload = document.getElementById('imageUpload');
-        const fileName = document.getElementById('fileName');
-        const imagePreview = document.getElementById('imagePreview');
-        const tableBody = document.getElementById('tableBody');
-        const noData = document.getElementById('noData');
-        const loading = document.getElementById('loading');
-        const toast = document.getElementById('toast');
+    // ================================================================
+    // 3. الحالة العامة
+    // ================================================================
+    let appData = {
+        gallery: [],
+        videos: [],
+        schedule: [],
+        matches: [],
+        players: [],
+        registrations: [] // سيتم جلبها بشكل منفصل
+    };
 
-        let selectedFile = null;
+    // ================================================================
+    // 4. دوال قراءة وكتابة Firebase
+    // ================================================================
+    function saveToFirebase(path, data) {
+        return database.ref(path).set(data)
+            .then(() => console.log(`✅ Saved ${path}`))
+            .catch((err) => {
+                console.warn(`⚠️ Failed to save ${path}, storing locally:`, err);
+                localStorage.setItem('fb_' + path.replace('/', '_'), JSON.stringify(data));
+            });
+    }
 
-        // =============== كلمة المرور الثابتة ===============
-        const ADMIN_PASSWORD = 'admin123';
+    function getFromFirebase(path) {
+        return database.ref(path).once('value')
+            .then(snapshot => snapshot.val())
+            .catch((err) => {
+                console.warn(`⚠️ Failed to fetch ${path}, using local:`, err);
+                const local = localStorage.getItem('fb_' + path.replace('/', '_'));
+                return local ? JSON.parse(local) : null;
+            });
+    }
 
-        // =============== وظائف الحماية ===============
-        function checkLogin() {
-            if (sessionStorage.getItem('loggedIn') === 'true') {
-                loginOverlay.style.display = 'none';
-                dashboardSection.style.display = 'block';
-                loadPlayers(); // تحميل البيانات بعد الدخول
+    // ================================================================
+    // 5. تحميل جميع البيانات
+    // ================================================================
+    async function loadAllData() {
+        try {
+            const [gallery, videos, schedule, matches, players] = await Promise.all([
+                getFromFirebase('academyData/gallery'),
+                getFromFirebase('academyData/videos'),
+                getFromFirebase('academyData/schedule'),
+                getFromFirebase('academyData/matches'),
+                getFromFirebase('academyData/players')
+            ]);
+
+            appData.gallery = gallery || defaultGallery;
+            appData.videos = videos || defaultVideos;
+            appData.schedule = schedule || defaultSchedule;
+            appData.matches = matches || defaultMatches;
+            appData.players = players || defaultPlayers;
+
+            if (!gallery) await saveToFirebase('academyData/gallery', appData.gallery);
+            if (!videos) await saveToFirebase('academyData/videos', appData.videos);
+            if (!schedule) await saveToFirebase('academyData/schedule', appData.schedule);
+            if (!matches) await saveToFirebase('academyData/matches', appData.matches);
+            if (!players) await saveToFirebase('academyData/players', appData.players);
+
+            console.log('✅ All data loaded from Firebase');
+        } catch (error) {
+            console.error('❌ Error loading data:', error);
+            // استخدام البيانات المحلية إذا وجدت
+            const local = localStorage.getItem('fb_academyData');
+            if (local) {
+                try {
+                    const parsed = JSON.parse(local);
+                    appData = parsed;
+                } catch (e) {}
             } else {
-                loginOverlay.style.display = 'flex';
-                dashboardSection.style.display = 'none';
+                appData.gallery = defaultGallery;
+                appData.videos = defaultVideos;
+                appData.schedule = defaultSchedule;
+                appData.matches = defaultMatches;
+                appData.players = defaultPlayers;
             }
         }
+    }
 
-        loginBtn.addEventListener('click', function() {
-            const pass = passwordInput.value.trim();
-            if (pass === ADMIN_PASSWORD) {
-                sessionStorage.setItem('loggedIn', 'true');
-                loginError.style.display = 'none';
-                checkLogin();
-            } else {
-                loginError.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        });
-
-        // السماح بالدخول بالضغط على Enter
-        passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') loginBtn.click();
-        });
-
-        // =============== وظيفة عرض الإشعارات ===============
-        function showToast(message, isError = false) {
-            toast.textContent = message;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    // ================================================================
+    // 6. دوال العرض
+    // ================================================================
+    function renderGallery() {
+        const container = document.getElementById('galleryGrid');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!appData.gallery || appData.gallery.length === 0) {
+            container.innerHTML = '<p style="color:var(--light-gray);">لا توجد صور في المعرض.</p>';
+            return;
         }
-
-        // =============== رفع الصور ومعاينتها (تم الإصلاح) ===============
-        imageUpload.addEventListener('change', function(e) {
-            const file = this.files[0];
-            if (file) {
-                selectedFile = file;
-                fileName.textContent = file.name;
-                // عرض المعاينة
-                const reader = new FileReader();
-                reader.onload = function(ev) {
-                    imagePreview.src = ev.target.result;
-                    imagePreview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                selectedFile = null;
-                fileName.textContent = 'لم يتم اختيار صورة';
-                imagePreview.style.display = 'none';
-            }
+        appData.gallery.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'gallery-item';
+            div.innerHTML = `
+                <img src="${item.url}" alt="${item.title}" loading="lazy">
+                <div class="overlay"><span>${item.title}</span></div>
+            `;
+            container.appendChild(div);
         });
+    }
 
-        // =============== حفظ البيانات ===============
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!firstName.value || !lastName.value || !age.value || !phone.value || !location.value) {
-                showToast('يرجى ملء جميع الحقول', true);
-                return;
-            }
-            if (!selectedFile) {
-                showToast('يرجى اختيار صورة', true);
-                return;
-            }
+    function renderVideos() {
+        const container = document.getElementById('videoWrapper');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!appData.videos || appData.videos.length === 0) {
+            container.innerHTML = '<p style="color:var(--light-gray);">لا توجد فيديوهات.</p>';
+            return;
+        }
+        const video = appData.videos[0];
+        container.innerHTML = `
+            <video controls preload="metadata" poster="https://github.com/darkonovic51-hash/Academy-Tecnho-football-/raw/bc8f5fa98c6a5536771f5d6df88692cb9d18dd6b/file_0000000072e871f4ac3fd1c6f3928600.png">
+                <source src="${video.url}" type="video/mp4">
+                متصفحك لا يدعم تشغيل الفيديو.
+            </video>
+        `;
+    }
 
-            loading.style.display = 'block';
-            const submitBtn = form.querySelector('.btn');
-            submitBtn.disabled = true;
-
-            try {
-                const storageRef = storage.ref('player_images/' + Date.now() + '_' + selectedFile.name);
-                const uploadTask = await storageRef.put(selectedFile);
-                const imageUrl = await uploadTask.ref.getDownloadURL();
-
-                const playerData = {
-                    firstName: firstName.value.trim(),
-                    lastName: lastName.value.trim(),
-                    age: parseInt(age.value),
-                    phone: phone.value.trim(),
-                    location: location.value.trim(),
-                    imageUrl: imageUrl,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                await playersCollection.add(playerData);
-                form.reset();
-                selectedFile = null;
-                fileName.textContent = 'لم يتم اختيار صورة';
-                imagePreview.style.display = 'none';
-                showToast('تم التسجيل بنجاح ✅');
-                loadPlayers(); // تحديث الجدول
-            } catch (error) {
-                console.error('خطأ في الحفظ:', error);
-                showToast('حدث خطأ أثناء الحفظ: ' + error.message, true);
-            } finally {
-                loading.style.display = 'none';
-                submitBtn.disabled = false;
-            }
+    function renderSchedule() {
+        const container = document.getElementById('scheduleWrapper');
+        if (!container) return;
+        if (!appData.schedule || appData.schedule.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:25px;"><i class="fas fa-calendar-alt" style="font-size:2rem; color:var(--primary-gold); opacity:0.5;"></i><p style="color:var(--light-gray); margin-top:8px;">لا توجد بيانات تدريب.</p></div>`;
+            return;
+        }
+        let html = `<table class="schedule-table"><thead><tr><th>الفئة</th><th>الأيام</th><th>الوقت</th><th>الملعب</th></tr></thead><tbody>`;
+        appData.schedule.forEach(row => {
+            html += `<tr><td class="category-cell">${row.category}</td><td>${row.days || '—'}</td><td>${row.time || '—'}</td><td>${row.field || '—'}</td></tr>`;
         });
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+    }
 
-        // =============== تحميل اللاعبين وعرضهم ===============
-        async function loadPlayers() {
-            try {
-                const snapshot = await playersCollection.orderBy('createdAt', 'desc').get();
-                tableBody.innerHTML = '';
-                if (snapshot.empty) {
-                    noData.style.display = 'block';
-                    return;
-                }
-                noData.style.display = 'none';
+    function renderMatches() {
+        const container = document.getElementById('matchesContainer');
+        if (!container) return;
+        if (!appData.matches || appData.matches.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; background:rgba(255,255,255,0.03); border-radius:var(--radius); border:1px dashed rgba(212,160,23,0.2);">
+                    <i class="fas fa-calendar-alt" style="font-size:2.5rem; color:var(--primary-gold); opacity:0.4;"></i>
+                    <h3 style="color:#FFFFFF; margin-top:10px; font-size:1.2rem;">لا توجد مباريات ودية حالياً</h3>
+                    <p style="color:var(--light-gray); font-size:0.9rem;">سيتم الإعلان عن المباريات القادمة فور اعتماد الجدول الزمني.</p>
+                </div>
+            `;
+            return;
+        }
+        let html = `<div class="matches-showcase">`;
+        appData.matches.forEach(m => {
+            html += `
+                <div class="match-card">
+                    <div class="academy-name">⭐ أكاديمية تيكنو</div>
+                    <div class="vs">VS</div>
+                    <div class="opponent">${m.opponent || 'خصم'}</div>
+                    <div class="match-date">📅 ${m.date || 'تاريخ'}</div>
+                    <div class="match-location">📍 ${m.location || 'مكان'}</div>
+                    <span class="match-badge">⚽ مباراة ودية</span>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+    }
 
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const id = doc.id;
-                    const fullName = data.firstName + ' ' + data.lastName;
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><img src="${data.imageUrl}" alt="صورة" class="player-img" /></td>
-                        <td>${fullName}</td>
-                        <td>${data.age}</td>
-                        <td>${data.phone}</td>
-                        <td>${data.location}</td>
-                        <td>
-                            <button class="action-btn" onclick="downloadPDF('${id}')"><i class="fas fa-file-pdf"></i> PDF</button>
-                            <button class="action-btn delete-btn" onclick="deletePlayer('${id}')"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
+    function renderPlayers() {
+        const container = document.getElementById('playersContainer');
+        if (!container) return;
+        if (!appData.players || appData.players.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center; padding:30px; background:rgba(255,255,255,0.03); border-radius:var(--radius); border:1px dashed rgba(212,160,23,0.2);">
+                    <i class="fas fa-users" style="font-size:2.5rem; color:var(--primary-gold); opacity:0.4;"></i>
+                    <h3 style="color:#FFFFFF; margin-top:10px; font-size:1.2rem;">لا يوجد لاعبون مسجلون</h3>
+                    <p style="color:var(--light-gray); font-size:0.9rem;">يمكن للمسؤول إضافة اللاعبين من لوحة التحكم.</p>
+                </div>
+            `;
+            return;
+        }
+        let html = `<div class="players-list">`;
+        appData.players.forEach(p => {
+            html += `
+                <div class="player-item">
+                    <div class="name">${p.firstName || p.name} ${p.lastName || ''}</div>
+                    <div class="position">${p.category || 'فئة'}</div>
+                    ${p.category ? `<span class="category-badge">${p.category}</span>` : ''}
+                </div>
+            `;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    // ================================================================
+    // 7. دوال الإدارة (مع حفظ تلقائي)
+    // ================================================================
+    function renderAdminGallery() {
+        const tbody = document.getElementById('adminGalleryList');
+        tbody.innerHTML = '';
+        appData.gallery.forEach((item, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = idx + 1;
+            row.insertCell(1).innerText = item.title;
+            row.insertCell(2).innerHTML = `<a href="${item.url}" target="_blank" style="color:var(--primary-gold);">رابط</a>`;
+            row.insertCell(3).innerHTML = `<button class="del-btn" onclick="deleteGalleryItem(${idx})">✕</button>`;
+        });
+    }
+
+    async function addGalleryItem() {
+        const title = document.getElementById('newGalleryTitle').value.trim();
+        const url = document.getElementById('newGalleryUrl').value.trim();
+        if (!title || !url) { alert('الرجاء إدخال عنوان ورابط الصورة'); return; }
+        appData.gallery.push({ id: Date.now(), title, url });
+        await saveToFirebase('academyData/gallery', appData.gallery);
+        document.getElementById('newGalleryTitle').value = '';
+        document.getElementById('newGalleryUrl').value = '';
+        renderAdminGallery();
+        renderGallery();
+    }
+
+    async function deleteGalleryItem(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذه الصورة؟')) return;
+        appData.gallery.splice(idx, 1);
+        await saveToFirebase('academyData/gallery', appData.gallery);
+        renderAdminGallery();
+        renderGallery();
+    }
+
+    function renderAdminVideos() {
+        const tbody = document.getElementById('adminVideoList');
+        tbody.innerHTML = '';
+        appData.videos.forEach((item, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = idx + 1;
+            row.insertCell(1).innerText = item.title;
+            row.insertCell(2).innerHTML = `<a href="${item.url}" target="_blank" style="color:var(--primary-gold);">رابط</a>`;
+            row.insertCell(3).innerHTML = `<button class="del-btn" onclick="deleteVideoItem(${idx})">✕</button>`;
+        });
+    }
+
+    async function addVideo() {
+        const title = document.getElementById('newVideoTitle').value.trim();
+        const url = document.getElementById('newVideoUrl').value.trim();
+        if (!title || !url) { alert('الرجاء إدخال عنوان ورابط الفيديو'); return; }
+        appData.videos.push({ id: Date.now(), title, url });
+        await saveToFirebase('academyData/videos', appData.videos);
+        document.getElementById('newVideoTitle').value = '';
+        document.getElementById('newVideoUrl').value = '';
+        renderAdminVideos();
+        renderVideos();
+    }
+
+    async function deleteVideoItem(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذا الفيديو؟')) return;
+        appData.videos.splice(idx, 1);
+        await saveToFirebase('academyData/videos', appData.videos);
+        renderAdminVideos();
+        renderVideos();
+    }
+
+    function renderAdminSchedule() {
+        const container = document.getElementById('adminScheduleContainer');
+        container.innerHTML = '';
+        appData.schedule.forEach((row, idx) => {
+            const card = document.createElement('div');
+            card.className = 'weekly-schedule-card';
+            card.innerHTML = `
+                <div class="day-title">${row.category}</div>
+                <div class="day-time">📅 ${row.days || '—'}</div>
+                <div class="day-time">⏰ ${row.time || '—'}</div>
+                <div class="day-field">🏟️ ${row.field || '—'}</div>
+                <div style="margin-top:10px;">
+                    <input value="${row.days || ''}" data-idx="${idx}" data-field="days" placeholder="الأيام" class="schedule-admin-input" style="width:100%; padding:6px 10px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff; margin-bottom:4px;">
+                    <input value="${row.time || ''}" data-idx="${idx}" data-field="time" placeholder="الوقت" class="schedule-admin-input" style="width:100%; padding:6px 10px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff; margin-bottom:4px;">
+                    <input value="${row.field || ''}" data-idx="${idx}" data-field="field" placeholder="الملعب" class="schedule-admin-input" style="width:100%; padding:6px 10px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <button onclick="deleteScheduleRow(${idx})" style="background:#e74c3c; border:none; color:#fff; padding:3px 12px; border-radius:20px; cursor:pointer; margin-top:6px; width:100%;">✕ حذف</button>
+                </div>
+            `;
+            container.appendChild(card);
+
+            // إضافة مستمعي التغيير
+            card.querySelectorAll('.schedule-admin-input').forEach(inp => {
+                inp.addEventListener('change', function() {
+                    const idx2 = parseInt(this.dataset.idx);
+                    const field = this.dataset.field;
+                    appData.schedule[idx2][field] = this.value;
+                    saveToFirebase('academyData/schedule', appData.schedule);
+                    renderSchedule();
                 });
-            } catch (error) {
-                console.error('خطأ في تحميل البيانات:', error);
-                showToast('فشل تحميل البيانات', true);
+            });
+        });
+    }
+
+    async function addScheduleRow() {
+        appData.schedule.push({ id: Date.now(), category: 'فئة جديدة', days: '—', time: '—', field: '—' });
+        await saveToFirebase('academyData/schedule', appData.schedule);
+        renderAdminSchedule();
+        renderSchedule();
+    }
+
+    async function deleteScheduleRow(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذا الصف؟')) return;
+        appData.schedule.splice(idx, 1);
+        await saveToFirebase('academyData/schedule', appData.schedule);
+        renderAdminSchedule();
+        renderSchedule();
+    }
+
+    async function saveScheduleAdmin() {
+        await saveToFirebase('academyData/schedule', appData.schedule);
+        renderSchedule();
+        alert('✅ تم حفظ جدول التدريبات');
+    }
+
+    function renderAdminMatches() {
+        const container = document.getElementById('adminMatchesContainer');
+        container.innerHTML = '';
+        appData.matches.forEach((m, idx) => {
+            const div = document.createElement('div');
+            div.style.cssText = 'background:var(--bg-card); border-radius:16px; padding:16px; border:1px solid var(--border-card);';
+            div.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:6px;">
+                    <input value="${m.opponent || ''}" data-idx="${idx}" data-field="opponent" placeholder="الخصم" class="match-admin-input" style="width:100%; padding:8px 12px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <input value="${m.date || ''}" data-idx="${idx}" data-field="date" placeholder="التاريخ" class="match-admin-input" style="width:100%; padding:8px 12px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <input value="${m.location || ''}" data-idx="${idx}" data-field="location" placeholder="المكان" class="match-admin-input" style="width:100%; padding:8px 12px; border-radius:10px; border:1px solid var(--border-card); background:rgba(0,0,0,0.3); color:#fff;">
+                    <button onclick="deleteMatch(${idx})" style="background:#e74c3c; border:none; color:#fff; padding:4px; border-radius:20px; cursor:pointer;">✕ حذف</button>
+                </div>
+            `;
+            container.appendChild(div);
+
+            div.querySelectorAll('.match-admin-input').forEach(inp => {
+                inp.addEventListener('change', function() {
+                    const idx2 = parseInt(this.dataset.idx);
+                    const field = this.dataset.field;
+                    appData.matches[idx2][field] = this.value;
+                    saveToFirebase('academyData/matches', appData.matches);
+                    renderMatches();
+                });
+            });
+        });
+    }
+
+    async function addMatch() {
+        const opponent = document.getElementById('newMatchOpponent').value.trim();
+        const date = document.getElementById('newMatchDate').value.trim();
+        const location = document.getElementById('newMatchLocation').value.trim();
+        if (!opponent || !date || !location) { alert('الرجاء ملء جميع الحقول'); return; }
+        appData.matches.push({ id: Date.now(), opponent, date, location });
+        await saveToFirebase('academyData/matches', appData.matches);
+        document.getElementById('newMatchOpponent').value = '';
+        document.getElementById('newMatchDate').value = '';
+        document.getElementById('newMatchLocation').value = '';
+        renderAdminMatches();
+        renderMatches();
+    }
+
+    async function deleteMatch(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذه المباراة؟')) return;
+        appData.matches.splice(idx, 1);
+        await saveToFirebase('academyData/matches', appData.matches);
+        renderAdminMatches();
+        renderMatches();
+    }
+
+    async function saveMatchesAdmin() {
+        await saveToFirebase('academyData/matches', appData.matches);
+        renderMatches();
+        alert('✅ تم حفظ المباريات');
+    }
+
+    // ================================================================
+    // 8. طلبات التسجيل والموافقة عليها
+    // ================================================================
+    async function saveRegistration(regData) {
+        try {
+            const newRef = database.ref('registrations').push();
+            await newRef.set({
+                ...regData,
+                status: 'pending',
+                timestamp: firebase.database.ServerValue.TIMESTAMP || Date.now()
+            });
+            console.log('✅ Registration saved to Firebase');
+        } catch (error) {
+            console.warn('⚠️ Failed to save registration, storing locally:', error);
+            let local = JSON.parse(localStorage.getItem('fb_registrations_local')) || [];
+            local.push({ ...regData, status: 'pending', id: Date.now(), timestamp: Date.now() });
+            localStorage.setItem('fb_registrations_local', JSON.stringify(local));
+        }
+    }
+
+    function getRegistrations(callback) {
+        database.ref('registrations').orderByChild('timestamp').once('value')
+            .then(snapshot => {
+                const data = snapshot.val();
+                const registrations = [];
+                if (data) {
+                    Object.keys(data).forEach(key => registrations.push({ id: key, ...data[key] }));
+                }
+                callback(registrations);
+            })
+            .catch(error => {
+                console.warn('⚠️ Failed to fetch registrations, using local:', error);
+                const local = JSON.parse(localStorage.getItem('fb_registrations_local')) || [];
+                callback(local);
+            });
+    }
+
+    function deleteRegistration(id, callback) {
+        database.ref('registrations/' + id).remove()
+            .then(() => callback())
+            .catch(error => {
+                console.warn('⚠️ Failed to delete registration, trying local:', error);
+                let local = JSON.parse(localStorage.getItem('fb_registrations_local')) || [];
+                local = local.filter(item => item.id != id);
+                localStorage.setItem('fb_registrations_local', JSON.stringify(local));
+                callback();
+            });
+    }
+
+    async function approveRegistration(id, regData) {
+        // تحديث حالة الطلب إلى approved
+        await database.ref('registrations/' + id).update({ status: 'approved' });
+
+        // إضافة اللاعب إلى قائمة اللاعبين مع الصورة إن وجدت
+        const playerData = {
+            id: Date.now(),
+            firstName: regData.firstName,
+            lastName: regData.lastName,
+            phone: regData.phone,
+            category: regData.category,
+            location: regData.location,
+            imageBase64: regData.imageBase64 || null
+        };
+        appData.players.push(playerData);
+        await saveToFirebase('academyData/players', appData.players);
+        renderPlayers();
+        renderAdminDashboard();
+    }
+
+    // ================================================================
+    // 9. نموذج التسجيل (مع رفع الصورة)
+    // ================================================================
+    function hasDeviceRegistered() {
+        const deviceId = localStorage.getItem('deviceId');
+        if (!deviceId) return false;
+        const registered = localStorage.getItem('registered_device');
+        return registered === 'true';
+    }
+
+    // معاينة الصورة فور اختيارها
+    document.getElementById('regImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('imagePreview');
+        const img = document.getElementById('previewImg');
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                img.src = ev.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.style.display = 'none';
+        }
+    });
+
+    document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (hasDeviceRegistered()) {
+            alert('❌ تم تسجيل هذا الجهاز مسبقاً. لا يمكنك إعادة التسجيل.');
+            return;
+        }
+
+        const firstName = document.getElementById('regFirstName').value.trim();
+        const lastName = document.getElementById('regLastName').value.trim();
+        const phone = document.getElementById('regPhone').value.trim();
+        const category = document.getElementById('regCategory').value;
+        const location = document.getElementById('regLocation').value;
+        const fileInput = document.getElementById('regImage');
+
+        if (!firstName || !lastName || !phone) {
+            alert('❌ الرجاء ملء جميع الحقول المطلوبة');
+            return;
+        }
+
+        // قراءة الصورة إن وجدت
+        let imageBase64 = '';
+        if (fileInput.files && fileInput.files[0]) {
+            try {
+                imageBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(fileInput.files[0]);
+                });
+                // ضغط الصورة (اختياري) – يمكن تقليل الجودة لتقليل الحجم
+                // نتركها كما هي
+            } catch (err) {
+                console.warn('فشل قراءة الصورة:', err);
             }
         }
 
-        // =============== حذف لاعب ===============
-        window.deletePlayer = async function(id) {
-            if (!confirm('هل أنت متأكد من حذف هذا اللاعب؟')) return;
-            try {
-                await playersCollection.doc(id).delete();
-                showToast('تم الحذف بنجاح');
-                loadPlayers();
-            } catch (error) {
-                console.error('خطأ في الحذف:', error);
-                showToast('فشل الحذف', true);
-            }
+        const regData = {
+            firstName,
+            lastName,
+            phone,
+            category,
+            location,
+            date: new Date().toLocaleString('ar-EG'),
+            imageBase64: imageBase64 || null
         };
 
-        // =============== تحميل PDF ===============
-        window.downloadPDF = async function(playerId) {
-            try {
-                const docRef = await playersCollection.doc(playerId).get();
-                if (!docRef.exists) {
-                    showToast('اللاعب غير موجود', true);
-                    return;
+        try {
+            await saveRegistration(regData);
+            localStorage.setItem('deviceId', Date.now().toString());
+            localStorage.setItem('registered_device', 'true');
+
+            // إرسال البريد الإلكتروني (بدون الصورة لتجنب الحجم الكبير)
+            const formData = new FormData();
+            formData.append('الاسم الشخصي', firstName);
+            formData.append('اللقب العائلي', lastName);
+            formData.append('رقم الهاتف', phone);
+            formData.append('الفئة', category);
+            formData.append('المكان', location);
+            formData.append('_subject', '🔔 طلب تسجيل جديد - أكاديمية تيكنو');
+            formData.append('_captcha', 'false');
+
+            await fetch('https://formsubmit.co/ajax/darkonovic51@gmail.com', {
+                method: 'POST',
+                body: formData
+            });
+
+            alert('✅ تم تسجيل طلبك بنجاح! سيتم التواصل معكم قريباً.');
+            this.reset();
+            document.getElementById('imagePreview').style.display = 'none';
+        } catch (error) {
+            console.error(error);
+            alert('❌ حدث خطأ، لكن بياناتك محفوظة.');
+        }
+    });
+
+    // ================================================================
+    // 10. لوحة التحكم مع عرض الصورة وزر PDF
+    // ================================================================
+    const ADMIN_PASSWORD_KEY = 'techno_admin_pass';
+    let adminPassword = localStorage.getItem(ADMIN_PASSWORD_KEY) || 'admin2025';
+    let adminLoggedIn = false;
+
+    window.adminLogin = function() {
+        const input = document.getElementById('adminPassInput').value;
+        if (input === adminPassword) {
+            adminLoggedIn = true;
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            renderAdminDashboard();
+        } else {
+            document.getElementById('adminLoginError').style.display = 'block';
+            setTimeout(() => document.getElementById('adminLoginError').style.display = 'none', 3000);
+        }
+    };
+
+    function renderAdminDashboard() {
+        getRegistrations((registrations) => {
+            const pending = registrations.filter(r => r.status === 'pending').length;
+            const approved = registrations.filter(r => r.status === 'approved').length;
+            document.getElementById('adminStats').innerHTML = `
+                <div class="admin-stat"><div class="num">${registrations.length}</div><div class="label">إجمالي الطلبات</div></div>
+                <div class="admin-stat"><div class="num" style="color:#f39c12;">${pending}</div><div class="label">في الانتظار</div></div>
+                <div class="admin-stat"><div class="num" style="color:#2ecc71;">${approved}</div><div class="label">معتمدين</div></div>
+                <div class="admin-stat"><div class="num">${appData.players.length}</div><div class="label">اللاعبون المعتمدون</div></div>
+                <div class="admin-stat"><div class="num">${appData.gallery.length}</div><div class="label">الصور</div></div>
+                <div class="admin-stat"><div class="num">${appData.matches.length}</div><div class="label">المباريات</div></div>
+            `;
+
+            // طلبات التسجيل مع صورة وزر PDF
+            const tbody = document.getElementById('adminRegistrations');
+            tbody.innerHTML = '';
+            registrations.forEach((reg, idx) => {
+                const row = tbody.insertRow();
+                const statusClass = reg.status === 'approved' ? 'approved' : 'pending';
+                const statusText = reg.status === 'approved' ? '✔ معتمد' : '⏳ قيد الانتظار';
+                row.insertCell(0).innerText = idx + 1;
+                row.insertCell(1).innerText = reg.firstName || '';
+                row.insertCell(2).innerText = reg.lastName || '';
+                row.insertCell(3).innerText = reg.phone || '';
+                row.insertCell(4).innerText = reg.category || '';
+                row.insertCell(5).innerText = reg.location || '';
+                row.insertCell(6).innerText = reg.date || '';
+                
+                // عمود الصورة
+                const imgCell = row.insertCell(7);
+                if (reg.imageBase64) {
+                    imgCell.innerHTML = `<img src="${reg.imageBase64}" alt="صورة" style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:2px solid var(--primary-gold);">`;
+                } else {
+                    imgCell.innerHTML = '<span style="color:var(--light-gray);">لا توجد</span>';
                 }
-                const data = docRef.data();
-                const fullName = data.firstName + ' ' + data.lastName;
 
-                const container = document.createElement('div');
-                container.style.cssText = 'padding:20px; background:white; text-align:center; font-family:Tahoma; width:400px; margin:auto;';
-                container.innerHTML = `
-                    <h2 style="color:#1e3c72;">أكاديمية كرة القدم</h2>
-                    <hr style="border:1px solid #2a5298;">
-                    <img src="${data.imageUrl}" style="width:150px; height:150px; border-radius:50%; object-fit:cover; border:3px solid #2a5298; margin:15px 0;" />
-                    <h3>${fullName}</h3>
-                    <p><strong>العمر:</strong> ${data.age} سنة</p>
-                    <p><strong>الهاتف:</strong> ${data.phone}</p>
-                    <p><strong>المكان:</strong> ${data.location}</p>
-                    <hr>
-                    <p style="color:#888; font-size:12px;">تم التصدير من لوحة التحكم</p>
-                `;
-                document.body.appendChild(container);
+                row.insertCell(8).innerHTML = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+                
+                // عمود الإجراءات (اعتماد / حذف)
+                const actions = row.insertCell(9);
+                if (reg.status === 'pending') {
+                    actions.innerHTML = `
+                        <button class="approve-btn" onclick="approveRegistrationHandler('${reg.id}')">✔ اعتماد</button>
+                        <button class="del-btn" onclick="deleteRegistrationHandler('${reg.id}')">✕</button>
+                    `;
+                } else {
+                    actions.innerHTML = `<button class="del-btn" onclick="deleteRegistrationHandler('${reg.id}')">✕</button>`;
+                }
 
-                const canvas = await html2canvas(container, { scale: 2 });
-                const imgData = canvas.toDataURL('image/png');
+                // عمود تحميل PDF
+                const pdfCell = row.insertCell(10);
+                pdfCell.innerHTML = `<button class="btn-warning" onclick="generatePDF('${reg.id}')" style="padding:4px 10px; font-size:0.75rem;"><i class="fas fa-file-pdf"></i> PDF</button>`;
+            });
+        });
 
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save(`لاعب_${fullName}.pdf`);
+        renderAdminPlayersList();
+        renderAdminGallery();
+        renderAdminVideos();
+        renderAdminSchedule();
+        renderAdminMatches();
+    }
 
-                document.body.removeChild(container);
-                showToast('تم تحميل PDF بنجاح');
-            } catch (error) {
-                console.error('خطأ في إنشاء PDF:', error);
-                showToast('فشل إنشاء PDF', true);
+    // ===== دالة إنشاء PDF لكل طلب =====
+    window.generatePDF = function(regId) {
+        getRegistrations((registrations) => {
+            const reg = registrations.find(r => r.id == regId);
+            if (!reg) {
+                alert('لم يتم العثور على بيانات هذا الطلب.');
+                return;
             }
-        };
 
-        // =============== بدء التشغيل ===============
-        checkLogin();
-    </script>
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            // العنوان
+            doc.setFontSize(22);
+            doc.setTextColor(212, 160, 23); // ذهبي
+            doc.text('أكاديمية تيكنو', pageWidth / 2, 20, { align: 'center' });
+            doc.setFontSize(16);
+            doc.setTextColor(255, 255, 255);
+            doc.text('طلب تسجيل لاعب', pageWidth / 2, 30, { align: 'center' });
+
+            doc.setDrawColor(212, 160, 23);
+            doc.line(10, 35, pageWidth - 10, 35);
+
+            // البيانات
+            const lines = [
+                ['الاسم الشخصي:', reg.firstName || '—'],
+                ['اللقب العائلي:', reg.lastName || '—'],
+                ['رقم الهاتف:', reg.phone || '—'],
+                ['الفئة العمرية:', reg.category || '—'],
+                ['المكان:', reg.location || '—'],
+                ['تاريخ التسجيل:', reg.date || '—'],
+                ['الحالة:', reg.status === 'approved' ? '✔ معتمد' : '⏳ قيد الانتظار']
+            ];
+
+            let y = 45;
+            doc.setFontSize(12);
+            doc.setTextColor(200, 200, 200);
+            lines.forEach(([label, value]) => {
+                doc.setFont('helvetica', 'bold');
+                doc.text(label, 20, y);
+                doc.setFont('helvetica', 'normal');
+                doc.text(value, 80, y);
+                y += 8;
+            });
+
+            // إدراج الصورة إن وجدت
+            if (reg.imageBase64) {
+                try {
+                    // نضغط الصورة قليلاً لتتناسب مع الـ PDF
+                    const imgWidth = 60;
+                    const imgHeight = 60;
+                    const x = (pageWidth - imgWidth) / 2;
+                    const yImg = y + 10;
+                    doc.addImage(reg.imageBase64, 'JPEG', x, yImg, imgWidth, imgHeight);
+                    y = yImg + imgHeight + 10;
+                } catch (e) {
+                    console.warn('فشل إدراج الصورة في PDF:', e);
+                }
+            } else {
+                y += 10;
+                doc.setFontSize(10);
+                doc.setTextColor(150);
+                doc.text('(لا توجد صورة)', pageWidth / 2, y, { align: 'center' });
+                y += 10;
+            }
+
+            // تذييل
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text('تم إنشاء هذا الملف بواسطة نظام أكاديمية تيكنو', pageWidth / 2, y + 20, { align: 'center' });
+
+            // حفظ الملف
+            doc.save(`طلب_تسجيل_${reg.firstName}_${reg.lastName}.pdf`);
+        });
+    };
+
+    // ===== عرض قائمة اللاعبين مع الصورة =====
+    function renderAdminPlayersList() {
+        const tbody = document.getElementById('adminPlayersList');
+        tbody.innerHTML = '';
+        appData.players.forEach((p, idx) => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = idx + 1;
+            row.insertCell(1).innerText = p.firstName || p.name || '';
+            row.insertCell(2).innerText = p.lastName || '';
+            row.insertCell(3).innerText = p.category || '';
+            row.insertCell(4).innerText = p.phone || '';
+            const imgCell = row.insertCell(5);
+            if (p.imageBase64) {
+                imgCell.innerHTML = `<img src="${p.imageBase64}" alt="صورة" style="width:40px; height:40px; object-fit:cover; border-radius:50%; border:2px solid var(--primary-gold);">`;
+            } else {
+                imgCell.innerHTML = '<span style="color:var(--light-gray);">—</span>';
+            }
+            row.insertCell(6).innerHTML = `<button class="del-btn" onclick="deletePlayerHandler(${idx})">✕</button>`;
+        });
+    }
+
+    window.deletePlayerHandler = async function(idx) {
+        if (!confirm('هل أنت متأكد من حذف هذا اللاعب؟')) return;
+        appData.players.splice(idx, 1);
+        await saveToFirebase('academyData/players', appData.players);
+        renderAdminDashboard();
+        renderPlayers();
+    };
+
+    window.approveRegistrationHandler = async function(id) {
+        if (!confirm('هل تريد اعتماد هذا الطلب وتحويل اللاعب إلى قائمة اللاعبين؟')) return;
+        const snapshot = await database.ref('registrations/' + id).once('value');
+        const regData = snapshot.val();
+        if (regData) {
+            await approveRegistration(id, regData);
+            renderAdminDashboard();
+            renderPlayers();
+        }
+    };
+
+    window.deleteRegistrationHandler = function(id) {
+        if (!confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
+        deleteRegistration(id, () => renderAdminDashboard());
+    };
+
+    window.changeAdminPassword = function() {
+        const newPass = document.getElementById('newAdminPass').value.trim();
+        if (newPass.length < 4) { alert('كلمة السر يجب أن تكون 4 أحرف على الأقل'); return; }
+        adminPassword = newPass;
+        localStorage.setItem(ADMIN_PASSWORD_KEY, adminPassword);
+        alert('✅ تم تغيير كلمة السر بنجاح');
+        document.getElementById('newAdminPass').value = '';
+    };
+
+    // ================================================================
+    // 11. نافذة التنبيه
+    // ================================================================
+    const modal = document.getElementById('paymentModal');
+    const closeModalBtn = document.getElementById('closePaymentModal');
+    setInterval(() => {
+        if (modal) {
+            modal.classList.add('active');
+            const content = modal.querySelector('.payment-modal-content');
+            if (content) {
+                content.style.animation = 'none';
+                setTimeout(() => {
+                    content.style.animation = 'modalPop 0.3s ease, shake 0.4s 0.3s ease';
+                }, 10);
+            }
+        }
+    }, 10000);
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => modal.classList.remove('active'));
+    }
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.remove('active');
+        });
+    }
+
+    // ================================================================
+    // 12. تهيئة الموقع
+    // ================================================================
+    async function init() {
+        try {
+            await loadAllData();
+            renderGallery();
+            renderVideos();
+            renderSchedule();
+            renderMatches();
+            renderPlayers();
+            console.log('✅ Website initialized successfully');
+        } catch (error) {
+            console.error('❌ Initialization error:', error);
+            document.body.innerHTML = `
+                <div style="text-align:center; padding:50px; color:red; direction:rtl;">
+                    <h2>حدث خطأ في تحميل الموقع</h2>
+                    <p>يرجى تحديث الصفحة أو المحاولة لاحقاً.</p>
+                    <p style="font-size:12px; color:gray;">${error.message}</p>
+                    <button onclick="location.reload()" style="margin-top:20px; padding:10px 30px; background:gold; border:none; border-radius:30px; cursor:pointer;">تحديث الصفحة</button>
+                </div>
+            `;
+        }
+
+        // الهيدر والقوائم
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+        if (menuBtn && navLinks) {
+            menuBtn.addEventListener('click', () => navLinks.classList.toggle('show'));
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (navLinks) navLinks.classList.remove('show');
+                }
+            });
+        });
+
+        // فتح/إغلاق لوحة التحكم
+        document.getElementById('adminToggle').addEventListener('click', function() {
+            document.getElementById('adminPanel').classList.toggle('active');
+            if (adminLoggedIn) renderAdminDashboard();
+        });
+
+        document.getElementById('closeAdmin').addEventListener('click', function() {
+            document.getElementById('adminPanel').classList.remove('active');
+        });
+
+        // صور المدير الفني
+        let coachIndex = 0;
+        const coachImages = document.querySelectorAll('#coachImages img');
+        if (coachImages.length > 1) {
+            setInterval(() => {
+                coachImages.forEach(img => img.classList.remove('active'));
+                coachIndex = (coachIndex + 1) % coachImages.length;
+                coachImages[coachIndex].classList.add('active');
+            }, 3000);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+</script>
 </body>
 </html>
