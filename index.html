@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>طلبات التربص الميداني | L2 بيئة ومحيط</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+        :root {
+            --bg-main: #0A2F1A;
+            --bg-overlay: rgba(10, 47, 26, 0.92);
+            --card-bg: rgba(30, 70, 35, 0.7);
+            --text-primary: #FFFFFF;
+            --text-secondary: #CFE6C5;
+            --accent: #D4A017;
+            --accent-dark: #B8860B;
+            --danger: #c62828;
+            --danger-light: #ffaaaa;
+            --table-header: #0D3B26;
+            --table-border: rgba(212, 160, 23, 0.2);
+            --hover-bg: rgba(212, 160, 23, 0.1);
+        }
+
+        [data-theme="light"] {
+            --bg-main: #E8F0E5;
+            --bg-overlay: #F5F7FB;
+            --card-bg: #FFFFFF;
+            --text-primary: #1A2C1E;
+            --text-secondary: #2E4A2A;
+            --accent: #B8860B;
+            --accent-dark: #8B6508;
+            --danger: #c62828;
+            --danger-light: #ffaaaa;
+            --table-header: #D4A017;
+            --table-border: #B8860B;
+            --hover-bg: rgba(184, 134, 11, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', 'Cairo', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            padding: 30px 20px;
+            position: relative;
+            transition: background-color 0.2s ease;
+        }
+        .nature-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: url('https://images.pexels.com/photos/957024/forest-trees-perspective-bright-957024.jpeg?auto=compress&cs=tinysrgb&w=1600') no-repeat center center/cover;
+            filter: brightness(0.7) saturate(1.2);
+            background-size: cover;
+            opacity: 0.8;
+        }
+        .overlay-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--bg-overlay);
+        }
+        .container { max-width: 1300px; margin: 0 auto; position: relative; z-index: 2; }
+
+        /* الهيدر وشريط الإشعارات */
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 30px;
+            border: 1px solid var(--accent);
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #FFE7B0, var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .header p { color: var(--text-secondary); margin-top: 8px; }
+
+        /* شريط الإشعارات */
+        .notice-bar {
+            background: var(--accent);
+            color: #0A2F1A;
+            padding: 12px 20px;
+            border-radius: 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        /* بطاقات الإحصائيات والرسوم البيانية */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--accent);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-number { font-size: 2.2rem; font-weight: 800; color: var(--accent); }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+        .chart-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            padding: 20px;
+            border: 1px solid var(--accent);
+        }
+        .chart-box h3 { text-align: center; margin-bottom: 15px; color: var(--accent); }
+
+        /* أكثر المؤسسات طلباً */
+        .top-institutions {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            padding: 20px;
+            margin-bottom: 35px;
+            border: 1px solid var(--accent);
+        }
+        .top-institutions h3 { text-align: center; margin-bottom: 15px; color: var(--accent); }
+        .institution-list { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; }
+        .institution-item {
+            background: rgba(0,0,0,0.3);
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+        }
+
+        /* شريط البحث والتبديل */
+        .tools-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .search-box {
+            flex: 2;
+            position: relative;
+            min-width: 250px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(0,0,0,0.3);
+            color: var(--text-primary);
+        }
+        .search-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+        }
+        .theme-toggle {
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* الجدول */
+        .table-wrapper {
+            background: rgba(20,45,30,0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            overflow-x: auto;
+            padding: 5px;
+            transition: 0.2s;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th {
+            background: var(--table-header);
+            padding: 15px 12px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent);
+            color: var(--text-primary);
+        }
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--table-border);
+            cursor: pointer;
+        }
+        tr:hover { background: var(--hover-bg); }
+        .missing-place { background: rgba(198, 40, 40, 0.2); color: var(--danger-light); }
+        .badge-missing {
+            background: var(--danger);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            display: inline-block;
+            color: white;
+        }
+
+        /* نافذة التفاصيل المنبثقة (مودال) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 40px;
+            max-width: 500px;
+            width: 90%;
+            padding: 30px;
+            text-align: center;
+            border-top: 6px solid var(--accent);
+            position: relative;
+        }
+        .modal-content h2 { margin-bottom: 15px; }
+        .modal-details { text-align: right; margin: 15px 0; }
+        .close-modal {
+            background: var(--accent);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .note-box {
+            background: rgba(0,0,0,0.4);
+            border-radius: 25px;
+            padding: 15px 25px;
+            margin-top: 25px;
+            border-right: 4px solid var(--danger);
+            font-size: 0.85rem;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .fa-spinner { animation: spin 1s linear infinite; }
+
+        @media (max-width: 768px) {
+            .charts-row { grid-template-columns: 1fr; }
+            .tools-bar { flex-direction: column; }
+            th, td { font-size: 0.7rem; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="nature-bg"></div>
+<div class="overlay-gradient"></div>
+<div class="container">
+    <div class="header">
+        <h1>🌿 طلبات التربص الميداني 🌿</h1>
+        <p>السنة الثانية L2 - تخصص البيئة والمحيط | دفعة 2025/2026</p>
+    </div>
+
+    <!-- شريط الإشعارات والإعلانات -->
+    <div class="notice-bar" id="noticeBar"></div>
+
+    <!-- بطاقات الإحصائيات الأساسية -->
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <!-- الرسوم البيانية -->
+    <div class="charts-row">
+        <div class="chart-box"><h3>نسبة الطلاب حسب الحالة</h3><canvas id="pieChart" width="400" height="300"></canvas></div>
+        <div class="chart-box"><h3>عدد الطلاب حسب البلدية</h3><canvas id="barChart" width="400" height="300"></canvas></div>
+    </div>
+
+    <!-- أكثر المؤسسات طلباً -->
+    <div class="top-institutions" id="topInstitutions"></div>
+
+    <!-- شريط البحث وأدوات التبديل -->
+    <div class="tools-bar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="ابحث بالاسم أو رقم التسجيل...">
+        </div>
+        <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i> الوضع المظلم</button>
+    </div>
+    <div class="loading" id="loading"><i class="fas fa-spinner"></i> جاري البحث...</div>
+
+    <!-- الجدول -->
+    <div class="table-wrapper">
+        <table id="studentsTable">
+            <thead><tr><th>الاسم واللقب</th><th>رقم التسجيل</th><th>Lieu de stage</th><th>البلدية</th><th>الحالة</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- نافذة تفاصيل الطالب -->
+    <div id="studentModal" class="modal"><div class="modal-content"><h2>📄 تفاصيل الطالب</h2><div id="modalDetails" class="modal-details"></div><button class="close-modal" id="closeModal">إغلاق</button></div></div>
+
+    <div class="note-box" id="missingNote"></div>
+    <footer>✨ يمكنك النقر على أي طالب لرؤية تفاصيله الكاملة | البيانات محدثة بشكل دوري</footer>
+</div>
+
+<script>
+    // ========== بيانات الطلاب (ثابتة) ==========
+    const studentsRaw = [
+        {nom:"Hadri alaa amina", matricule:"39179804", lieu:"المؤسسة الاستشفائية العمومية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"hathati zineb souad", matricule:"39194417", lieu:"المؤسسة الاستشفائية العمومية حنيشي مصطفى", municipalite:"الجلفة"},
+        {nom:"tenah imane", matricule:"39147610", lieu:"العيادة المتعددة الخدمات", municipalite:"عين اسرار الجلفة"},
+        {nom:"Benouda soulef", matricule:"39179204", lieu:"مختبر التحاليل", municipalite:"الجلفة"},
+        {nom:"Reguieg ikram", matricule:"39136903", lieu:"مختبر التحاليل", municipalite:"الجلفة"},
+        {nom:"Rebhi Mohamed", matricule:"39179804", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Selami amal samia", matricule:"39146014", lieu:"المؤسسة الاستشفائية محاد عبد القادر", municipalite:"الجلفة"},
+        {nom:"Elaguab lina hind", matricule:"39188601", lieu:"المؤسسة الاستشفائية العقيد احمد بوقرة", municipalite:"حاسي بحبح"},
+        {nom:"Hamira abdelkarim", matricule:"39210411", lieu:"العيادة المتعددة الخدمات", municipalite:"الشارف"},
+        {nom:"Houicher Aicha", matricule:"39194615", lieu:"العيادة المتعددة الخدمات", municipalite:"عين الشهداء"},
+        {nom:"Serra sara", matricule:"39170307", lieu:"المؤسسة الاستشفائية الشهيد هاني محمد بن الهادي", municipalite:"مسعد"},
+        {nom:"Daoudi rahaf salsabil", matricule:"39187803", lieu:"مديرية البيئة", municipalite:"الجلفة"},
+        {nom:"saada yacine abderrahmane", matricule:"39163408", lieu:"مستشفى الأمراض السرطانية المجاهد العقيد احمد بن شريف", municipalite:"الجلفة"},
+        {nom:"Drifel rahima", matricule:"39178912", lieu:"مختبر التحاليل", municipalite:"عين وسارة"},
+        {nom:"Goumichi nadjet", matricule:"39189220", lieu:null, municipalite:null},
+        {nom:"Choucha basmala", matricule:"39178603", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Nekiche fatna", matricule:"39179601", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Chegaf aicha nourelhoda", matricule:"39160408", lieu:"المؤسسة الاستشفائية", municipalite:"مسعد"},
+        {nom:"Zouina hocini", matricule:"39187815", lieu:"المؤسسة الاستشفائية العقيد احمد بوقرة", municipalite:"حاسي بحبح"},
+        {nom:"Kadous Faten rahaf", matricule:"39179505", lieu:"مخبر التحاليل", municipalite:"عين وسارة"},
+        {nom:"Barboura fatma", matricule:"39160703", lieu:"المؤسسة الاستشفائية هاني محمد بن الهادي", municipalite:"مسعد"},
+        {nom:"Cherrak djihad", matricule:"39148410", lieu:null, municipalite:null},
+        {nom:"Nekbil zakaria", matricule:"39150107", lieu:"مستشفى الأمراض السرطانية العقيد احمد بن شريف", municipalite:"الجلفة"},
+        {nom:"Ghezal achouak meriem", matricule:"39169505", lieu:"المؤسسة الاستشفائية هاني محمد بن الهادي", municipalite:"مسعد"},
+        {nom:"Nour el houda reguieg", matricule:"39156418", lieu:"المؤسسة الاستشفائية هتهات بوبكر", municipalite:"الجلفة"},
+        {nom:"Maamri nour el imane", matricule:"39201212", lieu:"المؤسسة الاستشفائية مجاهد سلماني سليمان", municipalite:"دار الشيوخ"},
+        {nom:"Hamidat saadia nabila", matricule:"39147208", lieu:"المؤسسة الاستشفائية محاد عبد القادر", municipalite:"الجلفة"},
+        {nom:"Brahimi linda nour el imane", matricule:"39153913", lieu:null, municipalite:null},
+        {nom:"Mecheri aya", matricule:"39147512", lieu:"المؤسسة الاستشفائية الام والطفل", municipalite:"الجلفة"},
+        {nom:"Ouazzani nour elhouda", matricule:"39180210", lieu:"المؤسسة الاستشفائية سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Bentahar karima", matricule:"39188602", lieu:"مديرية البيئة", municipalite:"الجلفة"},
+        {nom:"talbi khaoula", matricule:"39149202", lieu:"مركز مكافحة السرطان العقيد احمد بن شريف", municipalite:"الجلفة"},
+        {nom:"Harti hibat elrahmane", matricule:"39180220", lieu:"مخبر التحاليل بالمستشفى العمومي سعداوي المختار", municipalite:"عين وسارة"},
+        {nom:"Kerma inas", matricule:"39146617", lieu:"المؤسسة الاستشفائية محمدي مصطفى بن عبد القادر", municipalite:"الجلفة"}
+    ];
+
+    function capitalizeName(str) {
+        if(!str) return str;
+        return str.split(' ').map(word=>word.charAt(0).toUpperCase()+word.slice(1).toLowerCase()).join(' ');
+    }
+    const students = studentsRaw.map(s => ({
+        nom: capitalizeName(s.nom),
+        matricule: s.matricule,
+        lieu: s.lieu,
+        municipalite: s.municipalite ? (s.municipalite.includes('الجلفة')?'الجلفة':s.municipalite) : null,
+        aPlace: s.lieu !== null
+    }));
+
+    let currentData = [...students];
+
+    // وظائف التحديث والإحصائيات
+    function updateStats() {
+        const total = students.length;
+        const withPlace = students.filter(s=>s.aPlace).length;
+        const missing = total - withPlace;
+        const byMunicipality = {};
+        students.filter(s=>s.municipalite).forEach(s=>{ byMunicipality[s.municipalite] = (byMunicipality[s.municipalite]||0)+1; });
+        document.getElementById('statsGrid').innerHTML = `
+            <div class="stat-card"><div class="stat-number">${total}</div><div class="stat-label">👨‍🎓 إجمالي الطلاب</div></div>
+            <div class="stat-card"><div class="stat-number">${withPlace}</div><div class="stat-label">🏥 حددوا مكان التربص</div></div>
+            <div class="stat-card"><div class="stat-number" style="color:#ffaaaa;">${missing}</div><div class="stat-label">⚠️ لم يحددوا مكان التربص</div></div>
+            <div class="stat-card"><div class="stat-number">${Object.keys(byMunicipality).length}</div><div class="stat-label">🏙️ بلديات مختلفة</div></div>
+        `;
+        const missingNames = students.filter(s=>!s.aPlace).map(s=>s.nom).join('، ');
+        document.getElementById('missingNote').innerHTML = missingNames ? `⚠️ <strong>ملاحظة:</strong> الطلاب التالية أسماؤهم لم يحددوا مكان التربص: ${missingNames}. يرجى مراجعتهم لتحديد مؤسستهم.` : '✅ جميع الطلاب حددوا أماكن تربصهم.';
+        
+        // شريط الإشعارات
+        document.getElementById('noticeBar').innerHTML = `📢 آخر تحديث: اليوم - عدد الطلاب الذين لم يحددوا مكان التربص: ${missing} ⚠️ | إجمالي الطلاب: ${total}`;
+        
+        // أكثر المؤسسات طلباً
+        const lieuCount = {};
+        students.filter(s=>s.lieu).forEach(s=>{ lieuCount[s.lieu] = (lieuCount[s.lieu]||0)+1; });
+        const topLieus = Object.entries(lieuCount).sort((a,b)=>b[1]-a[1]).slice(0,3);
+        document.getElementById('topInstitutions').innerHTML = `<h3>🏆 أكثر المؤسسات طلباً</h3><div class="institution-list">${topLieus.map(l=>`<div class="institution-item">🏥 ${l[0]} (${l[1]} طالب)</div>`).join('')}</div>`;
+        
+        // تحديث الرسوم البيانية
+        updateCharts(withPlace, missing, byMunicipality);
+    }
+
+    let pieChart, barChart;
+    function updateCharts(withPlace, missing, byMunicipality) {
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        const ctxBar = document.getElementById('barChart').getContext('2d');
+        if(pieChart) pieChart.destroy();
+        if(barChart) barChart.destroy();
+        pieChart = new Chart(ctxPie, { type: 'pie', data: { labels: ['حددوا مكان التربص', 'لم يحددوا'], datasets: [{ data: [withPlace, missing], backgroundColor: ['#2E7D32', '#c62828'] }] } });
+        const municipalities = Object.keys(byMunicipality);
+        const counts = Object.values(byMunicipality);
+        barChart = new Chart(ctxBar, { type: 'bar', data: { labels: municipalities, datasets: [{ label: 'عدد الطلاب', data: counts, backgroundColor: '#D4A017' }] } });
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        if(currentData.length===0){
+            const row = tbody.insertRow();
+            row.insertCell(0).colSpan=5;
+            row.insertCell(0).innerHTML = '<div style="text-align:center;padding:40px;">🔍 لم يتم العثور على طالب مطابق.</div>';
+            return;
+        }
+        currentData.forEach(s=>{
+            const row = tbody.insertRow();
+            if(!s.aPlace) row.classList.add('missing-place');
+            row.insertCell(0).innerHTML = `<strong>${s.nom}</strong>`;
+            row.insertCell(1).innerText = s.matricule;
+            row.insertCell(2).innerHTML = s.lieu ? s.lieu : `<span class="badge-missing">❌ لم يحدد</span>`;
+            row.insertCell(3).innerText = s.municipalite || '—';
+            row.insertCell(4).innerHTML = s.aPlace ? '✅ محدد' : '⚠️ غير محدد';
+            row.addEventListener('click',()=> showModal(s));
+        });
+    }
+
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const loading = document.getElementById('loading');
+        loading.style.display = 'block';
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const term = e.target.value.trim().toLowerCase();
+            if(!term) currentData = [...students];
+            else currentData = students.filter(s=>s.nom.toLowerCase().includes(term) || s.matricule.includes(term));
+            renderTable();
+            loading.style.display = 'none';
+        }, 300);
+    });
+
+    const modal = document.getElementById('studentModal');
+    const modalDetails = document.getElementById('modalDetails');
+    function showModal(student) {
+        modalDetails.innerHTML = `
+            <p><strong>👤 الاسم الكامل:</strong> ${student.nom}</p>
+            <p><strong>🎓 رقم التسجيل:</strong> ${student.matricule}</p>
+            <p><strong>🏥 Lieu de stage:</strong> ${student.lieu || 'غير محدد'}</p>
+            <p><strong>📍 البلدية:</strong> ${student.municipalite || '—'}</p>
+            <p><strong>📅 الحالة:</strong> ${student.aPlace ? 'تم تحديد مكان التربص ✅' : 'لم يحدد مكان التربص ⚠️'}</p>
+        `;
+        modal.style.display = 'flex';
+    }
+    document.getElementById('closeModal').addEventListener('click',()=> modal.style.display='none');
+    window.onclick = (e) => { if(e.target === modal) modal.style.display='none'; };
+
+    // وضع النهار/الليل
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click',()=>{
+        const current = document.documentElement.getAttribute('data-theme');
+        if(current === 'light') {
+            document.documentElement.removeAttribute('data-theme');
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i> الوضع المظلم';
+        } else {
+            document.documentElement.setAttribute('data-theme','light');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i> الوضع المشرق';
+        }
+    });
+
+    renderTable();
+    updateStats();
+</script>
+</body>
+</html>
