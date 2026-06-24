@@ -11,8 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
-    <!-- jsPDF لإنشاء ملفات PDF -->
+    <!-- jsPDF و html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         /* ===== الألوان ===== */
@@ -1913,7 +1914,7 @@
     });
 
     // ================================================================
-    // 10. لوحة التحكم مع عرض الصورة وزر PDF (مع إصلاح عرض النصوص)
+    // 10. لوحة التحكم مع عرض الصورة وزر PDF (باستخدام html2canvas)
     // ================================================================
     const ADMIN_PASSWORD_KEY = 'techno_admin_pass';
     let adminPassword = localStorage.getItem(ADMIN_PASSWORD_KEY) || 'admin2025';
@@ -1994,88 +1995,119 @@
         renderAdminMatches();
     }
 
-    // ===== دالة إنشاء PDF لكل طلب (مع خط واضح وجدول منظم) =====
+    // ===== دالة إنشاء PDF باستخدام html2canvas (ورقة رسمية) =====
     window.generatePDF = function(regId) {
-        getRegistrations((registrations) => {
+        getRegistrations(async (registrations) => {
             const reg = registrations.find(r => r.id == regId);
             if (!reg) {
                 alert('لم يتم العثور على بيانات هذا الطلب.');
                 return;
             }
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
+            // إنشاء عنصر HTML مؤقت للورقة الرسمية
+            const container = document.createElement('div');
+            container.style.cssText = `
+                direction: rtl;
+                font-family: 'Arial', 'Cairo', sans-serif;
+                background: white;
+                color: #000;
+                padding: 30px 35px;
+                width: 650px;
+                margin: auto;
+                border: 3px solid #D4A017;
+                border-radius: 12px;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            `;
+            container.innerHTML = `
+                <!-- الرأس -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #D4A017; padding-bottom: 10px; margin-bottom: 15px;">
+                    <div>
+                        <h2 style="color: #D4A017; font-size: 24px; margin: 0;">أكاديمية تيكنو</h2>
+                        <p style="color: #555; font-size: 14px; margin: 2px 0;">Techno Academy</p>
+                    </div>
+                    <div style="text-align: left;">
+                        <p style="font-size: 12px; color: #666; margin: 0;">رقم الطلب: ${regId.slice(-6)}</p>
+                        <p style="font-size: 12px; color: #666; margin: 0;">التاريخ: ${new Date().toLocaleDateString('ar-EG')}</p>
+                    </div>
+                </div>
 
-            // العنوان
-            doc.setFontSize(24);
-            doc.setTextColor(212, 160, 23); // ذهبي
-            doc.text('أكاديمية تيكنو', pageWidth / 2, 25, { align: 'center' });
+                <!-- العنوان -->
+                <h3 style="text-align: center; color: #333; font-size: 20px; margin: 10px 0 20px;">طلب تسجيل لاعب</h3>
 
-            doc.setFontSize(18);
-            doc.setTextColor(255, 255, 255);
-            doc.text('طلب تسجيل لاعب', pageWidth / 2, 35, { align: 'center' });
+                <!-- الجسم: صورة + معلومات -->
+                <div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <!-- الصورة (في الزاوية اليمنى) -->
+                    <div style="flex-shrink: 0; width: 130px; text-align: center;">
+                        ${reg.imageBase64 ? `<img src="${reg.imageBase64}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 10px; border: 2px solid #D4A017;">` : '<div style="width:120px; height:120px; background:#f0f0f0; border-radius:10px; border:2px dashed #ccc; display:flex; align-items:center; justify-content:center; color:#999;">لا توجد صورة</div>'}
+                    </div>
+                    <!-- المعلومات -->
+                    <div style="flex: 1;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 15px; text-align: right;">
+                            <tr><td style="padding: 6px 4px; font-weight: bold; width: 30%;">الاسم الشخصي:</td><td style="padding: 6px 4px;">${reg.firstName || '—'}</td></tr>
+                            <tr><td style="padding: 6px 4px; font-weight: bold;">اللقب العائلي:</td><td style="padding: 6px 4px;">${reg.lastName || '—'}</td></tr>
+                            <tr><td style="padding: 6px 4px; font-weight: bold;">رقم الهاتف:</td><td style="padding: 6px 4px;">${reg.phone || '—'}</td></tr>
+                            <tr><td style="padding: 6px 4px; font-weight: bold;">الفئة العمرية:</td><td style="padding: 6px 4px;">${reg.category || '—'}</td></tr>
+                            <tr><td style="padding: 6px 4px; font-weight: bold;">المكان:</td><td style="padding: 6px 4px;">${reg.location || '—'}</td></tr>
+                            <tr><td style="padding: 6px 4px; font-weight: bold;">تاريخ التسجيل:</td><td style="padding: 6px 4px;">${reg.date || '—'}</td></tr>
+                            <tr><td style="padding: 6px 4px; font-weight: bold;">الحالة:</td><td style="padding: 6px 4px; color: ${reg.status === 'approved' ? '#2ecc71' : '#f39c12'}; font-weight: bold;">${reg.status === 'approved' ? '✔ معتمد' : '⏳ قيد الانتظار'}</td></tr>
+                        </table>
+                    </div>
+                </div>
 
-            doc.setDrawColor(212, 160, 23);
-            doc.line(10, 40, pageWidth - 10, 40);
+                <!-- تذييل -->
+                <div style="border-top: 1px solid #ddd; margin-top: 20px; padding-top: 10px; text-align: center; font-size: 12px; color: #888;">
+                    تم إنشاء هذا الملف بواسطة نظام أكاديمية تيكنو &bull; جميع الحقوق محفوظة
+                </div>
+            `;
 
-            // بيانات الجدول
-            const rows = [
-                { label: 'الاسم الشخصي', value: reg.firstName || '—' },
-                { label: 'اللقب العائلي', value: reg.lastName || '—' },
-                { label: 'رقم الهاتف', value: reg.phone || '—' },
-                { label: 'الفئة العمرية', value: reg.category || '—' },
-                { label: 'المكان', value: reg.location || '—' },
-                { label: 'تاريخ التسجيل', value: reg.date || '—' },
-                { label: 'الحالة', value: reg.status === 'approved' ? '✔ معتمد' : '⏳ قيد الانتظار' }
-            ];
+            // إضافة العنصر إلى الصفحة (مخفي)
+            container.style.position = 'absolute';
+            container.style.left = '-9999px';
+            container.style.top = '0';
+            document.body.appendChild(container);
 
-            let y = 50;
-            const colLabelX = pageWidth - 30; // محاذاة لليمين
-            const colValueX = pageWidth - 90; // محاذاة لليمين بمسافة أقل
-            const rowHeight = 10;
+            try {
+                // التقاط الصورة
+                const canvas = await html2canvas(container, {
+                    scale: 2.5,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false
+                });
+                const imgData = canvas.toDataURL('image/png');
 
-            doc.setFontSize(13);
-            rows.forEach((row) => {
-                // السطر الأول
-                doc.setFont('helvetica', 'bold');
-                doc.text(row.label, colLabelX, y, { align: 'right' });
-                doc.setFont('helvetica', 'normal');
-                doc.text(row.value, colValueX, y, { align: 'right' });
-                y += rowHeight;
-            });
+                // إنشاء PDF
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
 
-            // إدراج الصورة إن وجدت
-            let imageY = y + 10;
-            if (reg.imageBase64) {
-                try {
-                    const imgWidth = 70;
-                    const imgHeight = 70;
+                // حساب الأبعاد لتتناسب مع الصفحة مع هوامش
+                const margin = 10;
+                const imgWidth = pageWidth - (margin * 2);
+                const imgHeight = (canvas.height / canvas.width) * imgWidth;
+                let finalHeight = imgHeight;
+                let y = margin;
+                if (imgHeight > pageHeight - (margin * 2)) {
+                    // إذا كانت الصورة أطول من الصفحة، نضبط الارتفاع ونوسّط
+                    const ratio = (pageHeight - (margin * 2)) / imgHeight;
+                    finalHeight = pageHeight - (margin * 2);
+                    const newWidth = imgWidth * ratio;
+                    const x = (pageWidth - newWidth) / 2;
+                    doc.addImage(imgData, 'PNG', x, margin, newWidth, finalHeight);
+                } else {
                     const x = (pageWidth - imgWidth) / 2;
-                    doc.addImage(reg.imageBase64, 'JPEG', x, imageY, imgWidth, imgHeight);
-                    imageY += imgHeight + 15;
-                } catch (e) {
-                    console.warn('فشل إدراج الصورة في PDF:', e);
-                    doc.setFontSize(11);
-                    doc.setTextColor(150);
-                    doc.text('(تعذر عرض الصورة)', pageWidth / 2, imageY, { align: 'center' });
-                    imageY += 10;
+                    doc.addImage(imgData, 'PNG', x, margin, imgWidth, finalHeight);
                 }
-            } else {
-                doc.setFontSize(11);
-                doc.setTextColor(150);
-                doc.text('(لا توجد صورة)', pageWidth / 2, imageY, { align: 'center' });
-                imageY += 10;
+
+                doc.save(`طلب_تسجيل_${reg.firstName}_${reg.lastName}.pdf`);
+            } catch (error) {
+                console.error('خطأ في إنشاء PDF:', error);
+                alert('حدث خطأ أثناء إنشاء PDF، يرجى المحاولة مرة أخرى.');
+            } finally {
+                document.body.removeChild(container);
             }
-
-            // تذييل
-            doc.setFontSize(10);
-            doc.setTextColor(100);
-            doc.text('تم إنشاء هذا الملف بواسطة نظام أكاديمية تيكنو', pageWidth / 2, imageY + 15, { align: 'center' });
-
-            // حفظ الملف
-            doc.save(`طلب_تسجيل_${reg.firstName}_${reg.lastName}.pdf`);
         });
     };
 
