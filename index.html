@@ -1823,14 +1823,9 @@
     }
 
     // ================================================================
-    // 9. نموذج التسجيل (مع رفع الصورة)
+    // 9. نموذج التسجيل (مع رفع الصورة) - بدون منع إعادة التسجيل
     // ================================================================
-    function hasDeviceRegistered() {
-        const deviceId = localStorage.getItem('deviceId');
-        if (!deviceId) return false;
-        const registered = localStorage.getItem('registered_device');
-        return registered === 'true';
-    }
+    // تم حذف الدالة hasDeviceRegistered() والتحقق منها
 
     // معاينة الصورة فور اختيارها
     document.getElementById('regImage').addEventListener('change', function(e) {
@@ -1852,10 +1847,7 @@
     document.getElementById('registrationForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        if (hasDeviceRegistered()) {
-            alert('❌ تم تسجيل هذا الجهاز مسبقاً. لا يمكنك إعادة التسجيل.');
-            return;
-        }
+        // تم إزالة منع التسجيل من نفس الجهاز
 
         const firstName = document.getElementById('regFirstName').value.trim();
         const lastName = document.getElementById('regLastName').value.trim();
@@ -1879,8 +1871,6 @@
                     reader.onerror = reject;
                     reader.readAsDataURL(fileInput.files[0]);
                 });
-                // ضغط الصورة (اختياري) – يمكن تقليل الجودة لتقليل الحجم
-                // نتركها كما هي
             } catch (err) {
                 console.warn('فشل قراءة الصورة:', err);
             }
@@ -1898,8 +1888,7 @@
 
         try {
             await saveRegistration(regData);
-            localStorage.setItem('deviceId', Date.now().toString());
-            localStorage.setItem('registered_device', 'true');
+            // تم حذف تخزين deviceId و registered_device
 
             // إرسال البريد الإلكتروني (بدون الصورة لتجنب الحجم الكبير)
             const formData = new FormData();
@@ -2056,7 +2045,6 @@
             // إدراج الصورة إن وجدت
             if (reg.imageBase64) {
                 try {
-                    // نضغط الصورة قليلاً لتتناسب مع الـ PDF
                     const imgWidth = 60;
                     const imgHeight = 60;
                     const x = (pageWidth - imgWidth) / 2;
