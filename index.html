@@ -1825,7 +1825,6 @@
     // ================================================================
     // 9. نموذج التسجيل (مع رفع الصورة) - بدون منع إعادة التسجيل
     // ================================================================
-    // تم حذف الدالة hasDeviceRegistered() والتحقق منها
 
     // معاينة الصورة فور اختيارها
     document.getElementById('regImage').addEventListener('change', function(e) {
@@ -1888,7 +1887,6 @@
 
         try {
             await saveRegistration(regData);
-            // تم حذف تخزين deviceId و registered_device
 
             // إرسال البريد الإلكتروني (بدون الصورة لتجنب الحجم الكبير)
             const formData = new FormData();
@@ -1915,7 +1913,7 @@
     });
 
     // ================================================================
-    // 10. لوحة التحكم مع عرض الصورة وزر PDF
+    // 10. لوحة التحكم مع عرض الصورة وزر PDF (مع إصلاح عرض النصوص)
     // ================================================================
     const ADMIN_PASSWORD_KEY = 'techno_admin_pass';
     let adminPassword = localStorage.getItem(ADMIN_PASSWORD_KEY) || 'admin2025';
@@ -1996,7 +1994,7 @@
         renderAdminMatches();
     }
 
-    // ===== دالة إنشاء PDF لكل طلب =====
+    // ===== دالة إنشاء PDF لكل طلب (مع خط واضح وجدول منظم) =====
     window.generatePDF = function(regId) {
         getRegistrations((registrations) => {
             const reg = registrations.find(r => r.id == regId);
@@ -2008,64 +2006,73 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('p', 'mm', 'a4');
             const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
 
             // العنوان
-            doc.setFontSize(22);
+            doc.setFontSize(24);
             doc.setTextColor(212, 160, 23); // ذهبي
-            doc.text('أكاديمية تيكنو', pageWidth / 2, 20, { align: 'center' });
-            doc.setFontSize(16);
+            doc.text('أكاديمية تيكنو', pageWidth / 2, 25, { align: 'center' });
+
+            doc.setFontSize(18);
             doc.setTextColor(255, 255, 255);
-            doc.text('طلب تسجيل لاعب', pageWidth / 2, 30, { align: 'center' });
+            doc.text('طلب تسجيل لاعب', pageWidth / 2, 35, { align: 'center' });
 
             doc.setDrawColor(212, 160, 23);
-            doc.line(10, 35, pageWidth - 10, 35);
+            doc.line(10, 40, pageWidth - 10, 40);
 
-            // البيانات
-            const lines = [
-                ['الاسم الشخصي:', reg.firstName || '—'],
-                ['اللقب العائلي:', reg.lastName || '—'],
-                ['رقم الهاتف:', reg.phone || '—'],
-                ['الفئة العمرية:', reg.category || '—'],
-                ['المكان:', reg.location || '—'],
-                ['تاريخ التسجيل:', reg.date || '—'],
-                ['الحالة:', reg.status === 'approved' ? '✔ معتمد' : '⏳ قيد الانتظار']
+            // بيانات الجدول
+            const rows = [
+                { label: 'الاسم الشخصي', value: reg.firstName || '—' },
+                { label: 'اللقب العائلي', value: reg.lastName || '—' },
+                { label: 'رقم الهاتف', value: reg.phone || '—' },
+                { label: 'الفئة العمرية', value: reg.category || '—' },
+                { label: 'المكان', value: reg.location || '—' },
+                { label: 'تاريخ التسجيل', value: reg.date || '—' },
+                { label: 'الحالة', value: reg.status === 'approved' ? '✔ معتمد' : '⏳ قيد الانتظار' }
             ];
 
-            let y = 45;
-            doc.setFontSize(12);
-            doc.setTextColor(200, 200, 200);
-            lines.forEach(([label, value]) => {
+            let y = 50;
+            const colLabelX = pageWidth - 30; // محاذاة لليمين
+            const colValueX = pageWidth - 90; // محاذاة لليمين بمسافة أقل
+            const rowHeight = 10;
+
+            doc.setFontSize(13);
+            rows.forEach((row) => {
+                // السطر الأول
                 doc.setFont('helvetica', 'bold');
-                doc.text(label, 20, y);
+                doc.text(row.label, colLabelX, y, { align: 'right' });
                 doc.setFont('helvetica', 'normal');
-                doc.text(value, 80, y);
-                y += 8;
+                doc.text(row.value, colValueX, y, { align: 'right' });
+                y += rowHeight;
             });
 
             // إدراج الصورة إن وجدت
+            let imageY = y + 10;
             if (reg.imageBase64) {
                 try {
-                    const imgWidth = 60;
-                    const imgHeight = 60;
+                    const imgWidth = 70;
+                    const imgHeight = 70;
                     const x = (pageWidth - imgWidth) / 2;
-                    const yImg = y + 10;
-                    doc.addImage(reg.imageBase64, 'JPEG', x, yImg, imgWidth, imgHeight);
-                    y = yImg + imgHeight + 10;
+                    doc.addImage(reg.imageBase64, 'JPEG', x, imageY, imgWidth, imgHeight);
+                    imageY += imgHeight + 15;
                 } catch (e) {
                     console.warn('فشل إدراج الصورة في PDF:', e);
+                    doc.setFontSize(11);
+                    doc.setTextColor(150);
+                    doc.text('(تعذر عرض الصورة)', pageWidth / 2, imageY, { align: 'center' });
+                    imageY += 10;
                 }
             } else {
-                y += 10;
-                doc.setFontSize(10);
+                doc.setFontSize(11);
                 doc.setTextColor(150);
-                doc.text('(لا توجد صورة)', pageWidth / 2, y, { align: 'center' });
-                y += 10;
+                doc.text('(لا توجد صورة)', pageWidth / 2, imageY, { align: 'center' });
+                imageY += 10;
             }
 
             // تذييل
             doc.setFontSize(10);
             doc.setTextColor(100);
-            doc.text('تم إنشاء هذا الملف بواسطة نظام أكاديمية تيكنو', pageWidth / 2, y + 20, { align: 'center' });
+            doc.text('تم إنشاء هذا الملف بواسطة نظام أكاديمية تيكنو', pageWidth / 2, imageY + 15, { align: 'center' });
 
             // حفظ الملف
             doc.save(`طلب_تسجيل_${reg.firstName}_${reg.lastName}.pdf`);
