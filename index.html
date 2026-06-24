@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>استمارة التسجيل مع الصور - PDF</title>
+    <title>استمارة التسجيل مع الصور</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <!-- html2pdf لإنشاء PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- html2pdf لتحميل PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
+        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
@@ -37,11 +38,12 @@
             border: 1px solid rgba(212, 160, 23, 0.3);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
+
         h1 {
             text-align: center;
             font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             color: #d4a017;
         }
         h1 span {
@@ -53,6 +55,8 @@
             margin-bottom: 25px;
             font-size: 0.95rem;
         }
+
+        /* ===== FORM ===== */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -87,10 +91,6 @@
             border-color: #d4a017;
             outline: none;
             box-shadow: 0 0 0 3px rgba(212, 160, 23, 0.2);
-        }
-        textarea {
-            resize: vertical;
-            min-height: 70px;
         }
 
         /* رفع الصورة */
@@ -153,16 +153,16 @@
             font-size: 1.1rem;
             color: #000;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
             width: 100%;
             margin-top: 10px;
         }
         .btn-submit:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(212, 160, 23, 0.3);
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
-        /* ADMIN PANEL */
+        /* ===== ADMIN PANEL ===== */
         .admin-toggle {
             display: inline-block;
             margin-top: 20px;
@@ -173,7 +173,7 @@
             color: #fff;
             font-weight: 600;
             cursor: pointer;
-            transition: 0.3s;
+            transition: 0.2s;
         }
         .admin-toggle:hover {
             background: #005a2e;
@@ -279,6 +279,7 @@
             font-size: 0.7rem;
             margin: 2px;
             display: inline-block;
+            white-space: nowrap;
         }
         .btn-sm-success {
             background: #2ecc71;
@@ -316,6 +317,97 @@
             background: #d35400;
         }
 
+        /* ===== POPUP تأكيد ===== */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .popup-overlay.active {
+            display: flex;
+        }
+        .popup-box {
+            background: linear-gradient(145deg, #1a2a1a, #0D1A0D);
+            border: 2px solid #d4a017;
+            border-radius: 30px;
+            padding: 35px 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(212, 160, 23, 0.2);
+            animation: popupPulse 0.4s ease;
+        }
+        @keyframes popupPulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .popup-box i {
+            font-size: 3.5rem;
+            color: #d4a017;
+            margin-bottom: 10px;
+        }
+        .popup-box h3 {
+            font-size: 1.6rem;
+            color: #fff;
+            margin-bottom: 12px;
+            font-family: 'Amiri', serif;
+        }
+        .popup-box .info-grid {
+            text-align: right;
+            margin: 12px 0;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+        .popup-box .info-grid p {
+            margin: 2px 0;
+            color: #ddd;
+        }
+        .popup-box .info-grid strong {
+            color: #d4a017;
+        }
+        .popup-box .info-grid img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #d4a017;
+            margin-top: 4px;
+        }
+        .popup-close {
+            background: #d4a017;
+            border: none;
+            color: #000;
+            padding: 10px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .popup-close:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(212, 160, 23, 0.3);
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 700px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -415,6 +507,16 @@
         </div>
     </div>
 
+    <!-- ===== POPUP CONFIRMATION ===== -->
+    <div class="popup-overlay" id="confirmPopup">
+        <div class="popup-box">
+            <i class="fas fa-check-circle"></i>
+            <h3>✅ تم التسجيل بنجاح</h3>
+            <div class="info-grid" id="confirmInfo"></div>
+            <button class="popup-close" onclick="closeConfirmPopup()">حسناً</button>
+        </div>
+    </div>
+
     <script>
         // ================================================================
         // 1. Firebase Config
@@ -477,7 +579,7 @@
         });
 
         // ================================================================
-        // 3. حفظ التسجيل (Base64)
+        // 3. حفظ التسجيل (Base64) مع نافذة تأكيد
         // ================================================================
         document.getElementById('registrationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -499,6 +601,7 @@
             }
 
             try {
+                // قراءة الصورة كـ Base64
                 const reader = new FileReader();
                 const imageData = await new Promise((resolve, reject) => {
                     reader.onload = () => resolve(reader.result);
@@ -518,11 +621,27 @@
                     timestamp: Date.now()
                 };
 
-                await database.ref('registrations').push(regData);
-                alert('✅ تم التسجيل بنجاح');
+                // حفظ في Firebase
+                const newRef = database.ref('registrations').push();
+                await newRef.set(regData);
+
+                // عرض نافذة التأكيد
+                document.getElementById('confirmInfo').innerHTML = `
+                    <p><strong>الاسم:</strong> ${firstName}</p>
+                    <p><strong>اللقب:</strong> ${lastName}</p>
+                    <p><strong>الهاتف:</strong> ${phone}</p>
+                    <p><strong>العنوان:</strong> ${address || '—'}</p>
+                    <p><strong>الميلاد:</strong> ${birth || '—'}</p>
+                    <p><strong>الصورة:</strong> <img src="${imageData}" alt="صورة" /></p>
+                `;
+                document.getElementById('confirmPopup').classList.add('active');
+
+                // إعادة تعيين النموذج
                 this.reset();
                 previewContainer.style.display = 'none';
                 uploadStatus.textContent = '';
+
+                // تحديث لوحة التحكم إذا كانت مفتوحة
                 if (document.getElementById('adminContent').style.display !== 'none') {
                     renderAdminTable();
                     renderStats();
@@ -532,6 +651,11 @@
                 alert('❌ حدث خطأ، حاول مرة أخرى');
             }
         });
+
+        // إغلاق نافذة التأكيد
+        function closeConfirmPopup() {
+            document.getElementById('confirmPopup').classList.remove('active');
+        }
 
         // ================================================================
         // 4. دوال التحميل (الصورة و PDF)
@@ -547,9 +671,8 @@
             document.body.removeChild(link);
         }
 
-        // تحميل PDF يحتوي على المعلومات والصورة
+        // تحميل PDF
         function downloadPDF(reg) {
-            // إنشاء عنصر مؤقت لتحويله إلى PDF
             const container = document.createElement('div');
             container.style.cssText =
                 'background: white; color: black; font-family: Arial, sans-serif; padding: 30px; max-width: 600px; margin: auto; text-align: center; border-radius: 8px;';
@@ -573,7 +696,6 @@
             `;
             document.body.appendChild(container);
 
-            // تحويل العنصر إلى PDF
             html2pdf()
                 .set({
                     margin: 10,
@@ -655,9 +777,11 @@
                         'rejected' : 'pending');
                     const statusText = reg.status === 'approved' ? 'معتمد' : (reg.status === 'rejected' ? 'مرفوض' :
                         'قيد الانتظار');
-                    // تأكد من وجود الصورة
                     const imageUrl = reg.imageUrl && reg.imageUrl.startsWith('data:image') ? reg.imageUrl :
                         'https://via.placeholder.com/45/00733F/FFFFFF?text=صورة';
+
+                    // نحتاج إلى المفتاح (id) من أجل التحديث والحذف
+                    const key = Object.keys(data).find(k => data[k] === reg) || '';
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -672,10 +796,10 @@
                         <td><span class="badge ${statusClass}">${statusText}</span></td>
                         <td>
                             ${reg.status === 'pending' ? `
-                                <button class="btn-sm btn-sm-success" onclick="updateStatus('${reg.id || ''}','approved')">قبول</button>
-                                <button class="btn-sm btn-sm-danger" onclick="updateStatus('${reg.id || ''}','rejected')">رفض</button>
+                                <button class="btn-sm btn-sm-success" onclick="updateStatus('${key}','approved')">قبول</button>
+                                <button class="btn-sm btn-sm-danger" onclick="updateStatus('${key}','rejected')">رفض</button>
                             ` : ''}
-                            <button class="btn-sm btn-sm-warning" onclick="deleteRecord('${reg.id || ''}')">حذف</button>
+                            <button class="btn-sm btn-sm-warning" onclick="deleteRecord('${key}')">حذف</button>
                             <button class="btn-sm btn-sm-info" onclick="downloadImage('${imageUrl}','${reg.firstName}_${reg.lastName}')"><i class="fas fa-download"></i> صورة</button>
                             <button class="btn-sm btn-sm-pdf" onclick="downloadPDF(${JSON.stringify(reg).replace(/"/g, '&quot;')})"><i class="fas fa-file-pdf"></i> PDF</button>
                         </td>
@@ -685,7 +809,7 @@
             });
         }
 
-        // دوال التحديث (نحتاج معرفة المفتاح)
+        // دوال التحديث والحذف
         window.updateStatus = function(id, status) {
             if (!confirm(`هل تريد ${status === 'approved' ? 'قبول' : 'رفض'} هذا الطلب؟`)) return;
             database.ref('registrations/' + id).update({ status: status })
