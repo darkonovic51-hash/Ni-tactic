@@ -1,875 +1,340 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ETOILE CHELGHOUM LAID ACADEMY</title>
-    <!-- Cairo & Beba Neue fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <style>
-        /* ===== 01. PALETTE ===== */
-        :root {
-            --primary-dark: #0E4832;
-            --primary-mid: #136F46;
-            --red-accent: #C8102E;
-            --black: #1A1A1A;
-            --white: #F2F2F2;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: var(--white);
-            color: var(--black);
-            direction: rtl;
-            line-height: 1.6;
-        }
-
-        /* ===== 02. TYPOGRAPHIE ===== */
-        h1, h2, h3, .headline {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .bebas {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 2px;
-        }
-
-        /* ===== Layout ===== */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* ===== HEADER ===== */
-        header {
-            background: var(--primary-dark);
-            padding: 20px 0;
-            border-bottom: 4px solid var(--red-accent);
-        }
-
-        .header-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            font-size: 2.8rem;
-            color: var(--white);
-            background: var(--red-accent);
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-family: 'Bebas Neue', sans-serif;
-            font-weight: 400;
-            line-height: 1;
-            box-shadow: 0 0 0 3px var(--white);
-        }
-
-        .logo-text {
-            color: var(--white);
-        }
-
-        .logo-text h1 {
-            font-size: 2rem;
-            line-height: 1;
-            color: var(--white);
-            letter-spacing: 2px;
-        }
-
-        .logo-text span {
-            font-size: 0.9rem;
-            font-weight: 300;
-            color: #cfcfcf;
-            display: block;
-        }
-
-        .tagline {
-            color: var(--white);
-            font-size: 1.2rem;
-            font-weight: 300;
-            border-right: 3px solid var(--red-accent);
-            padding-right: 16px;
-        }
-
-        .tagline .highlight {
-            color: var(--red-accent);
-            font-weight: 700;
-        }
-
-        /* ===== HERO ===== */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-mid) 100%);
-            padding: 80px 0 60px;
-            color: var(--white);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::after {
-            content: "★";
-            position: absolute;
-            left: -50px;
-            top: -50px;
-            font-size: 28rem;
-            color: rgba(255,255,255,0.03);
-            font-family: 'Bebas Neue', sans-serif;
-            transform: rotate(15deg);
-            pointer-events: none;
-        }
-
-        .hero-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero-content h2 {
-            font-size: 4.5rem;
-            line-height: 1;
-            letter-spacing: 4px;
-            color: var(--white);
-            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
-        }
-
-        .hero-content h2 .star {
-            color: var(--red-accent);
-            display: inline-block;
-            margin: 0 8px;
-        }
-
-        .hero-content p {
-            font-size: 1.6rem;
-            font-weight: 300;
-            max-width: 700px;
-            margin: 20px auto 0;
-            background: rgba(0,0,0,0.2);
-            padding: 12px 32px;
-            border-radius: 50px;
-            backdrop-filter: blur(2px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .hero-content .one-team {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.8rem;
-            letter-spacing: 6px;
-            margin-top: 12px;
-            color: var(--red-accent);
-        }
-
-        /* ===== SECTION GÉNÉRIQUE ===== */
-        section {
-            padding: 60px 0;
-        }
-
-        .section-title {
-            font-size: 2.8rem;
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 2px;
-            position: relative;
-            display: inline-block;
-            margin-bottom: 40px;
-            color: var(--primary-dark);
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            right: 0;
-            width: 80px;
-            height: 4px;
-            background: var(--red-accent);
-        }
-
-        .section-title.center {
-            display: block;
-            text-align: center;
-        }
-
-        .section-title.center::after {
-            right: 50%;
-            transform: translateX(50%);
-        }
-
-        /* ===== PALETTE ===== */
-        .palette-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .palette-item {
-            width: 120px;
-            height: 120px;
-            border-radius: 20px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            padding: 12px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            border: 2px solid rgba(0,0,0,0.05);
-            transition: transform 0.2s;
-        }
-
-        .palette-item:hover {
-            transform: scale(1.05);
-        }
-
-        .palette-item .hex {
-            background: rgba(0,0,0,0.6);
-            padding: 4px 14px;
-            border-radius: 40px;
-            color: white;
-            font-size: 0.8rem;
-            backdrop-filter: blur(2px);
-        }
-
-        .palette-item.light .hex {
-            background: rgba(0,0,0,0.7);
-            color: white;
-        }
-
-        /* ===== TYPOGRAPHIE DEMO ===== */
-        .typo-demo {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            justify-content: center;
-            background: var(--white);
-            padding: 30px;
-            border-radius: 30px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-        }
-
-        .typo-box {
-            flex: 1 1 200px;
-            text-align: center;
-        }
-
-        .typo-box .label {
-            font-size: 0.8rem;
-            color: var(--primary-mid);
-            font-weight: 700;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        }
-
-        .typo-box .headline-sample {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.8rem;
-            line-height: 1.2;
-            color: var(--black);
-        }
-
-        .typo-box .body-sample {
-            font-family: 'Cairo', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 300;
-            color: var(--black);
-        }
-
-        .typo-box .body-sample strong {
-            font-weight: 700;
-        }
-
-        .values-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px 30px;
-            justify-content: center;
-            margin-top: 20px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.8rem;
-            letter-spacing: 2px;
-            color: var(--primary-dark);
-        }
-
-        .values-list span {
-            background: var(--white);
-            padding: 4px 24px;
-            border-radius: 40px;
-            border: 2px solid var(--primary-mid);
-        }
-
-        /* ===== LOGO PRINCIPAL & VARIANTS ===== */
-        .logo-showcase {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .logo-card {
-            background: var(--white);
-            padding: 30px 40px;
-            border-radius: 30px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-            text-align: center;
-            min-width: 180px;
-            border: 1px solid #eee;
-        }
-
-        .logo-card .logo-big {
-            font-size: 4rem;
-            font-family: 'Bebas Neue', sans-serif;
-            background: var(--primary-dark);
-            color: var(--white);
-            padding: 16px 24px;
-            border-radius: 20px;
-            display: inline-block;
-            letter-spacing: 2px;
-        }
-
-        .logo-card .logo-big .star {
-            color: var(--red-accent);
-        }
-
-        .logo-card .logo-variant {
-            background: var(--primary-dark);
-            color: var(--white);
-            padding: 12px 20px;
-            border-radius: 16px;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2.2rem;
-            letter-spacing: 2px;
-        }
-
-        .logo-card .logo-variant.light-bg {
-            background: var(--white);
-            color: var(--primary-dark);
-            border: 3px solid var(--primary-dark);
-        }
-
-        .logo-card .logo-variant.red {
-            background: var(--red-accent);
-            color: var(--white);
-        }
-
-        /* ===== MOTIFS & ÉLÉMENTS ===== */
-        .motif-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            text-align: center;
-        }
-
-        .motif-item {
-            background: var(--white);
-            padding: 24px 10px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border: 1px solid #eaeaea;
-            transition: all 0.2s;
-        }
-
-        .motif-item i {
-            font-size: 2.6rem;
-            color: var(--primary-mid);
-            margin-bottom: 8px;
-        }
-
-        .motif-item span {
-            display: block;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 1px;
-            color: var(--primary-dark);
-        }
-
-        /* ===== ICONOGRAPHIE ===== */
-        .icon-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-        }
-
-        .icon-box {
-            background: var(--white);
-            padding: 20px 28px;
-            border-radius: 30px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-            border: 1px solid #eee;
-            font-size: 2.2rem;
-            color: var(--primary-dark);
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .icon-box i {
-            font-size: 2.6rem;
-            color: var(--primary-mid);
-        }
-
-        .icon-box span {
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: var(--black);
-            letter-spacing: 1px;
-        }
-
-        /* ===== PHOTO STYLE ===== */
-        .photo-placeholder {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            justify-content: center;
-        }
-
-        .photo-card {
-            width: 200px;
-            height: 200px;
-            border-radius: 30px;
-            background: linear-gradient(145deg, var(--primary-mid), var(--primary-dark));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.4rem;
-            letter-spacing: 2px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
-            border: 4px solid var(--white);
-            transition: 0.2s;
-            position: relative;
-        }
-
-        .photo-card::after {
-            content: "📸";
-            font-size: 2.8rem;
-            opacity: 0.3;
-            position: absolute;
-        }
-
-        .photo-card span {
-            background: rgba(0,0,0,0.5);
-            padding: 6px 18px;
-            border-radius: 40px;
-            backdrop-filter: blur(2px);
-            z-index: 2;
-        }
-
-        /* ===== TENUE ===== */
-        .kit-showcase {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            justify-content: center;
-        }
-
-        .kit-item {
-            background: var(--white);
-            padding: 30px 20px;
-            border-radius: 40px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-            text-align: center;
-            min-width: 180px;
-            border: 1px solid #eee;
-        }
-
-        .kit-item .shirt {
-            width: 120px;
-            height: 140px;
-            background: var(--primary-dark);
-            margin: 0 auto 16px;
-            border-radius: 30px 30px 10px 10px;
-            position: relative;
-            box-shadow: 0 8px 0 var(--red-accent);
-        }
-
-        .kit-item .shirt::before {
-            content: "★";
-            color: var(--white);
-            font-size: 2.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .kit-item .shirt.white {
-            background: var(--white);
-            border: 3px solid var(--primary-dark);
-        }
-
-        .kit-item .shirt.white::before {
-            color: var(--primary-dark);
-        }
-
-        .kit-item .shirt.red {
-            background: var(--red-accent);
-        }
-
-        .kit-item p {
-            font-weight: 700;
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 1px;
-            font-size: 1.2rem;
-        }
-
-        /* ===== PAPETERIE ===== */
-        .papeterie-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            justify-content: center;
-        }
-
-        .papeterie-item {
-            background: var(--white);
-            padding: 30px 30px 20px;
-            border-radius: 30px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            border: 1px solid #eee;
-            text-align: center;
-            min-width: 150px;
-        }
-
-        .papeterie-item i {
-            font-size: 3.4rem;
-            color: var(--primary-mid);
-            margin-bottom: 8px;
-        }
-
-        .papeterie-item span {
-            display: block;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        /* ===== SOCIAL ===== */
-        .social-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .social-item {
-            background: var(--primary-dark);
-            color: var(--white);
-            padding: 16px 28px;
-            border-radius: 60px;
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: 0.2s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .social-item i {
-            font-size: 2.2rem;
-        }
-
-        .social-item span {
-            font-family: 'Bebas Neue', sans-serif;
-            letter-spacing: 1px;
-            font-size: 1.2rem;
-        }
-
-        .social-item:hover {
-            background: var(--red-accent);
-            transform: scale(1.03);
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            background: var(--black);
-            color: var(--white);
-            padding: 40px 0 30px;
-            text-align: center;
-            border-top: 6px solid var(--red-accent);
-        }
-
-        footer .star-line {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 2rem;
-            letter-spacing: 4px;
-            color: var(--red-accent);
-        }
-
-        footer p {
-            font-weight: 300;
-            margin-top: 12px;
-            color: #aaa;
-        }
-
-        footer .one-team {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 1.8rem;
-            letter-spacing: 6px;
-            color: var(--white);
-            margin-top: 6px;
-        }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 768px) {
-            .header-inner {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .hero-content h2 {
-                font-size: 2.8rem;
-            }
-            .hero-content p {
-                font-size: 1.2rem;
-            }
-            .tagline {
-                border-right: none;
-                padding-right: 0;
-                border-top: 2px solid var(--red-accent);
-                padding-top: 12px;
-                width: 100%;
-            }
-            .logo-text h1 {
-                font-size: 1.6rem;
-            }
-            .section-title {
-                font-size: 2.2rem;
-            }
-            .typo-demo {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>محاكاة قيادة الدول</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --navy:#0A1628; --navy2:#132540; --gold:#C89A2B; --gold-light:#E4C46A;
+    --success:#27AE60; --warning:#F4B400; --error:#E53935; --bg:#0d1420;
+    --card:#111d31; --border:rgba(200,154,43,0.18); --text2:#8b96a8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Cairo',sans-serif; background:var(--bg); color:#fff; overflow-x:hidden;}
+  #root{min-height:100vh;}
+  .btn{border:none; cursor:pointer; font-family:'Cairo',sans-serif; border-radius:14px; font-weight:700; transition:.25s;}
+  .btn-gold{background:linear-gradient(135deg,var(--gold-light),var(--gold)); color:#1a1400; padding:14px 28px;}
+  .btn-gold:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(200,154,43,0.35);}
+  .btn-outline{background:transparent; border:1.5px solid var(--border); color:#fff; padding:12px 22px;}
+  .btn-outline:hover{border-color:var(--gold);}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:20px; padding:22px;}
+  ::-webkit-scrollbar{width:8px;} ::-webkit-scrollbar-thumb{background:var(--gold); border-radius:10px;}
+</style>
 </head>
 <body>
-    <!-- ===== HEADER ===== -->
-    <header>
-        <div class="container header-inner">
-            <div class="logo-area">
-                <div class="logo-icon">★</div>
-                <div class="logo-text">
-                    <h1>ETOILE CHELGHOUM LAID</h1>
-                    <span>أكاديمية نجم شلغوم العيد</span>
-                </div>
-            </div>
-            <div class="tagline">
-                <span class="highlight">ONE TEAM</span> • <span class="highlight">ONE DREAM</span> • <span class="highlight">ONE STAR</span>
-            </div>
-        </div>
-    </header>
+<div id="root"></div>
 
-    <!-- ===== HERO ===== -->
-    <section class="hero">
-        <div class="container hero-content">
-            <h2>
-                <span class="star">★</span> 
-                ETOILE CHELGHOUM LAID
-                <span class="star">★</span>
-            </h2>
-            <p>أكاديمية رياضية متخصصة في تكوين وصقل المواهب الكروية</p>
-            <div class="one-team">ONE TEAM • ONE DREAM • ONE STAR</div>
-        </div>
-    </section>
+<!-- ===== React + Babel (بدون أدوات بناء) ===== -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- ===== 01. PALETTE ===== -->
-    <section>
-        <div class="container">
-            <h2 class="section-title center">01. PALETTE DE COULEURS</h2>
-            <div class="palette-grid">
-                <div class="palette-item" style="background:#0E4832; color:white;"><span class="hex">#0E4832</span></div>
-                <div class="palette-item" style="background:#136F46; color:white;"><span class="hex">#136F46</span></div>
-                <div class="palette-item" style="background:#C8102E; color:white;"><span class="hex">#C8102E</span></div>
-                <div class="palette-item" style="background:#1A1A1A; color:white;"><span class="hex">#1A1A1A</span></div>
-                <div class="palette-item light" style="background:#F2F2F2; color:#1A1A1A;"><span class="hex" style="background:rgba(0,0,0,0.7); color:white;">#F2F2F2</span></div>
+<!-- ===== محرك اللعبة (ملفات JS عادية) ===== -->
+<script src="src/engine/countryModel.js"></script>
+<script src="src/engine/simulationEngine.js"></script>
+<script src="src/engine/aiEventEngine.js"></script>
+<script src="src/data/countriesData.js"></script>
+<script src="src/storage/saveSystem.js"></script>
+
+<!-- ===== تطبيق React الرئيسي ===== -->
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback } = React;
+
+/* ============ مكوّن: رسم بياني بسيط بدون مكتبات خارجية ============ */
+function MiniLineChart({ data, dataKey, color, label }) {
+  if (!data || data.length < 2) {
+    return <div style={{color:'var(--text2)', fontSize:'.8rem', textAlign:'center', padding:'20px'}}>لا توجد بيانات كافية بعد</div>;
+  }
+  const values = data.map(d => d[dataKey]);
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 1;
+  const w = 100, h = 40;
+  const points = values.map((v, i) => {
+    const x = (i / (values.length - 1)) * w;
+    const y = h - ((v - min) / range) * h;
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <div style={{marginBottom:'6px'}}>
+      <div style={{display:'flex', justifyContent:'space-between', fontSize:'.75rem', color:'var(--text2)', marginBottom:'6px'}}>
+        <span>{label}</span>
+        <span style={{color:color, fontWeight:800}}>{Math.round(values[values.length-1] * 100) / 100}</span>
+      </div>
+      <svg viewBox={`0 0 ${w} ${h}`} style={{width:'100%', height:'60px'}} preserveAspectRatio="none">
+        <polyline points={points} fill="none" stroke={color} strokeWidth="1.6" vectorEffect="non-scaling-stroke" />
+      </svg>
+    </div>
+  );
+}
+
+/* ============ مكوّن: اختيار الدولة ============ */
+function CountrySelector({ onSelect }) {
+  return (
+    <div style={{minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 20px'}}>
+      <div style={{maxWidth:'1100px', width:'100%'}}>
+        <div style={{textAlign:'center', marginBottom:'50px'}}>
+          <div style={{color:'var(--gold-light)', fontWeight:800, letterSpacing:'1px', marginBottom:'10px'}}>
+            <i className="fas fa-globe"></i> محاكاة قيادة الدول
+          </div>
+          <h1 style={{fontSize:'2.4rem', fontWeight:900, marginBottom:'14px'}}>اختر الدولة التي ستقودها</h1>
+          <p style={{color:'var(--text2)', fontSize:'1rem'}}>كل قرار تتخذه سيُشكّل مستقبل هذه الدولة بشكل حقيقي ومترابط</p>
+        </div>
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:'22px'}}>
+          {window.CountriesData.map(c => (
+            <div key={c.id} className="card" style={{textAlign:'center', cursor:'pointer'}}
+                 onClick={() => onSelect(c)}
+                 onMouseEnter={e => e.currentTarget.style.borderColor='var(--gold)'}
+                 onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}>
+              <div style={{fontSize:'3rem', marginBottom:'12px'}}>{c.flag}</div>
+              <h3 style={{fontSize:'1.15rem', fontWeight:800, marginBottom:'8px'}}>{c.name}</h3>
+              <div style={{fontSize:'.78rem', color:'var(--text2)'}}>{c.politicalSystem}</div>
+              <div style={{fontSize:'.78rem', color:'var(--text2)', marginTop:'4px'}}>
+                {(c.population/1e6).toFixed(1)} مليون نسمة
+              </div>
+              <button className="btn btn-gold" style={{marginTop:'16px', width:'100%', fontSize:'.85rem', padding:'10px'}}>
+                ابدأ الحكم <i className="fas fa-arrow-left"></i>
+              </button>
             </div>
+          ))}
         </div>
-    </section>
+      </div>
+    </div>
+  );
+}
 
-    <!-- ===== 02. TYPOGRAPHIE ===== -->
-    <section style="background: #f9f9f9;">
-        <div class="container">
-            <h2 class="section-title center">02. TYPOGRAPHIE</h2>
-            <div class="typo-demo">
-                <div class="typo-box">
-                    <div class="label">HEADLINES</div>
-                    <div class="headline-sample">BEBA NEUE</div>
-                    <div style="font-family:'Bebas Neue'; font-size:1.4rem; letter-spacing:2px;">ABCDEFG0000000000</div>
-                    <div style="font-family:'Bebas Neue'; font-size:1.4rem;">0123456789</div>
-                </div>
-                <div class="typo-box">
-                    <div class="label">BODY TEXT</div>
-                    <div class="body-sample">CAIRO</div>
-                    <div class="body-sample" style="font-size:1rem;">ABCDEFG0000000000</div>
-                    <div class="body-sample" style="font-size:1rem;">0123456789</div>
-                </div>
-                <div class="typo-box">
-                    <div class="label">VALUES</div>
-                    <div class="values-list">
-                        <span>AMBITION</span>
-                        <span>TEAMWORK</span>
-                        <span>DISCIPLINE</span>
-                        <span>SUCCESS</span>
+/* ============ مكوّن: نافذة الحدث والخيارات ============ */
+function EventModal({ event, onChoice, loading }) {
+  if (!event && !loading) return null;
+  const severityColor = { low:'var(--success)', medium:'var(--warning)', high:'#ff8a3d', critical:'var(--error)' };
+
+  return (
+    <div style={{position:'fixed', inset:0, background:'rgba(5,10,20,0.8)', backdropFilter:'blur(10px)',
+                 zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px'}}>
+      <div className="card" style={{maxWidth:'560px', width:'100%', border:'1px solid var(--gold)'}}>
+        {loading ? (
+          <div style={{textAlign:'center', padding:'40px 0'}}>
+            <i className="fas fa-spinner fa-spin" style={{fontSize:'2rem', color:'var(--gold)'}}></i>
+            <p style={{marginTop:'16px', color:'var(--text2)'}}>جاري تحليل الوضع وتوليد الحدث...</p>
+          </div>
+        ) : (
+          <>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'14px'}}>
+              <span style={{background:severityColor[event.severity]+'22', color:severityColor[event.severity],
+                            padding:'5px 14px', borderRadius:'20px', fontSize:'.75rem', fontWeight:800}}>
+                {event.severity === 'critical' ? 'حرج' : event.severity === 'high' ? 'مرتفع' : event.severity === 'medium' ? 'متوسط' : 'منخفض'}
+              </span>
+              <span style={{fontSize:'.75rem', color:'var(--text2)'}}>{event.date}</span>
+            </div>
+            <h3 style={{fontSize:'1.3rem', fontWeight:800, marginBottom:'12px'}}>{event.title}</h3>
+            <p style={{color:'var(--text2)', lineHeight:1.9, marginBottom:'22px', fontSize:'.92rem'}}>{event.narrative}</p>
+            <div style={{display:'flex', flexDirection:'column', gap:'10px'}}>
+              {event.choices.map(choice => (
+                <button key={choice.id} className="btn btn-outline" style={{textAlign:'right', padding:'14px 18px'}}
+                        onClick={() => onChoice(choice.id)}
+                        onMouseEnter={e => e.currentTarget.style.borderColor='var(--gold)'}
+                        onMouseLeave={e => e.currentTarget.style.borderColor='var(--border)'}>
+                  {choice.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ============ المكوّن الرئيسي: لوحة القيادة ============ */
+function Dashboard() {
+  const [state, setState] = useState(null);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [eventLoading, setEventLoading] = useState(false);
+  const [savesList, setSavesList] = useState([]);
+  const [showSaves, setShowSaves] = useState(false);
+  const [notice, setNotice] = useState(null);
+
+  useEffect(() => {
+    window.SaveSystem.listSaves().then(setSavesList);
+  }, []);
+
+  const showNotice = (msg) => { setNotice(msg); setTimeout(() => setNotice(null), 3000); };
+
+  const startCountry = (countryData) => {
+    const initialState = window.CountryModel.createInitialCountryState(countryData);
+    window.SimulationEngine.recalculateDerivedValues(initialState);
+    setState(initialState);
+  };
+
+  const continueGame = async (slotId) => {
+    const loaded = await window.SaveSystem.loadGame(slotId);
+    if (loaded) { setState(loaded); showNotice('✅ تم تحميل الحفظ بنجاح'); }
+    else showNotice('❌ تعذّر تحميل هذا الحفظ');
+    setShowSaves(false);
+  };
+
+  const advanceTurn = async () => {
+    if (!state) return;
+    setEventLoading(true);
+    const newState = JSON.parse(JSON.stringify(state));
+    const { triggeredEvents } = window.SimulationEngine.runSimulationTurn(newState);
+    setState(newState);
+    await window.SaveSystem.autoSave(newState);
+
+    if (triggeredEvents.length > 0) {
+      const evt = await window.AIEventEngine.generateDynamicEvent(newState, { eventType: triggeredEvents[0].type });
+      setCurrentEvent(evt);
+    } else if (Math.random() < 0.4) {
+      const evt = await window.AIEventEngine.generateDynamicEvent(newState);
+      setCurrentEvent(evt);
+    }
+    setEventLoading(false);
+  };
+
+  const handleEventChoice = (choiceId) => {
+    const newState = JSON.parse(JSON.stringify(state));
+    window.AIEventEngine.applyEventChoice(newState, currentEvent, choiceId, window.SimulationEngine.applyDecision);
+    setState(newState);
+    setCurrentEvent(null);
+    showNotice('✅ تم تنفيذ القرار وتحديث المؤشرات');
+  };
+
+  const manualSave = async () => {
+    const ok = await window.SaveSystem.saveGame(`slot_${Date.now()}`, state);
+    showNotice(ok ? '✅ تم الحفظ بنجاح' : '❌ فشل الحفظ');
+    window.SaveSystem.listSaves().then(setSavesList);
+  };
+
+  /* ===== شاشة البداية: اختيار دولة أو متابعة حفظ ===== */
+  if (!state) {
+    return (
+      <div>
+        {savesList.length > 0 && (
+          <div style={{textAlign:'center', paddingTop:'30px'}}>
+            <button className="btn btn-outline" onClick={() => setShowSaves(!showSaves)}>
+              <i className="fas fa-folder-open"></i> متابعة لعبة محفوظة ({savesList.length})
+            </button>
+            {showSaves && (
+              <div style={{maxWidth:'500px', margin:'20px auto'}}>
+                {savesList.map(s => (
+                  <div key={s.slotId} className="card" style={{display:'flex', justifyContent:'space-between',
+                       alignItems:'center', marginBottom:'10px', cursor:'pointer'}}
+                       onClick={() => continueGame(s.slotId)}>
+                    <div style={{textAlign:'right'}}>
+                      <div style={{fontWeight:700}}>{s.label}</div>
+                      <div style={{fontSize:'.75rem', color:'var(--text2)'}}>{new Date(s.savedAt).toLocaleString('ar-EG')}</div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
+                    <i className="fas fa-play" style={{color:'var(--gold)'}}></i>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <CountrySelector onSelect={startCountry} />
+      </div>
+    );
+  }
 
-    <!-- ===== 03. LOGO PRINCIPAL & 04. VARIANTS ===== -->
-    <section>
-        <div class="container">
-            <h2 class="section-title center">03. LOGO PRINCIPAL &amp; 04. VARIANTES</h2>
-            <div class="logo-showcase">
-                <div class="logo-card">
-                    <div class="logo-big">★ ETOILE</div>
-                    <p style="margin-top:10px; font-weight:700;">Principal</p>
-                </div>
-                <div class="logo-card">
-                    <div class="logo-variant light-bg">★ ETOILE</div>
-                    <p style="margin-top:10px; font-weight:700;">Variant Light</p>
-                </div>
-                <div class="logo-card">
-                    <div class="logo-variant red">★ ETOILE</div>
-                    <p style="margin-top:10px; font-weight:700;">Variant Red</p>
-                </div>
-                <div class="logo-card">
-                    <div class="logo-variant" style="background:var(--white); color:var(--red-accent); border:3px solid var(--red-accent);">★ ETOILE</div>
-                    <p style="margin-top:10px; font-weight:700;">Variant Outline</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  const ind = state.indicators, eco = state.economy, pop = state.population, mil = state.military;
+  const snapshots = state.history.turnSnapshots;
 
-    <!-- ===== 05. MOTIFS & ÉLÉMENTS GRAPHIQUES ===== -->
-    <section style="background:#f9f9f9;">
-        <div class="container">
-            <h2 class="section-title center">05. MOTIFS &amp; ÉLÉMENTS GRAPHIQUES</h2>
-            <div class="motif-grid">
-                <div class="motif-item"><i class="fas fa-star"></i><span>AMBITION</span></div>
-                <div class="motif-item"><i class="fas fa-users"></i><span>TEAMWORK</span></div>
-                <div class="motif-item"><i class="fas fa-flag-checkered"></i><span>DISCIPLINE</span></div>
-                <div class="motif-item"><i class="fas fa-trophy"></i><span>SUCCESS</span></div>
-                <div class="motif-item"><i class="fas fa-futbol"></i><span>FOOTBALL</span></div>
-                <div class="motif-item"><i class="fas fa-shield-alt"></i><span>ACADEMY</span></div>
-            </div>
-        </div>
-    </section>
+  const indicatorBoxes = [
+    { label:'الناتج المحلي', value:(eco.gdp/1e9).toFixed(1)+' مليار', icon:'fa-chart-line', color:'var(--success)' },
+    { label:'التضخم', value:eco.inflationRate.toFixed(1)+'%', icon:'fa-percent', color:'var(--warning)' },
+    { label:'البطالة', value:pop.unemploymentRate.toFixed(1)+'%', icon:'fa-user-slash', color:'var(--error)' },
+    { label:'شعبية الرئيس', value:Math.round(ind.presidentPopularity)+'%', icon:'fa-star', color:'var(--gold)' },
+    { label:'الأمن', value:Math.round(ind.security), icon:'fa-shield-alt', color:'var(--success)' },
+    { label:'الفساد', value:Math.round(ind.corruptionIndex), icon:'fa-exclamation-triangle', color:'var(--error)' },
+    { label:'الدين/الناتج', value:eco.debtToGdpRatio+'%', icon:'fa-file-invoice-dollar', color:'var(--warning)' },
+    { label:'التصنيف الائتماني', value:eco.creditRating, icon:'fa-award', color:'var(--gold)' },
+    { label:'القوة العسكرية', value:mil.overallMilitaryPower+'/100', icon:'fa-fighter-jet', color:'var(--success)' },
+  ];
 
-    <!-- ===== 06. ICONOGRAPHIE ===== -->
-    <section>
-        <div class="container">
-            <h2 class="section-title center">06. ICONOGRAPHIE</h2>
-            <div class="icon-grid">
-                <div class="icon-box"><i class="fas fa-futbol"></i><span>Ball</span></div>
-                <div class="icon-box"><i class="fas fa-whistle"></i><span>Coach</span></div>
-                <div class="icon-box"><i class="fas fa-trophy"></i><span>Victory</span></div>
-                <div class="icon-box"><i class="fas fa-users"></i><span>Team</span></div>
-                <div class="icon-box"><i class="fas fa-calendar-alt"></i><span>Schedule</span></div>
-                <div class="icon-box"><i class="fas fa-map-pin"></i><span>Location</span></div>
+  return (
+    <div style={{minHeight:'100vh', padding:'0 0 60px'}}>
+      {/* ===== الهيدر ===== */}
+      <div style={{background:'linear-gradient(135deg,var(--navy),var(--navy2))', padding:'26px 30px',
+                    display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'16px',
+                    borderBottom:'1px solid var(--border)'}}>
+        <div style={{display:'flex', alignItems:'center', gap:'14px'}}>
+          <div style={{fontSize:'2.2rem'}}>{state.meta.flag || '🏛️'}</div>
+          <div>
+            <h2 style={{fontSize:'1.3rem', fontWeight:800}}>{state.meta.name}</h2>
+            <div style={{fontSize:'.8rem', color:'var(--text2)'}}>
+              الجولة {state.meta.turnCount} — {state.meta.simulationDate}
             </div>
+          </div>
         </div>
-    </section>
+        <div style={{display:'flex', gap:'10px'}}>
+          <button className="btn btn-outline" onClick={manualSave}><i className="fas fa-save"></i> حفظ</button>
+          <button className="btn btn-gold" onClick={advanceTurn} disabled={eventLoading}>
+            <i className="fas fa-forward"></i> الجولة التالية
+          </button>
+        </div>
+      </div>
 
-    <!-- ===== 07. STYLE PHOTOGRAPHIQUE ===== -->
-    <section style="background:#f9f9f9;">
-        <div class="container">
-            <h2 class="section-title center">07. STYLE PHOTOGRAPHIQUE</h2>
-            <div class="photo-placeholder">
-                <div class="photo-card"><span>ACTION</span></div>
-                <div class="photo-card" style="background:linear-gradient(145deg, var(--red-accent), #a00);"><span>PORTRAIT</span></div>
-                <div class="photo-card" style="background:linear-gradient(145deg, var(--primary-dark), #0a2a1a);"><span>TEAM</span></div>
-                <div class="photo-card" style="background:linear-gradient(145deg, #222, #111);"><span>STADIUM</span></div>
+      <div style={{maxWidth:'1300px', margin:'30px auto', padding:'0 24px'}}>
+        {/* ===== شريط المؤشرات ===== */}
+        <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:'16px', marginBottom:'30px'}}>
+          {indicatorBoxes.map((b, i) => (
+            <div key={i} className="card" style={{textAlign:'center'}}>
+              <i className={`fas ${b.icon}`} style={{color:b.color, fontSize:'1.2rem', marginBottom:'8px'}}></i>
+              <div style={{fontSize:'1.3rem', fontWeight:800}}>{b.value}</div>
+              <div style={{fontSize:'.72rem', color:'var(--text2)', marginTop:'4px'}}>{b.label}</div>
             </div>
+          ))}
         </div>
-    </section>
 
-    <!-- ===== 08. TENUE OFFICIELLE ===== -->
-    <section>
-        <div class="container">
-            <h2 class="section-title center">08. TENUE OFFICIELLE</h2>
-            <div class="kit-showcase">
-                <div class="kit-item">
-                    <div class="shirt"></div>
-                    <p>Domicile</p>
-                    <span style="font-size:0.8rem; color:var(--primary-mid);">#0E4832</span>
+        <div style={{display:'grid', gridTemplateColumns:'1.3fr 1fr', gap:'22px'}}>
+          {/* ===== الرسوم البيانية ===== */}
+          <div className="card">
+            <h4 style={{marginBottom:'18px', color:'var(--gold-light)'}}><i className="fas fa-chart-area"></i> تطور المؤشرات عبر الزمن</h4>
+            <MiniLineChart data={snapshots} dataKey="gdp" color="#27AE60" label="الناتج المحلي" />
+            <MiniLineChart data={snapshots} dataKey="inflation" color="#F4B400" label="التضخم" />
+            <MiniLineChart data={snapshots} dataKey="unemployment" color="#E53935" label="البطالة" />
+            <MiniLineChart data={snapshots} dataKey="popularity" color="#C89A2B" label="شعبية الرئيس" />
+          </div>
+
+          {/* ===== سجل الأحداث والقرارات ===== */}
+          <div className="card">
+            <h4 style={{marginBottom:'18px', color:'var(--gold-light)'}}><i className="fas fa-history"></i> السجل الزمني</h4>
+            <div style={{maxHeight:'340px', overflowY:'auto', display:'flex', flexDirection:'column', gap:'10px'}}>
+              {[...state.history.decisionsLog, ...state.history.eventsLog]
+                .sort((a,b) => b.turn - a.turn)
+                .slice(0, 15)
+                .map((item, i) => (
+                <div key={i} style={{background:'rgba(255,255,255,0.03)', borderRight:'3px solid var(--gold)',
+                                      padding:'10px 14px', borderRadius:'10px', fontSize:'.82rem'}}>
+                  <div style={{fontWeight:700}}>{item.label || item.type}</div>
+                  <div style={{color:'var(--text2)', fontSize:'.72rem', marginTop:'2px'}}>الجولة {item.turn} — {item.date}</div>
                 </div>
-                <div class="kit-item">
-                    <div class="shirt white"></div>
-                    <p>Extérieur</p>
-                    <span style="font-size:0.8rem; color:var(--primary-mid);">#F2F2F2</span>
-                </div>
-                <div class="kit-item">
-                    <div class="shirt red"></div>
-                    <p>Third</p>
-                    <span style="font-size:0.8rem; color:var(--red-accent);">#C8102E</span>
-                </div>
+              ))}
+              {state.history.decisionsLog.length === 0 && state.history.eventsLog.length === 0 && (
+                <div style={{color:'var(--text2)', textAlign:'center', padding:'20px'}}>لا يوجد سجل بعد</div>
+              )}
             </div>
+          </div>
         </div>
-    </section>
+      </div>
 
-    <!-- ===== 09. PAPETERIE ===== -->
-    <section style="background:#f9f9f9;">
-        <div class="container">
-            <h2 class="section-title center">09. PAPETERIE</h2>
-            <div class="papeterie-grid">
-                <div class="papeterie-item"><i class="fas fa-envelope"></i><span>Enveloppe</span></div>
-                <div class="papeterie-item"><i class="fas fa-file-alt"></i><span>Papier à en-tête</span></div>
-                <div class="papeterie-item"><i class="fas fa-id-card"></i><span>Carte de visite</span></div>
-                <div class="papeterie-item"><i class="fas fa-folder"></i><span>Dossier</span></div>
-            </div>
-        </div>
-    </section>
+      <EventModal event={currentEvent} loading={eventLoading} onChoice={handleEventChoice} />
 
-    <!-- ===== 10. RÉSEAUX SOCIAUX ===== -->
-    <section>
-        <div class="container">
-            <h2 class="section-title center">10. RÉSEAUX SOCIAUX</h2>
-            <div class="social-grid">
-                <div class="social-item"><i class="fab fa-facebook-f"></i><span>Facebook</span></div>
-                <div class="social-item"><i class="fab fa-instagram"></i><span>Instagram</span></div>
-                <div class="social-item"><i class="fab fa-youtube"></i><span>YouTube</span></div>
-                <div class="social-item"><i class="fab fa-twitter"></i><span>Twitter</span></div>
-                <div class="social-item"><i class="fab fa-tiktok"></i><span>TikTok</span></div>
-            </div>
+      {notice && (
+        <div style={{position:'fixed', bottom:'26px', left:'50%', transform:'translateX(-50%)',
+                     background:'var(--card)', border:'1px solid var(--gold)', padding:'12px 26px',
+                     borderRadius:'40px', zIndex:10000, fontSize:'.85rem'}}>
+          {notice}
         </div>
-    </section>
+      )}
+    </div>
+  );
+}
 
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <div class="container">
-            <div class="star-line">★ ETOILE CHELGHOUM LAID ★</div>
-            <div class="one-team">ONE TEAM • ONE DREAM • ONE STAR</div>
-            <p>© 2026 Académie ETOILE CHELGHOUM LAID - Tous droits réservés</p>
-        </div>
-    </footer>
+ReactDOM.createRoot(document.getElementById('root')).render(<Dashboard />);
+</script>
 </body>
 </html>
