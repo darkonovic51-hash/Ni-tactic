@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المستويات والأقسام | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:900px){ .two-col{grid-template-columns:1fr;} }
+.mini-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);font-size:13px;}
+.mini-row:first-child{border-top:none;}
+.mini-actions button{background:none;border:none;cursor:pointer;color:var(--text-gray);font-size:14px;margin-right:8px;}
+.mini-actions button:hover{color:var(--primary);}
+.add-inline{display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--border);}
+.add-inline input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>المستويات والأقسام</h2>
+        <p>إضافة أو تعديل أو حذف المستويات والأقسام الدراسية</p>
+      </div>
+
+      <div class="two-col">
+        <div class="panel">
+          <div class="panel-head"><h3>المستويات الدراسية</h3></div>
+          <div id="levelsList"></div>
+          <div class="add-inline">
+            <input type="text" id="newLevelName" placeholder="اسم المستوى الجديد...">
+            <button class="btn btn-sm btn-primary" onclick="addLevel()"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>الأقسام</h3></div>
+          <div id="sectionsList"></div>
+          <div class="add-inline">
+            <input type="text" id="newSectionName" placeholder="اسم القسم الجديد (مثال: 5P-C)...">
+            <button class="btn btn-sm btn-primary" onclick="addSection()"><i class="fa-solid fa-plus"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('levels');
+
+function loadLevels(){
+  const levels = DB.get('eliteLevels');
+  const list = document.getElementById('levelsList');
+  if(levels.length === 0){
+    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-layer-group"></i><p>لا توجد مستويات مضافة</p></div>`;
+    return;
+  }
+  list.innerHTML = levels.map(l => `
+    <div class="mini-row">
+      <span>${l.name} <small style="color:var(--text-gray);">(${l.stage})</small></span>
+      <span class="mini-actions">
+        <button onclick="deleteLevel('${l.id}')"><i class="fa-solid fa-trash"></i></button>
+      </span>
+    </div>
+  `).join('');
+}
+
+function loadSections(){
+  const sections = DB.get('eliteSections');
+  const list = document.getElementById('sectionsList');
+  if(sections.length === 0){
+    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-door-open"></i><p>لا توجد أقسام مضافة</p></div>`;
+    return;
+  }
+  list.innerHTML = sections.map(s => `
+    <div class="mini-row">
+      <span>${s.name} <small style="color:var(--text-gray);">— ${s.seats} مقعد</small></span>
+      <span class="mini-actions">
+        <button onclick="deleteSection('${s.id}')"><i class="fa-solid fa-trash"></i></button>
+      </span>
+    </div>
+  `).join('');
+}
+
+function addLevel(){
+  const input = document.getElementById('newLevelName');
+  const name = input.value.trim();
+  if(!name) return;
+  const levels = DB.get('eliteLevels');
+  levels.push({id: uid('lvl'), name, stage:'مخصص'});
+  DB.set('eliteLevels', levels);
+  logAction(`تمت إضافة مستوى جديد: ${name}`);
+  input.value = '';
+  loadLevels();
+}
+
+function deleteLevel(id){
+  let levels = DB.get('eliteLevels');
+  levels = levels.filter(l => l.id !== id);
+  DB.set('eliteLevels', levels);
+  loadLevels();
+}
+
+function addSection(){
+  const input = document.getElementById('newSectionName');
+  const name = input.value.trim();
+  if(!name) return;
+  const sections = DB.get('eliteSections');
+  sections.push({id: uid('sec'), name, seats:30, mainTeacher:'—'});
+  DB.set('eliteSections', sections);
+  logAction(`تمت إضافة قسم جديد: ${name}`);
+  input.value = '';
+  loadSections();
+}
+
+function deleteSection(id){
+  let sections = DB.get('eliteSections');
+  sections = sections.filter(s => s.id !== id);
+  DB.set('eliteSections', sections);
+  loadSections();
+}
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadLevels();
+loadSections();
+</script>
+</body>
+</html>
