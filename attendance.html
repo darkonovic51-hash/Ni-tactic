@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الحضور والغياب | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.att-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:end;}
+.att-toolbar .form-field{margin:0;}
+.att-toolbar input,.att-toolbar select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
+.att-status-btns{display:flex;gap:6px;}
+.att-status-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;}
+.att-status-btn.selected-present{background:rgba(46,158,91,0.15);border-color:var(--success);color:var(--success);}
+.att-status-btn.selected-absent{background:rgba(214,69,69,0.15);border-color:var(--danger);color:var(--danger);}
+.att-status-btn.selected-late{background:rgba(212,162,76,0.2);border-color:var(--accent);color:#a3781f;}
+.att-status-btn.selected-justified{background:rgba(15,76,92,0.1);border-color:var(--primary);color:var(--primary);}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>الحضور والغياب</h2>
+        <p>تسجيل حضور التلاميذ حسب التاريخ والمستوى والقسم</p>
+      </div>
+
+      <div class="mini-stats">
+        <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-calendar-xmark"></i></div><div><div class="dstat-num" id="absentTodayCount">0</div><div class="dstat-label">غياب اليوم</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-calendar-week"></i></div><div><div class="dstat-num" id="absentMonthCount">0</div><div class="dstat-label">الغياب الشهري</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-user-clock"></i></div><div><div class="dstat-num" id="mostAbsentName">—</div><div class="dstat-label">الأكثر غيابًا</div></div></div>
+      </div>
+
+      <div class="att-toolbar">
+        <div class="form-field"><label style="font-size:12px;font-weight:700;">التاريخ</label><input type="date" id="attDate"></div>
+        <div class="form-field"><label style="font-size:12px;font-weight:700;">القسم</label>
+          <select id="attSection"><option value="">اختر القسم</option></select>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>قائمة التلاميذ</h3></div>
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>التلميذ</th><th>القسم</th><th>الحالة</th></tr></thead>
+            <tbody id="attTableBody"></tbody>
+          </table>
+        </div>
+        <div style="padding:16px 22px;">
+          <button class="btn btn-primary" onclick="saveAttendance()"><i class="fa-solid fa-floppy-disk"></i> حفظ الحضور</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('attendance');
+
+let currentAttendanceState = {};
+
+function initAttendancePage(){
+  document.getElementById('attDate').value = new Date().toISOString().split('T')[0];
+  const sections = DB.get('eliteSections');
+  const sectionSelect = document.getElementById('attSection');
+  sections.forEach(s => sectionSelect.insertAdjacentHTML('beforeend', `<option value="${s.name}">${s.name}</option>`));
+  renderStats();
+}
+
+function renderStats(){
+  const attendance = DB.get('eliteAttendance');
+  const today = new Date().toISOString().split('T')[0];
+  const thisMonth = today.slice(0,7);
+
+  document.getElementById('absentTodayCount').textContent = attendance.filter(a => a.status==='غائب' && a.date===today).length;
+  document.getElementById('absentMonthCount').textContent = attendance.filter(a => a.status==='غائب' && a.date.startsWith(thisMonth)).length;
+
+  const counts = {};
+  attendance.filter(a=>a.status==='غائب').forEach(a => counts[a.studentName] = (counts[a.studentName]||0)+1);
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('mostAbsentName').textContent = sorted.length ? sorted[0][0] : '—';
+}
+
+function loadStudentsForAttendance(){
+  const section = document.getElementById('attSection').value;
+  const date = document.getElementById('attDate').value;
+  const tbody = document.getElementById('attTableBody');
+
+  if(!section){
+    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-door-open"></i><p>اختر قسمًا لعرض التلاميذ</p></div></td></tr>`;
+    return;
+  }
+
+  const students = DB.get('eliteStudents').filter(s => s.section === section);
+  if(students.length === 0){
+    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>لا يوجد تلاميذ في هذا القسم</p></div></td></tr>`;
+    return;
+  }
+
+  const attendance = DB.get('eliteAttendance');
+  currentAttendanceState = {};
+
+  tbody.innerHTML = students.map(s => {
+    const existing = attendance.find(a => a.studentId === s.id && a.date === date);
+    const status = existing ? existing.status : 'حاضر';
+    currentAttendanceState[s.id] = status;
+    return `
+      <tr>
+        <td><b>${s.firstname} ${s.lastname}</b></td>
+        <td>${s.section}</td>
+        <td>
+          <div class="att-status-btns" data-student="${s.id}">
+            <button class="att-status-btn ${status==='حاضر'?'selected-present':''}" onclick="setStatus('${s.id}','حاضر',this)">حاضر</button>
+            <button class="att-status-btn ${status==='غائب'?'selected-absent':''}" onclick="setStatus('${s.id}','غائب',this)">غائب</button>
+            <button class="att-status-btn ${status==='غياب مبرر'?'selected-justified':''}" onclick="setStatus('${s.id}','غياب مبرر',this)">غياب مبرر</button>
+            <button class="att-status-btn ${status==='متأخر'?'selected-late':''}" onclick="setStatus('${s.id}','متأخر',this)">متأخر</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function setStatus(studentId, status, btn){
+  currentAttendanceState[studentId] = status;
+  const group = btn.parentElement;
+  group.querySelectorAll('.att-status-btn').forEach(b => b.className = 'att-status-btn');
+  const map = {'حاضر':'selected-present','غائب':'selected-absent','غياب مبرر':'selected-justified','متأخر':'selected-late'};
+  btn.classList.add(map[status]);
+}
+
+function saveAttendance(){
+  const date = document.getElementById('attDate').value;
+  const section = document.getElementById('attSection').value;
+  if(!section){ alert('اختر القسم أولًا'); return; }
+
+  const students = DB.get('eliteStudents');
+  let attendance = DB.get('eliteAttendance');
+
+  Object.entries(currentAttendanceState).forEach(([studentId, status]) => {
+    const student = students.find(s => s.id === studentId);
+    attendance = attendance.filter(a => !(a.studentId === studentId && a.date === date));
+    attendance.push({
+      id: uid('att'), studentId, studentName: `${student.firstname} ${student.lastname}`,
+      section: student.section, date, status
+    });
+  });
+
+  DB.set('eliteAttendance', attendance);
+  logAction(`تم تسجيل الحضور لقسم ${section} بتاريخ ${date}`);
+  renderStats();
+  alert('تم حفظ الحضور بنجاح');
+}
+
+document.getElementById('attSection').addEventListener('change', loadStudentsForAttendance);
+document.getElementById('attDate').addEventListener('change', loadStudentsForAttendance);
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+initAttendancePage();
+</script>
+</body>
+</html>
