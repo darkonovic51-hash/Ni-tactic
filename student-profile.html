@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ملف التلميذ | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+/* PREMIUM STUDENT CARD */
+.student-card-premium{background:linear-gradient(135deg,var(--primary-dark),var(--primary));border-radius:20px;padding:0;color:#fff;box-shadow:var(--shadow-lg);overflow:hidden;position:relative;max-width:420px;margin:0 auto 30px;}
+.scp-top{padding:20px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.15);background:rgba(0,0,0,0.1);}
+.scp-top i{color:var(--accent);font-size:20px;}
+.scp-top span{font-size:13px;font-weight:700;}
+.scp-body{padding:26px 24px;text-align:center;}
+.scp-avatar{width:90px;height:90px;border-radius:50%;background:rgba(212,162,76,0.2);border:3px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:800;color:var(--accent-light);margin:0 auto 16px;}
+.scp-name{font-size:20px;font-weight:800;margin-bottom:4px;}
+.scp-namefr{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:12px;}
+.scp-level{display:inline-block;background:rgba(212,162,76,0.2);color:var(--accent-light);padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;}
+.scp-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 24px 20px;font-size:12px;}
+.scp-info div{background:rgba(255,255,255,0.06);padding:10px 12px;border-radius:10px;}
+.scp-info span{display:block;color:rgba(255,255,255,0.5);margin-bottom:3px;}
+.scp-info b{font-size:13px;}
+.scp-card-number{background:var(--accent);color:var(--primary-dark);text-align:center;padding:16px;}
+.scp-card-number span{display:block;font-size:11px;font-weight:700;margin-bottom:4px;opacity:.8;}
+.scp-card-number b{font-size:26px;letter-spacing:3px;font-weight:900;}
+.scp-actions{display:flex;gap:10px;margin-top:16px;justify-content:center;}
+
+/* TABS */
+.profile-tabs{display:flex;gap:6px;background:#fff;border-radius:12px;padding:6px;box-shadow:var(--shadow);margin-bottom:20px;flex-wrap:wrap;}
+.profile-tab{padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-gray);border:none;background:none;font-family:'Cairo',sans-serif;}
+.profile-tab.active{background:var(--primary);color:#fff;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+.info-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.info-item{background:#fff;padding:16px 18px;border-radius:12px;border:1px solid var(--border);}
+.info-item span{display:block;font-size:11px;color:var(--text-gray);margin-bottom:5px;font-weight:600;}
+.info-item b{font-size:14px;}
+@media(max-width:700px){ .info-grid-2{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="topSearchInput" placeholder="بحث شامل...">
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin">
+          <div class="topbar-admin-avatar">AD</div>
+          <div><span>المدير</span><small>admin</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <a href="students.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--text-gray);margin-bottom:16px;font-weight:700;">
+        <i class="fa-solid fa-arrow-right"></i> العودة لقائمة التلاميذ
+      </a>
+
+      <div class="student-card-premium" id="studentCard">
+        <!-- يُبنى ديناميكيًا -->
+      </div>
+
+      <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="personal">المعلومات الشخصية</button>
+        <button class="profile-tab" data-tab="academic">المعلومات الدراسية</button>
+        <button class="profile-tab" data-tab="parent">معلومات الولي</button>
+        <button class="profile-tab" data-tab="attendance">الحضور والغياب</button>
+        <button class="profile-tab" data-tab="finance">المالية</button>
+        <button class="profile-tab" data-tab="notes">الملاحظات</button>
+      </div>
+
+      <div class="tab-content active" id="tab-personal">
+        <div class="info-grid-2" id="personalInfoGrid"></div>
+      </div>
+
+      <div class="tab-content" id="tab-academic">
+        <div class="info-grid-2" id="academicInfoGrid"></div>
+      </div>
+
+      <div class="tab-content" id="tab-parent">
+        <div class="info-grid-2" id="parentInfoGrid"></div>
+      </div>
+
+      <div class="tab-content" id="tab-attendance">
+        <div class="panel">
+          <div class="panel-head"><h3>سجل الحضور والغياب</h3></div>
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>التاريخ</th><th>الحالة</th></tr></thead>
+              <tbody id="attendanceTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-finance">
+        <div class="panel">
+          <div class="panel-head"><h3>سجل المدفوعات</h3><a href="payment.html">الذهاب للمالية</a></div>
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>رقم الوصل</th><th>المبلغ</th><th>السبب</th><th>الطريقة</th><th>التاريخ</th></tr></thead>
+              <tbody id="paymentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-notes">
+        <div class="panel" style="padding:20px;">
+          <p id="studentNotesText" style="font-size:14px;color:var(--text-gray);"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('students');
+
+const params = new URLSearchParams(window.location.search);
+const studentId = params.get('id');
+const students = DB.get('eliteStudents');
+const student = students.find(s => s.id === studentId);
+
+if(!student){
+  document.querySelector('.dash-content').innerHTML = `
+    <div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>لم يتم العثور على هذا التلميذ</p></div>`;
+} else {
+  function initials(f,l){ return (f[0]||'') + (l[0]||''); }
+
+  document.getElementById('studentCard').innerHTML = `
+    <div class="scp-top"><i class="fa-solid fa-graduation-cap"></i><span>أكاديمية النخبة للتعليم والتكوين</span></div>
+    <div class="scp-body">
+      <div class="scp-avatar">${initials(student.firstname, student.lastname)}</div>
+      <div class="scp-name">${student.firstname} ${student.lastname}</div>
+      <div class="scp-namefr">${student.fullFr || ''}</div>
+      <div class="scp-level">${student.level} — ${student.section}</div>
+    </div>
+    <div class="scp-info">
+      <div><span>تاريخ الميلاد</span><b>${student.dob || '—'}</b></div>
+      <div><span>مكان الميلاد</span><b>${student.pob || '—'}</b></div>
+      <div><span>الولي</span><b>${student.parentName}</b></div>
+      <div><span>هاتف الولي</span><b>${student.parentPhone}</b></div>
+    </div>
+    <div class="scp-card-number">
+      <span>رقم بطاقة التلميذ</span>
+      <b>${student.cardNumber}</b>
+    </div>
+  `;
+
+  document.getElementById('personalInfoGrid').innerHTML = `
+    <div class="info-item"><span>الاسم واللقب</span><b>${student.firstname} ${student.lastname}</b></div>
+    <div class="info-item"><span>الاسم بالفرنسية</span><b>${student.fullFr || '—'}</b></div>
+    <div class="info-item"><span>تاريخ الميلاد</span><b>${student.dob || '—'}</b></div>
+    <div class="info-item"><span>مكان الميلاد</span><b>${student.pob || '—'}</b></div>
+    <div class="info-item"><span>رقم البطاقة</span><b>${student.cardNumber}</b></div>
+    <div class="info-item"><span>الحالة</span><b><span class="badge ${statusBadgeClass(student.status)}">${student.status}</span></b></div>
+  `;
+
+  document.getElementById('academicInfoGrid').innerHTML = `
+    <div class="info-item"><span>المستوى</span><b>${student.level}</b></div>
+    <div class="info-item"><span>القسم</span><b>${student.section}</b></div>
+    <div class="info-item"><span>تاريخ التسجيل</span><b>${student.registeredAt || '—'}</b></div>
+    <div class="info-item"><span>السنة الدراسية</span><b>${DB.getSettings().schoolYear}</b></div>
+  `;
+
+  document.getElementById('parentInfoGrid').innerHTML = `
+    <div class="info-item"><span>اسم الولي</span><b>${student.parentName}</b></div>
+    <div class="info-item"><span>هاتف الولي</span><b>${student.parentPhone}</b></div>
+  `;
+
+  // Attendance
+  const attendance = DB.get('eliteAttendance').filter(a => a.studentId === student.id);
+  const attBody = document.getElementById('attendanceTableBody');
+  attBody.innerHTML = attendance.length ? attendance.map(a => `
+    <tr><td>${a.date}</td><td><span class="badge ${a.status==='حاضر'?'badge-accepted':(a.status==='غائب'?'badge-rejected':'badge-progress')}">${a.status}</span></td></tr>
+  `).join('') : `<tr><td colspan="2"><div class="empty-state"><i class="fa-solid fa-calendar"></i><p>لا توجد سجلات حضور بعد</p></div></td></tr>`;
+
+  // Payments
+  const payments = DB.get('elitePayments').filter(p => p.studentId === student.id);
+  const payBody = document.getElementById('paymentsTableBody');
+  payBody.innerHTML = payments.length ? payments.map(p => `
+    <tr><td>${p.receiptNumber}</td><td>${Number(p.amount).toLocaleString('en-US')} دج</td><td>${p.reason}</td><td>${p.method}</td><td>${p.date}</td></tr>
+  `).join('') : `<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>لا توجد مدفوعات مسجلة</p></div></td></tr>`;
+
+  document.getElementById('studentNotesText').textContent = student.notes || 'لا توجد ملاحظات مسجلة لهذا التلميذ.';
+}
+
+// Tabs logic
+document.querySelectorAll('.profile-tab').forEach(tab => {
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab-' + this.dataset.tab).classList.add('active');
+  });
+});
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+</script>
+
+</body>
+</html>
