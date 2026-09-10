@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>التقارير | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.report-tabs{display:flex;gap:6px;background:#fff;border-radius:12px;padding:6px;box-shadow:var(--shadow);margin-bottom:20px;flex-wrap:wrap;}
+.report-tab{padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-gray);border:none;background:none;font-family:'Cairo',sans-serif;}
+.report-tab.active{background:var(--primary);color:#fff;}
+.report-content{display:none;}
+.report-content.active{display:block;}
+.report-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.sub-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:900px){.sub-cards{grid-template-columns:1fr 1fr;}}
+@media print{ .sidebar,.topbar,.report-tabs,.report-toolbar button{display:none !important;} }
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>التقارير</h2>
+        <p>تقارير التلاميذ، التقارير الإدارية، والتقارير المالية — قابلة للطباعة</p>
+      </div>
+
+      <div class="report-tabs">
+        <button class="report-tab active" data-r="students">تقارير التلاميذ</button>
+        <button class="report-tab" data-r="admin">التقارير الإدارية</button>
+        <button class="report-tab" data-r="finance">التقارير المالية</button>
+      </div>
+
+      <!-- STUDENT REPORTS -->
+      <div class="report-content active" id="report-students">
+        <div class="report-toolbar">
+          <select id="studentReportFilter">
+            <option value="all">جميع التلاميذ</option>
+            <option value="level">حسب المستوى</option>
+            <option value="section">حسب القسم</option>
+          </select>
+          <button class="btn btn-dark" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة التقرير</button>
+        </div>
+        <div class="sub-cards">
+          <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-user-graduate"></i></div><div><div class="dstat-num" id="repTotalStudents">0</div><div class="dstat-label">إجمالي التلاميذ</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-user-check"></i></div><div><div class="dstat-num" id="repActiveStudents">0</div><div class="dstat-label">النشطون</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-box-archive"></i></div><div><div class="dstat-num" id="repArchivedStudents">0</div><div class="dstat-label">المؤرشفون</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-layer-group"></i></div><div><div class="dstat-num" id="repLevelsCount">0</div><div class="dstat-label">عدد المستويات</div></div></div>
+        </div>
+        <div class="panel">
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>الاسم</th><th>رقم البطاقة</th><th>المستوى</th><th>القسم</th><th>الحالة</th></tr></thead>
+              <tbody id="studentReportBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN REPORTS -->
+      <div class="report-content" id="report-admin">
+        <div class="report-toolbar">
+          <span></span>
+          <button class="btn btn-dark" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة التقرير</button>
+        </div>
+        <div class="sub-cards">
+          <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-file-lines"></i></div><div><div class="dstat-num" id="repRequestsCount">0</div><div class="dstat-label">طلبات التسجيل</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-folder-open"></i></div><div><div class="dstat-num">3</div><div class="dstat-label">ملفات ناقصة</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-calendar-check"></i></div><div><div class="dstat-num" id="repAttendanceCount">0</div><div class="dstat-label">سجلات حضور</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-box-archive"></i></div><div><div class="dstat-num" id="repArchiveCount2">0</div><div class="dstat-label">الأرشيف</div></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>ملخص طلبات التسجيل حسب الحالة</h3></div>
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>الحالة</th><th>العدد</th></tr></thead>
+              <tbody id="requestsSummaryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- FINANCE REPORTS -->
+      <div class="report-content" id="report-finance">
+        <div class="report-toolbar">
+          <span></span>
+          <button class="btn btn-dark" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة التقرير</button>
+        </div>
+        <div class="sub-cards">
+          <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-sack-dollar"></i></div><div><div class="dstat-num" id="repTotalPayments">0</div><div class="dstat-label">إجمالي المدفوعات (دج)</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-circle-exclamation"></i></div><div><div class="dstat-num">720,000</div><div class="dstat-label">الديون (دج)</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-money-bill-transfer"></i></div><div><div class="dstat-num">185,000</div><div class="dstat-label">المصاريف (دج)</div></div></div>
+          <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-hand-holding-dollar"></i></div><div><div class="dstat-num">1,296,000</div><div class="dstat-label">الرواتب (دج)</div></div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>تفصيل المدفوعات</h3></div>
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>رقم الوصل</th><th>التلميذ</th><th>المبلغ</th><th>السبب</th><th>التاريخ</th></tr></thead>
+              <tbody id="paymentReportBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('reports');
+
+document.querySelectorAll('.report-tab').forEach(tab => {
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.report-tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.report-content').forEach(c=>c.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('report-' + this.dataset.r).classList.add('active');
+  });
+});
+
+function loadStudentReport(){
+  const students = DB.get('eliteStudents');
+  const levels = DB.get('eliteLevels');
+  document.getElementById('repTotalStudents').textContent = students.length;
+  document.getElementById('repActiveStudents').textContent = students.filter(s=>s.status==='نشط').length;
+  document.getElementById('repArchivedStudents').textContent = students.filter(s=>s.status==='مؤرشف').length;
+  document.getElementById('repLevelsCount').textContent = levels.length;
+
+  const tbody = document.getElementById('studentReportBody');
+  tbody.innerHTML = students.length ? students.map(s => `
+    <tr><td>${s.firstname} ${s.lastname}</td><td>${s.cardNumber}</td><td>${s.level}</td><td>${s.section}</td>
+    <td><span class="badge ${statusBadgeClass(s.status)}">${s.status}</span></td></tr>
+  `).join('') : `<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>لا توجد بيانات</p></div></td></tr>`;
+}
+
+function loadAdminReport(){
+  const requests = DB.get('eliteRegistrationRequests');
+  const attendance = DB.get('eliteAttendance');
+  const students = DB.get('eliteStudents');
+
+  document.getElementById('repRequestsCount').textContent = requests.length;
+  document.getElementById('repAttendanceCount').textContent = attendance.length;
+  document.getElementById('repArchiveCount2').textContent = students.filter(s=>s.status==='مؤرشف').length;
+
+  const statusCounts = {};
+  requests.forEach(r => statusCounts[r.status] = (statusCounts[r.status]||0)+1);
+  const tbody = document.getElementById('requestsSummaryBody');
+  tbody.innerHTML = Object.keys(statusCounts).length ? Object.entries(statusCounts).map(([status,count]) => `
+    <tr><td><span class="badge ${statusBadgeClass(status)}">${status}</span></td><td><b>${count}</b></td></tr>
+  `).join('') : `<tr><td colspan="2"><div class="empty-state"><i class="fa-solid fa-file-lines"></i><p>لا توجد طلبات</p></div></td></tr>`;
+}
+
+function loadFinanceReport(){
+  const payments = DB.get('elitePayments');
+  const total = payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
+  document.getElementById('repTotalPayments').textContent = total.toLocaleString('en-US');
+
+  const tbody = document.getElementById('paymentReportBody');
+  tbody.innerHTML = payments.length ? payments.slice().reverse().map(p => `
+    <tr><td>${p.receiptNumber}</td><td>${p.studentName}</td><td>${Number(p.amount).toLocaleString('en-US')} دج</td><td>${p.reason}</td><td>${p.date}</td></tr>
+  `).join('') : `<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>لا توجد مدفوعات</p></div></td></tr>`;
+}
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadStudentReport();
+loadAdminReport();
+loadFinanceReport();
+</script>
+</body>
+</html>
