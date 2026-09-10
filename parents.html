@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأولياء | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>إدارة الأولياء</h2>
+        <p>ملفات الأولياء وربطهم بالتلاميذ (بدون حسابات دخول)</p>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <input type="text" id="parentSearch" placeholder="بحث بالاسم أو الهاتف..." style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;width:100%;max-width:340px;background:#fff;">
+      </div>
+
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>الاسم واللقب</th><th>صلة القرابة</th><th>الهاتف</th><th>المهنة</th><th>الأبناء</th></tr></thead>
+            <tbody id="parentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('parents');
+
+function loadParents(){
+  const q = document.getElementById('parentSearch').value.trim();
+  const parents = DB.get('eliteParents').filter(p =>
+    !q || `${p.firstname} ${p.lastname}`.includes(q) || (p.phone && p.phone.includes(q))
+  );
+  const students = DB.get('eliteStudents');
+
+  const tbody = document.getElementById('parentsBody');
+  if(parents.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-people-roof"></i><p>لا يوجد أولياء مطابقون للبحث</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = parents.map(p => {
+    const children = students.filter(s => `${p.firstname} ${p.lastname}` === s.parentName);
+    const childrenNames = children.length ? children.map(c => c.firstname + ' ' + c.lastname).join('، ') : '—';
+    return `
+      <tr>
+        <td><b>${p.firstname} ${p.lastname}</b></td>
+        <td>${p.relation}</td>
+        <td>${p.phone}</td>
+        <td>${p.job || '—'}</td>
+        <td>${childrenNames}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+document.getElementById('parentSearch').addEventListener('input', loadParents);
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadParents();
+</script>
+</body>
+</html>
