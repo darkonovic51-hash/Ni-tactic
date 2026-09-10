@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إدارة التلاميذ | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.page-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+.toolbar-filters{display:flex;gap:12px;flex-wrap:wrap;flex:1;}
+.toolbar-filters select, .toolbar-filters input{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
+.students-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px;}
+.student-mini-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);cursor:pointer;transition:.2s;}
+.student-mini-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--accent);}
+.smc-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.smc-avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--accent-light);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0;}
+.smc-name{font-size:15px;font-weight:800;}
+.smc-level{font-size:12px;color:var(--text-gray);}
+.smc-row{display:flex;justify-content:space-between;font-size:12px;color:var(--text-gray);padding:5px 0;border-top:1px dashed var(--border);}
+.smc-row b{color:var(--text-dark);font-weight:700;}
+.pagination{display:flex;justify-content:center;gap:8px;margin-top:24px;}
+.pagination button{width:36px;height:36px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;}
+.pagination button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="topSearchInput" placeholder="بحث شامل...">
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin">
+          <div class="topbar-admin-avatar">AD</div>
+          <div><span>المدير</span><small>admin</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+        <div>
+          <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+          <h2>إدارة التلاميذ</h2>
+          <p>جميع التلاميذ المسجلين في المؤسسة</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddStudentModal()"><i class="fa-solid fa-plus"></i> تسجيل تلميذ جديد</button>
+      </div>
+
+      <div class="panel" style="padding:18px 22px;margin-bottom:20px;">
+        <div class="page-toolbar" style="margin:0;">
+          <div class="toolbar-filters">
+            <input type="text" id="searchBox" placeholder="بحث بالاسم، اللقب، رقم البطاقة، الهاتف...">
+            <select id="filterLevel"><option value="">كل المستويات</option></select>
+            <select id="filterSection"><option value="">كل الأقسام</option></select>
+            <select id="filterStatus">
+              <option value="">كل الحالات</option>
+              <option value="نشط">نشط</option>
+              <option value="مؤرشف">مؤرشف</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="students-grid" id="studentsGrid"></div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD STUDENT MODAL -->
+<div class="modal-overlay" id="addStudentModal">
+  <div class="success-modal" style="max-width:700px;text-align:right;max-height:88vh;overflow-y:auto;">
+    <h3 style="margin-bottom:18px;">تسجيل تلميذ جديد</h3>
+    <form id="addStudentForm">
+      <div class="form-grid" style="margin-bottom:14px;">
+        <div class="form-field"><label>الاسم <span class="req">*</span></label><input type="text" name="firstname" required></div>
+        <div class="form-field"><label>اللقب <span class="req">*</span></label><input type="text" name="lastname" required></div>
+        <div class="form-field"><label>الاسم بالفرنسية</label><input type="text" name="fullFr"></div>
+        <div class="form-field"><label>تاريخ الميلاد</label><input type="date" name="dob"></div>
+        <div class="form-field"><label>مكان الميلاد</label><input type="text" name="pob"></div>
+        <div class="form-field"><label>المستوى <span class="req">*</span></label>
+          <select name="level" id="addLevelSelect" required></select>
+        </div>
+        <div class="form-field"><label>القسم <span class="req">*</span></label>
+          <select name="section" id="addSectionSelect" required></select>
+        </div>
+        <div class="form-field"><label>اسم الولي <span class="req">*</span></label><input type="text" name="parentName" required></div>
+        <div class="form-field"><label>هاتف الولي <span class="req">*</span></label><input type="tel" name="parentPhone" required></div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;">حفظ وتوليد بطاقة التلميذ</button>
+        <button type="button" class="btn btn-danger" onclick="closeAddStudentModal()">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- NEW CARD GENERATED MODAL -->
+<div class="modal-overlay" id="cardGeneratedModal">
+  <div class="success-modal">
+    <div class="success-icon"><i class="fa-solid fa-id-card"></i></div>
+    <h3>تم إنشاء ملف التلميذ بنجاح</h3>
+    <p>رقم بطاقة التلميذ الجديد</p>
+    <div class="reg-number-box"><span>رقم البطاقة</span><b id="newCardNumberDisplay">00000000</b></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="goToNewStudentProfile()">عرض بطاقة التلميذ</button>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('students');
+
+let allStudents = [];
+let filteredStudents = [];
+let currentPage = 1;
+const PAGE_SIZE = 9;
+let lastCreatedStudentId = null;
+
+function initFilters(){
+  const levels = DB.get('eliteLevels');
+  const sections = DB.get('eliteSections');
+
+  const levelSelect = document.getElementById('filterLevel');
+  levels.forEach(l => levelSelect.insertAdjacentHTML('beforeend', `<option value="${l.name}">${l.name}</option>`));
+
+  const sectionSelect = document.getElementById('filterSection');
+  sections.forEach(s => sectionSelect.insertAdjacentHTML('beforeend', `<option value="${s.name}">${s.name}</option>`));
+
+  const addLevelSelect = document.getElementById('addLevelSelect');
+  levels.forEach(l => addLevelSelect.insertAdjacentHTML('beforeend', `<option value="${l.name}">${l.name}</option>`));
+
+  const addSectionSelect = document.getElementById('addSectionSelect');
+  sections.forEach(s => addSectionSelect.insertAdjacentHTML('beforeend', `<option value="${s.name}">${s.name}</option>`));
+}
+
+function loadStudents(){
+  allStudents = DB.get('eliteStudents');
+  applyFilters();
+}
+
+function initials(firstname, lastname){
+  return (firstname[0]||'') + (lastname[0]||'');
+}
+
+function applyFilters(){
+  const q = document.getElementById('searchBox').value.trim();
+  const level = document.getElementById('filterLevel').value;
+  const section = document.getElementById('filterSection').value;
+  const status = document.getElementById('filterStatus').value;
+
+  filteredStudents = allStudents.filter(s => {
+    const matchesQuery = !q ||
+      s.cardNumber.includes(q) ||
+      `${s.firstname} ${s.lastname}`.includes(q) ||
+      (s.parentPhone && s.parentPhone.includes(q));
+    const matchesLevel = !level || s.level === level;
+    const matchesSection = !section || s.section === section;
+    const matchesStatus = !status || s.status === status;
+    return matchesQuery && matchesLevel && matchesSection && matchesStatus;
+  });
+
+  currentPage = 1;
+  renderGrid();
+}
+
+function renderGrid(){
+  const grid = document.getElementById('studentsGrid');
+  if(filteredStudents.length === 0){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-user-graduate"></i><p>لا يوجد تلاميذ مطابقون للبحث</p></div>`;
+    document.getElementById('pagination').innerHTML = '';
+    return;
+  }
+
+  const totalPages = Math.ceil(filteredStudents.length / PAGE_SIZE);
+  const start = (currentPage-1) * PAGE_SIZE;
+  const pageItems = filteredStudents.slice(start, start + PAGE_SIZE);
+
+  grid.innerHTML = pageItems.map(s => `
+    <div class="student-mini-card" onclick="window.location.href='student-profile.html?id=${s.id}'">
+      <div class="smc-top">
+        <div class="smc-avatar">${initials(s.firstname, s.lastname)}</div>
+        <div>
+          <div class="smc-name">${s.firstname} ${s.lastname}</div>
+          <div class="smc-level">${s.level} — ${s.section}</div>
+        </div>
+      </div>
+      <div class="smc-row"><span>رقم البطاقة</span><b>${s.cardNumber}</b></div>
+      <div class="smc-row"><span>الولي</span><b>${s.parentName}</b></div>
+      <div class="smc-row"><span>الحالة</span><span class="badge ${statusBadgeClass(s.status)}">${s.status}</span></div>
+    </div>
+  `).join('');
+
+  let pagHtml = '';
+  for(let i=1;i<=totalPages;i++){
+    pagHtml += `<button class="${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  document.getElementById('pagination').innerHTML = pagHtml;
+}
+
+function goToPage(p){ currentPage = p; renderGrid(); }
+
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+document.getElementById('filterLevel').addEventListener('change', applyFilters);
+document.getElementById('filterSection').addEventListener('change', applyFilters);
+document.getElementById('filterStatus').addEventListener('change', applyFilters);
+
+function openAddStudentModal(){ document.getElementById('addStudentModal').classList.add('active'); }
+function closeAddStudentModal(){ document.getElementById('addStudentModal').classList.remove('active'); }
+
+document.getElementById('addStudentForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const fd = new FormData(this);
+  const data = {};
+  fd.forEach((v,k)=> data[k]=v );
+
+  const cardNumber = generateCardNumber();
+  const newStudent = {
+    id: uid('st'),
+    cardNumber,
+    firstname: data.firstname,
+    lastname: data.lastname,
+    fullFr: data.fullFr || '',
+    dob: data.dob || '',
+    pob: data.pob || '',
+    level: data.level,
+    section: data.section,
+    parentId: '',
+    parentName: data.parentName,
+    parentPhone: data.parentPhone,
+    status: 'نشط',
+    registeredAt: new Date().toISOString().split('T')[0]
+  };
+
+  const students = DB.get('eliteStudents');
+  students.unshift(newStudent);
+  DB.set('eliteStudents', students);
+  logAction(`تم تسجيل التلميذ ${newStudent.firstname} ${newStudent.lastname} (بطاقة ${cardNumber})`);
+
+  lastCreatedStudentId = newStudent.id;
+  closeAddStudentModal();
+  this.reset();
+  document.getElementById('newCardNumberDisplay').textContent = cardNumber;
+  document.getElementById('cardGeneratedModal').classList.add('active');
+  loadStudents();
+});
+
+function goToNewStudentProfile(){
+  window.location.href = `student-profile.html?id=${lastCreatedStudentId}`;
+}
+
+// Handle ?search= param coming from dashboard topbar
+const urlParams = new URLSearchParams(window.location.search);
+const searchParam = urlParams.get('search');
+if(searchParam){ document.getElementById('searchBox').value = searchParam; }
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    document.getElementById('searchBox').value = this.value.trim();
+    applyFilters();
+    this.value = '';
+  }
+});
+
+initFilters();
+loadStudents();
+if(searchParam) applyFilters();
+</script>
+
+</body>
+</html>
