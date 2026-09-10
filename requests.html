@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طلبات التسجيل | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.req-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.req-toolbar input,.req-toolbar select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
+.req-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;}
+.req-detail-grid .info-item{background:var(--bg-light);padding:14px 16px;border-radius:10px;}
+.req-detail-grid .info-item span{display:block;font-size:11px;color:var(--text-gray);margin-bottom:4px;}
+.req-detail-grid .info-item b{font-size:13px;}
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>طلبات التسجيل</h2>
+        <p>جميع طلبات التسجيل الواردة من الموقع العام</p>
+      </div>
+
+      <div class="req-toolbar">
+        <input type="text" id="reqSearch" placeholder="بحث برقم الطلب أو اسم التلميذ...">
+        <select id="reqStatusFilter">
+          <option value="">كل الحالات</option>
+          <option value="جديد">جديد</option>
+          <option value="قيد الدراسة">قيد الدراسة</option>
+          <option value="تم التواصل">تم التواصل</option>
+          <option value="مقبول">مقبول</option>
+          <option value="مرفوض">مرفوض</option>
+          <option value="مكتمل التسجيل">مكتمل التسجيل</option>
+        </select>
+      </div>
+
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>رقم الطلب</th><th>التلميذ</th><th>المستوى</th><th>الولي</th><th>الهاتف</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <tbody id="requestsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REQUEST DETAIL / TRANSFER MODAL -->
+<div class="modal-overlay" id="requestDetailModal">
+  <div class="success-modal" style="max-width:640px;text-align:right;max-height:88vh;overflow-y:auto;">
+    <h3 style="margin-bottom:6px;" id="detailRegNumber"></h3>
+    <p style="color:var(--text-gray);font-size:13px;margin-bottom:10px;">مراجعة بيانات الطلب قبل التحويل</p>
+    <div class="req-detail-grid" id="requestDetailGrid"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-primary" id="acceptTransferBtn" style="flex:1;justify-content:center;"><i class="fa-solid fa-user-check"></i> قبول وتحويل إلى تلميذ</button>
+      <button class="btn btn-danger" id="rejectRequestBtn">رفض الطلب</button>
+      <button type="button" class="btn" style="background:var(--bg-light);" onclick="closeDetailModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="transferSuccessModal">
+  <div class="success-modal">
+    <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+    <h3>تم تحويل الطلب بنجاح</h3>
+    <p>تم إنشاء ملف التلميذ وبطاقته</p>
+    <div class="reg-number-box"><span>رقم البطاقة الجديد</span><b id="transferCardNumber">00000000</b></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="goToTransferredProfile()">عرض ملف التلميذ</button>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('requests');
+
+let currentRequestId = null;
+let lastTransferredStudentId = null;
+
+function loadRequests(){
+  const q = document.getElementById('reqSearch').value.trim();
+  const status = document.getElementById('reqStatusFilter').value;
+  let requests = DB.get('eliteRegistrationRequests');
+
+  requests = requests.filter(r => {
+    const matchQ = !q || r.regNumber.includes(q) || `${r.student.firstname} ${r.student.lastname}`.includes(q);
+    const matchStatus = !status || r.status === status;
+    return matchQ && matchStatus;
+  });
+
+  const tbody = document.getElementById('requestsBody');
+  if(requests.length === 0){
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات تسجيل حاليًا</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = requests.map(r => `
+    <tr>
+      <td><b>${r.regNumber}</b></td>
+      <td>${r.student.firstname} ${r.student.lastname}</td>
+      <td>${r.student.level}</td>
+      <td>${r.parent.firstname} ${r.parent.lastname}</td>
+      <td>${r.parent.phone}</td>
+      <td>${r.createdAt}</td>
+      <td><span class="badge ${statusBadgeClass(r.status)}">${r.status}</span></td>
+      <td><button class="btn btn-sm btn-dark" onclick="openDetail('${r.id}')">فتح</button></td>
+    </tr>
+  `).join('');
+}
+
+function openDetail(id){
+  const requests = DB.get('eliteRegistrationRequests');
+  const r = requests.find(x => x.id === id);
+  if(!r) return;
+  currentRequestId = id;
+
+  document.getElementById('detailRegNumber').textContent = `طلب رقم ${r.regNumber}`;
+  document.getElementById('requestDetailGrid').innerHTML = `
+    <div class="info-item"><span>الاسم واللقب</span><b>${r.student.firstname} ${r.student.lastname}</b></div>
+    <div class="info-item"><span>المستوى المطلوب</span><b>${r.student.level}</b></div>
+    <div class="info-item"><span>تاريخ الميلاد</span><b>${r.student.dob || '—'}</b></div>
+    <div class="info-item"><span>مكان الميلاد</span><b>${r.student.pob || '—'}</b></div>
+    <div class="info-item"><span>اسم الولي</span><b>${r.parent.firstname} ${r.parent.lastname}</b></div>
+    <div class="info-item"><span>هاتف الولي</span><b>${r.parent.phone}</b></div>
+    <div class="info-item"><span>الحالة الحالية</span><b><span class="badge ${statusBadgeClass(r.status)}">${r.status}</span></b></div>
+    <div class="info-item"><span>تاريخ الطلب</span><b>${r.createdAt}</b></div>
+  `;
+
+  document.getElementById('acceptTransferBtn').style.display = (r.status === 'مقبول' || r.status === 'مكتمل التسجيل') ? 'none' : 'flex';
+  document.getElementById('requestDetailModal').classList.add('active');
+}
+
+function closeDetailModal(){ document.getElementById('requestDetailModal').classList.remove('active'); }
+
+document.getElementById('acceptTransferBtn').addEventListener('click', function(){
+  const requests = DB.get('eliteRegistrationRequests');
+  const r = requests.find(x => x.id === currentRequestId);
+  if(!r) return;
+
+  const cardNumber = generateCardNumber();
+  const newStudent = {
+    id: uid('st'),
+    cardNumber,
+    firstname: r.student.firstname,
+    lastname: r.student.lastname,
+    fullFr: r.student.fullFr || '',
+    dob: r.student.dob || '',
+    pob: r.student.pob || '',
+    level: r.student.level,
+    section: '—',
+    parentId: '',
+    parentName: `${r.parent.firstname} ${r.parent.lastname}`,
+    parentPhone: r.parent.phone,
+    status: 'نشط',
+    registeredAt: new Date().toISOString().split('T')[0],
+    notes: r.student.notes || ''
+  };
+
+  const students = DB.get('eliteStudents');
+  students.unshift(newStudent);
+  DB.set('eliteStudents', students);
+
+  r.status = 'مكتمل التسجيل';
+  DB.set('eliteRegistrationRequests', requests);
+
+  logAction(`تم قبول الطلب ${r.regNumber} وتحويله إلى ملف تلميذ (بطاقة ${cardNumber})`);
+
+  lastTransferredStudentId = newStudent.id;
+  closeDetailModal();
+  document.getElementById('transferCardNumber').textContent = cardNumber;
+  document.getElementById('transferSuccessModal').classList.add('active');
+  loadRequests();
+});
+
+document.getElementById('rejectRequestBtn').addEventListener('click', function(){
+  const requests = DB.get('eliteRegistrationRequests');
+  const r = requests.find(x => x.id === currentRequestId);
+  if(!r) return;
+  r.status = 'مرفوض';
+  DB.set('eliteRegistrationRequests', requests);
+  logAction(`تم رفض طلب التسجيل ${r.regNumber}`);
+  closeDetailModal();
+  loadRequests();
+});
+
+function goToTransferredProfile(){
+  window.location.href = `student-profile.html?id=${lastTransferredStudentId}`;
+}
+
+document.getElementById('reqSearch').addEventListener('input', loadRequests);
+document.getElementById('reqStatusFilter').addEventListener('change', loadRequests);
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadRequests();
+</script>
+</body>
+</html>
