@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأساتذة | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>إدارة الأساتذة</h2>
+        <p>الملفات الإدارية للأساتذة (بدون حسابات دخول)</p>
+      </div>
+
+      <div style="margin-bottom:16px;display:flex;gap:12px;flex-wrap:wrap;">
+        <input type="text" id="teacherSearch" placeholder="بحث بالاسم أو المادة..." style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;min-width:220px;">
+        <select id="subjectFilter" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;">
+          <option value="">كل المواد</option>
+        </select>
+      </div>
+
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>الاسم واللقب</th><th>المادة</th><th>القسم</th><th>الهاتف</th><th>نوع العقد</th><th>تاريخ التوظيف</th></tr></thead>
+            <tbody id="teachersBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('teachers');
+
+function initSubjectFilter(){
+  const teachers = DB.get('eliteTeachers');
+  const subjects = [...new Set(teachers.map(t => t.subject))];
+  const select = document.getElementById('subjectFilter');
+  subjects.forEach(s => select.insertAdjacentHTML('beforeend', `<option value="${s}">${s}</option>`));
+}
+
+function loadTeachers(){
+  const q = document.getElementById('teacherSearch').value.trim();
+  const subject = document.getElementById('subjectFilter').value;
+  let teachers = DB.get('eliteTeachers');
+
+  teachers = teachers.filter(t => {
+    const matchQ = !q || `${t.firstname} ${t.lastname}`.includes(q) || t.subject.includes(q);
+    const matchSubject = !subject || t.subject === subject;
+    return matchQ && matchSubject;
+  });
+
+  const tbody = document.getElementById('teachersBody');
+  if(teachers.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-chalkboard-user"></i><p>لا يوجد أساتذة مطابقون للبحث</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = teachers.map(t => `
+    <tr>
+      <td><b>${t.firstname} ${t.lastname}</b></td>
+      <td>${t.subject}</td>
+      <td>${t.section}</td>
+      <td>${t.phone}</td>
+      <td>${t.contractType}</td>
+      <td>${t.hireDate}</td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('teacherSearch').addEventListener('input', loadTeachers);
+document.getElementById('subjectFilter').addEventListener('change', loadTeachers);
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+initSubjectFilter();
+loadTeachers();
+</script>
+</body>
+</html>
