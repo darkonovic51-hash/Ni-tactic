@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إعدادات المؤسسة | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>إعدادات المؤسسة</h2>
+        <p>يمكنك تعديل بيانات المؤسسة الأساسية من هنا</p>
+      </div>
+
+      <div class="panel" style="padding:30px;max-width:800px;">
+        <form id="settingsForm">
+          <div class="form-grid">
+            <div class="form-field"><label>اسم المؤسسة</label><input type="text" id="s_name"></div>
+            <div class="form-field"><label>الاسم بالفرنسية</label><input type="text" id="s_nameFr"></div>
+            <div class="form-field full"><label>الشعار (Slogan)</label><input type="text" id="s_slogan"></div>
+            <div class="form-field full"><label>العنوان</label><input type="text" id="s_address"></div>
+            <div class="form-field"><label>الهاتف</label><input type="text" id="s_phone"></div>
+            <div class="form-field"><label>البريد الإلكتروني</label><input type="email" id="s_email"></div>
+            <div class="form-field"><label>ساعات العمل</label><input type="text" id="s_workHours"></div>
+            <div class="form-field"><label>السنة الدراسية الحالية</label>
+              <select id="s_schoolYear">
+                <option value="2025/2026">2025/2026</option>
+                <option value="2026/2027">2026/2027</option>
+                <option value="2027/2028">2027/2028</option>
+              </select>
+            </div>
+            <div class="form-field"><label>رسوم التسجيل (دج)</label><input type="number" id="s_regFee"></div>
+            <div class="form-field"><label>القسط الشهري (دج)</label><input type="number" id="s_monthlyFee"></div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top:20px;"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
+          <span id="savedMsg" style="display:none;color:var(--success);font-weight:700;font-size:13px;margin-right:14px;">✓ تم الحفظ بنجاح</span>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('settings');
+
+function loadSettingsForm(){
+  const s = DB.getSettings();
+  document.getElementById('s_name').value = s.institutionName;
+  document.getElementById('s_nameFr').value = s.institutionNameFr;
+  document.getElementById('s_slogan').value = s.slogan;
+  document.getElementById('s_address').value = s.address;
+  document.getElementById('s_phone').value = s.phone;
+  document.getElementById('s_email').value = s.email;
+  document.getElementById('s_workHours').value = s.workHours;
+  document.getElementById('s_schoolYear').value = s.schoolYear;
+  document.getElementById('s_regFee').value = s.registrationFee;
+  document.getElementById('s_monthlyFee').value = s.monthlyFee;
+}
+
+document.getElementById('settingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const s = DB.getSettings();
+  s.institutionName = document.getElementById('s_name').value;
+  s.institutionNameFr = document.getElementById('s_nameFr').value;
+  s.slogan = document.getElementById('s_slogan').value;
+  s.address = document.getElementById('s_address').value;
+  s.phone = document.getElementById('s_phone').value;
+  s.email = document.getElementById('s_email').value;
+  s.workHours = document.getElementById('s_workHours').value;
+  s.schoolYear = document.getElementById('s_schoolYear').value;
+  s.registrationFee = Number(document.getElementById('s_regFee').value);
+  s.monthlyFee = Number(document.getElementById('s_monthlyFee').value);
+  DB.setSettings(s);
+  logAction('تم تحديث إعدادات المؤسسة');
+
+  document.getElementById('savedMsg').style.display = 'inline';
+  setTimeout(()=> document.getElementById('savedMsg').style.display='none', 3000);
+  renderSidebar('settings'); // إعادة رسم Sidebar لتحديث اسم المؤسسة إن تغيّر
+});
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadSettingsForm();
+</script>
+</body>
+</html>
