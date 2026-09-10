@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="topSearchInput" placeholder="بحث شامل: رقم بطاقة، اسم تلميذ، رقم طلب...">
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin">
+          <div class="topbar-admin-avatar">AD</div>
+          <div><span>المدير</span><small>admin</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>مرحبًا بك، المدير 👋</h2>
+        <p>نظرة عامة على نشاط المؤسسة اليوم</p>
+      </div>
+
+      <div class="stats-cards">
+        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-user-graduate"></i></div><div><div class="dstat-num" id="statTotalStudents">0</div><div class="dstat-label">إجمالي التلاميذ</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-user-check"></i></div><div><div class="dstat-num" id="statActiveStudents">0</div><div class="dstat-label">التلاميذ النشطون</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-file-circle-plus"></i></div><div><div class="dstat-num" id="statNewRequests">0</div><div class="dstat-label">طلبات تسجيل جديدة</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="dstat-num" id="statTeachers">0</div><div class="dstat-label">الأساتذة</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-id-badge"></i></div><div><div class="dstat-num" id="statStaff">0</div><div class="dstat-label">الموظفون</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-door-open"></i></div><div><div class="dstat-num" id="statSections">0</div><div class="dstat-label">الأقسام</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-sack-dollar"></i></div><div><div class="dstat-num" id="statCollected">0</div><div class="dstat-label">المبالغ المحصلة (دج)</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-calendar-xmark"></i></div><div><div class="dstat-num" id="statAbsentToday">0</div><div class="dstat-label">غيابات اليوم</div></div></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="panel">
+          <div class="panel-head"><h3>آخر طلبات التسجيل</h3><a href="requests.html">عرض الكل</a></div>
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>رقم الطلب</th><th>التلميذ</th><th>المستوى</th><th>الولي</th><th>الهاتف</th><th>الحالة</th></tr></thead>
+              <tbody id="requestsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>الإشعارات</h3></div>
+          <div class="notif-list" id="notifList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('dashboard');
+
+function loadDashboard(){
+  const students = DB.get('eliteStudents');
+  const requests = DB.get('eliteRegistrationRequests');
+  const teachers = DB.get('eliteTeachers');
+  const staff = DB.get('eliteStaff');
+  const sections = DB.get('eliteSections');
+  const payments = DB.get('elitePayments');
+  const attendance = DB.get('eliteAttendance');
+
+  document.getElementById('statTotalStudents').textContent = students.length;
+  document.getElementById('statActiveStudents').textContent = students.filter(s=>s.status==='نشط').length;
+  document.getElementById('statNewRequests').textContent = requests.filter(r=>r.status==='جديد').length;
+  document.getElementById('statTeachers').textContent = teachers.length;
+  document.getElementById('statStaff').textContent = staff.length;
+  document.getElementById('statSections').textContent = sections.length;
+
+  const totalCollected = payments.reduce((sum,p)=> sum + Number(p.amount||0), 0);
+  document.getElementById('statCollected').textContent = totalCollected.toLocaleString('en-US');
+
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('statAbsentToday').textContent = attendance.filter(a=> a.status==='غائب').length;
+
+  // Requests table
+  const tbody = document.getElementById('requestsTableBody');
+  if(requests.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات تسجيل حاليًا</p></div></td></tr>`;
+  } else {
+    tbody.innerHTML = requests.slice(0,6).map(r => `
+      <tr>
+        <td><b>${r.regNumber}</b></td>
+        <td>${r.student.firstname} ${r.student.lastname}</td>
+        <td>${r.student.level}</td>
+        <td>${r.parent.firstname} ${r.parent.lastname}</td>
+        <td>${r.parent.phone}</td>
+        <td><span class="badge ${statusBadgeClass(r.status)}">${r.status}</span></td>
+      </tr>
+    `).join('');
+  }
+
+  // Notifications
+  const newReqCount = requests.filter(r=>r.status==='جديد').length;
+  const dueDocs = 3; // placeholder demo value
+  const duePayments = 7; // placeholder demo value
+  const absentToday = attendance.filter(a=>a.status==='غائب').length;
+  document.getElementById('notifList').innerHTML = `
+    <div class="notif-item"><i class="fa-solid fa-file-lines"></i><div><p>${newReqCount} طلبات تسجيل جديدة</p><span>اليوم</span></div></div>
+    <div class="notif-item"><i class="fa-solid fa-folder-open"></i><div><p>${dueDocs} ملفات ناقصة</p><span>اليوم</span></div></div>
+    <div class="notif-item"><i class="fa-solid fa-sack-dollar"></i><div><p>${duePayments} دفعات مستحقة</p><span>أمس</span></div></div>
+    <div class="notif-item"><i class="fa-solid fa-calendar-xmark"></i><div><p>${absentToday} غيابات اليوم</p><span>اليوم</span></div></div>
+  `;
+}
+
+loadDashboard();
+
+// Global search redirect
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+</script>
+
+</body>
+</html>
