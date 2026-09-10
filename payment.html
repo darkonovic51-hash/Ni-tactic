@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>المالية والمدفوعات | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.finance-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+@media(max-width:900px){.finance-cards{grid-template-columns:1fr 1fr;}}
+.pay-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;justify-content:space-between;}
+.pay-toolbar input,.pay-toolbar select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
+
+/* RECEIPT */
+.receipt-box{background:#fff;border:2px dashed var(--border);border-radius:14px;padding:30px;max-width:420px;margin:0 auto;}
+.receipt-head{text-align:center;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px;}
+.receipt-head .logo-icon{margin:0 auto 10px;}
+.receipt-head h3{font-size:16px;}
+.receipt-head span{font-size:11px;color:var(--text-gray);}
+.receipt-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px dashed var(--border);}
+.receipt-row b{font-weight:800;}
+.receipt-total{background:var(--bg-light);padding:14px;border-radius:10px;text-align:center;margin-top:14px;}
+.receipt-total span{display:block;font-size:11px;color:var(--text-gray);}
+.receipt-total b{font-size:22px;color:var(--primary);}
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+        <div>
+          <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+          <h2>المالية والمدفوعات</h2>
+          <p>رسوم التسجيل، الأقساط، والمدفوعات (الدينار الجزائري - دج)</p>
+        </div>
+        <button class="btn btn-primary" onclick="openPaymentModal()"><i class="fa-solid fa-plus"></i> تسجيل دفعة جديدة</button>
+      </div>
+
+      <div class="finance-cards">
+        <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-sack-dollar"></i></div><div><div class="dstat-num" id="totalCollected">0</div><div class="dstat-label">المبالغ المحصلة (دج)</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-circle-exclamation"></i></div><div><div class="dstat-num" id="totalRemaining">720,000</div><div class="dstat-label">المبالغ المتبقية (دج)</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-coins"></i></div><div><div class="dstat-num" id="regFeeDisplay">5,000</div><div class="dstat-label">رسوم التسجيل (دج)</div></div></div>
+        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-calendar-days"></i></div><div><div class="dstat-num" id="monthlyFeeDisplay">12,000</div><div class="dstat-label">القسط الشهري (دج)</div></div></div>
+      </div>
+
+      <div class="pay-toolbar">
+        <input type="text" id="paySearch" placeholder="بحث برقم البطاقة، اسم التلميذ، رقم الوصل...">
+        <select id="payReasonFilter">
+          <option value="">كل الأسباب</option>
+          <option value="رسوم التسجيل">رسوم التسجيل</option>
+          <option value="القسط الشهري">القسط الشهري</option>
+        </select>
+      </div>
+
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>رقم الوصل</th><th>التلميذ</th><th>رقم البطاقة</th><th>المبلغ</th><th>السبب</th><th>الطريقة</th><th>التاريخ</th><th></th></tr></thead>
+            <tbody id="paymentsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PAYMENT MODAL -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="success-modal" style="max-width:480px;text-align:right;">
+    <h3 style="margin-bottom:16px;">تسجيل دفعة جديدة</h3>
+    <form id="paymentForm">
+      <div class="form-field" style="margin-bottom:12px;">
+        <label>رقم بطاقة التلميذ أو الاسم</label>
+        <input type="text" id="paySearchStudent" placeholder="ابحث عن التلميذ..." required>
+        <div id="studentSuggestions" style="font-size:12px;color:var(--text-gray);margin-top:4px;"></div>
+      </div>
+      <input type="hidden" id="selectedStudentId">
+      <div class="form-field" style="margin-bottom:12px;">
+        <label>سبب الدفع</label>
+        <select id="payReason">
+          <option value="رسوم التسجيل">رسوم التسجيل</option>
+          <option value="القسط الشهري">القسط الشهري</option>
+          <option value="أخرى">أخرى</option>
+        </select>
+      </div>
+      <div class="form-field" style="margin-bottom:12px;">
+        <label>المبلغ (دج)</label>
+        <input type="number" id="payAmount" required>
+      </div>
+      <div class="form-field" style="margin-bottom:12px;">
+        <label>طريقة الدفع</label>
+        <select id="payMethod"><option value="نقدًا">نقدًا</option><option value="تحويل بنكي">تحويل بنكي</option></select>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;">تسجيل وإنشاء الوصل</button>
+        <button type="button" class="btn btn-danger" onclick="closePaymentModal()">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="modal-overlay" id="receiptModal">
+  <div class="success-modal" style="max-width:460px;">
+    <div class="receipt-box" id="receiptContent"></div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      <button class="btn btn-dark" style="flex:1;justify-content:center;" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة الوصل</button>
+      <button class="btn" style="background:var(--bg-light);flex:1;justify-content:center;" onclick="closeReceiptModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('payment');
+
+let selectedStudent = null;
+
+function loadFinanceStats(){
+  const payments = DB.get('elitePayments');
+  const settings = DB.getSettings();
+  const total = payments.reduce((sum,p)=> sum + Number(p.amount||0), 0);
+  document.getElementById('totalCollected').textContent = total.toLocaleString('en-US');
+  document.getElementById('regFeeDisplay').textContent = Number(settings.registrationFee).toLocaleString('en-US');
+  document.getElementById('monthlyFeeDisplay').textContent = Number(settings.monthlyFee).toLocaleString('en-US');
+}
+
+function loadPayments(){
+  const q = document.getElementById('paySearch').value.trim();
+  const reason = document.getElementById('payReasonFilter').value;
+  let payments = DB.get('elitePayments');
+
+  payments = payments.filter(p => {
+    const matchQ = !q || p.cardNumber.includes(q) || p.studentName.includes(q) || p.receiptNumber.includes(q);
+    const matchReason = !reason || p.reason === reason;
+    return matchQ && matchReason;
+  });
+
+  const tbody = document.getElementById('paymentsBody');
+  if(payments.length === 0){
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>لا توجد مدفوعات مطابقة</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = payments.slice().reverse().map(p => `
+    <tr>
+      <td><b>${p.receiptNumber}</b></td>
+      <td>${p.studentName}</td>
+      <td>${p.cardNumber}</td>
+      <td>${Number(p.amount).toLocaleString('en-US')} دج</td>
+      <td>${p.reason}</td>
+      <td>${p.method}</td>
+      <td>${p.date}</td>
+      <td><button class="btn btn-sm btn-dark" onclick="showReceipt('${p.id}')"><i class="fa-solid fa-receipt"></i></button></td>
+    </tr>
+  `).join('');
+}
+
+function openPaymentModal(){ document.getElementById('paymentModal').classList.add('active'); }
+function closePaymentModal(){
+  document.getElementById('paymentModal').classList.remove('active');
+  document.getElementById('paymentForm').reset();
+  selectedStudent = null;
+  document.getElementById('studentSuggestions').innerHTML = '';
+}
+
+document.getElementById('paySearchStudent').addEventListener('input', function(){
+  const q = this.value.trim();
+  const box = document.getElementById('studentSuggestions');
+  if(!q){ box.innerHTML=''; return; }
+  const students = DB.get('eliteStudents').filter(s =>
+    s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q)
+  ).slice(0,5);
+  box.innerHTML = students.map(s =>
+    `<div style="cursor:pointer;padding:4px 0;" onclick="selectStudent('${s.id}','${s.firstname} ${s.lastname}')">💠 ${s.firstname} ${s.lastname} — ${s.cardNumber}</div>`
+  ).join('') || 'لا توجد نتائج';
+});
+
+function selectStudent(id, name){
+  selectedStudent = DB.get('eliteStudents').find(s => s.id === id);
+  document.getElementById('paySearchStudent').value = name;
+  document.getElementById('studentSuggestions').innerHTML = `<span style="color:var(--success);">✓ تم اختيار التلميذ</span>`;
+}
+
+document.getElementById('paymentForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  if(!selectedStudent){ alert('يرجى اختيار تلميذ من القائمة'); return; }
+
+  const receiptNumber = generateReceiptNumber();
+  const payment = {
+    id: uid('pay'),
+    receiptNumber,
+    studentId: selectedStudent.id,
+    studentName: `${selectedStudent.firstname} ${selectedStudent.lastname}`,
+    cardNumber: selectedStudent.cardNumber,
+    amount: document.getElementById('payAmount').value,
+    reason: document.getElementById('payReason').value,
+    method: document.getElementById('payMethod').value,
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  const payments = DB.get('elitePayments');
+  payments.push(payment);
+  DB.set('elitePayments', payments);
+  logAction(`تم تسجيل دفعة بقيمة ${Number(payment.amount).toLocaleString('en-US')} دج للتلميذ ${payment.studentName}`);
+
+  closePaymentModal();
+  loadFinanceStats();
+  loadPayments();
+  showReceipt(payment.id);
+});
+
+function showReceipt(paymentId){
+  const payment = DB.get('elitePayments').find(p => p.id === paymentId);
+  if(!payment) return;
+  const settings = DB.getSettings();
+
+  document.getElementById('receiptContent').innerHTML = `
+    <div class="receipt-head">
+      <div class="logo-icon" style="margin:0 auto 10px;"><i class="fa-solid fa-graduation-cap"></i></div>
+      <h3>${settings.institutionName}</h3>
+      <span>وصل استلام دفعة</span>
+    </div>
+    <div class="receipt-row"><span>رقم الوصل</span><b>${payment.receiptNumber}</b></div>
+    <div class="receipt-row"><span>اسم التلميذ</span><b>${payment.studentName}</b></div>
+    <div class="receipt-row"><span>رقم بطاقة التلميذ</span><b>${payment.cardNumber}</b></div>
+    <div class="receipt-row"><span>سبب الدفع</span><b>${payment.reason}</b></div>
+    <div class="receipt-row"><span>طريقة الدفع</span><b>${payment.method}</b></div>
+    <div class="receipt-row"><span>التاريخ</span><b>${payment.date}</b></div>
+    <div class="receipt-row"><span>اسم المدير</span><b>المدير</b></div>
+    <div class="receipt-total"><span>المبلغ المدفوع</span><b>${Number(payment.amount).toLocaleString('en-US')} دج</b></div>
+  `;
+  document.getElementById('receiptModal').classList.add('active');
+}
+
+function closeReceiptModal(){ document.getElementById('receiptModal').classList.remove('active'); }
+
+document.getElementById('paySearch').addEventListener('input', loadPayments);
+document.getElementById('payReasonFilter').addEventListener('change', loadPayments);
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadFinanceStats();
+loadPayments();
+</script>
+</body>
+</html>
