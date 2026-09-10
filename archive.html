@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأرشيف | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.archive-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
+.archive-toolbar input,.archive-toolbar select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
+.section-block{margin-bottom:26px;}
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>الأرشيف</h2>
+        <p>التلاميذ المغادرون — لا يتم حذف بياناتهم أبدًا، فقط تغيير حالتهم إلى "مؤرشف"</p>
+      </div>
+
+      <!-- ARCHIVE A STUDENT -->
+      <div class="panel section-block" style="padding:18px 22px;">
+        <div class="panel-head" style="border:none;padding:0 0 14px;"><h3>أرشفة تلميذ</h3></div>
+        <div class="archive-toolbar" style="margin:0;">
+          <input type="text" id="archiveSearchStudent" placeholder="ابحث برقم البطاقة أو الاسم لأرشفة تلميذ...">
+        </div>
+        <div id="archiveSearchResults" style="margin-top:10px;font-size:13px;"></div>
+      </div>
+
+      <!-- ARCHIVED LIST -->
+      <div class="archive-toolbar">
+        <input type="text" id="archivedSearch" placeholder="بحث في الأرشيف...">
+      </div>
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>الاسم</th><th>رقم البطاقة</th><th>آخر مستوى</th><th>القسم</th><th>الولي</th><th></th></tr></thead>
+            <tbody id="archivedBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('archive');
+
+function searchForArchiving(){
+  const q = document.getElementById('archiveSearchStudent').value.trim();
+  const box = document.getElementById('archiveSearchResults');
+  if(!q){ box.innerHTML=''; return; }
+
+  const students = DB.get('eliteStudents').filter(s =>
+    s.status === 'نشط' && (s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q))
+  ).slice(0,5);
+
+  if(students.length === 0){ box.innerHTML = 'لا توجد نتائج'; return; }
+
+  box.innerHTML = students.map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border);">
+      <span>${s.firstname} ${s.lastname} — ${s.cardNumber} (${s.level})</span>
+      <button class="btn btn-sm btn-danger" onclick="archiveStudent('${s.id}')"><i class="fa-solid fa-box-archive"></i> أرشفة</button>
+    </div>
+  `).join('');
+}
+
+function archiveStudent(id){
+  if(!confirm('هل تريد أرشفة هذا التلميذ؟ سيتم الاحتفاظ بجميع بياناته.')) return;
+  const students = DB.get('eliteStudents');
+  const student = students.find(s => s.id === id);
+  if(!student) return;
+  student.status = 'مؤرشف';
+  DB.set('eliteStudents', students);
+  logAction(`تمت أرشفة التلميذ ${student.firstname} ${student.lastname}`);
+  document.getElementById('archiveSearchStudent').value = '';
+  document.getElementById('archiveSearchResults').innerHTML = '';
+  loadArchivedList();
+}
+
+function loadArchivedList(){
+  const q = document.getElementById('archivedSearch').value.trim();
+  const archived = DB.get('eliteStudents').filter(s =>
+    s.status === 'مؤرشف' && (!q || s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q))
+  );
+
+  const tbody = document.getElementById('archivedBody');
+  if(archived.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-box-archive"></i><p>لا يوجد تلاميذ في الأرشيف</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = archived.map(s => `
+    <tr>
+      <td><b>${s.firstname} ${s.lastname}</b></td>
+      <td>${s.cardNumber}</td>
+      <td>${s.level}</td>
+      <td>${s.section}</td>
+      <td>${s.parentName}</td>
+      <td><a href="student-profile.html?id=${s.id}" class="btn btn-sm btn-dark">عرض الملف</a></td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('archiveSearchStudent').addEventListener('input', searchForArchiving);
+document.getElementById('archivedSearch').addEventListener('input', loadArchivedList);
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadArchivedList();
+</script>
+</body>
+</html>
