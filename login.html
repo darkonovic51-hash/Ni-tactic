@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مساحة الإدارة | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="login-page">
+  <div class="login-box">
+    <div class="logo-icon" style="margin:0 auto 16px;"><i class="fa-solid fa-lock"></i></div>
+    <h2>مساحة الإدارة</h2>
+    <p>الدخول مخصص لمدير المؤسسة فقط</p>
+    <div class="login-error" id="loginError">اسم المستخدم أو رمز الدخول غير صحيح</div>
+    <form id="adminLoginForm">
+      <div class="form-field"><label>اسم المستخدم</label><input type="text" id="adminUser" required autocomplete="username"></div>
+      <div class="form-field"><label>رمز الدخول</label><input type="password" id="adminPass" required autocomplete="current-password"></div>
+      <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center;margin-top:10px;">دخول</button>
+    </form>
+    <div class="demo-note"><i class="fa-solid fa-circle-info"></i> بيانات Demo — admin / Elite@2026</div>
+    <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-right"></i> العودة للصفحة الرئيسية</a>
+  </div>
+</section>
+
+<script src="shared.js"></script>
+<script>
+document.getElementById('adminLoginForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value.trim();
+  const errorBox = document.getElementById('loginError');
+  if(u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password){
+    sessionStorage.setItem('eliteAdminLoggedIn', 'true');
+    logAction('تسجيل دخول المدير');
+    window.location.href = 'dashboard.html';
+  } else {
+    errorBox.style.display = 'block';
+  }
+});
+</script>
+
+</body>
+</html>
