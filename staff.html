@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الموظفون | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>إدارة الموظفين</h2>
+        <p>الملفات الإدارية للموظفين (بدون حسابات دخول)</p>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <input type="text" id="staffSearch" placeholder="بحث بالاسم أو الوظيفة..." style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;min-width:220px;">
+      </div>
+
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>الاسم واللقب</th><th>الوظيفة</th><th>الهاتف</th><th>تاريخ التوظيف</th></tr></thead>
+            <tbody id="staffBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('staff');
+
+function loadStaff(){
+  const q = document.getElementById('staffSearch').value.trim();
+  const staff = DB.get('eliteStaff').filter(s =>
+    !q || `${s.firstname} ${s.lastname}`.includes(q) || s.role.includes(q)
+  );
+
+  const tbody = document.getElementById('staffBody');
+  if(staff.length === 0){
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-id-badge"></i><p>لا يوجد موظفون مطابقون للبحث</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = staff.map(s => `
+    <tr>
+      <td><b>${s.firstname} ${s.lastname}</b></td>
+      <td>${s.role}</td>
+      <td>${s.phone}</td>
+      <td>${s.hireDate}</td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('staffSearch').addEventListener('input', loadStaff);
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadStaff();
+</script>
+</body>
+</html>
