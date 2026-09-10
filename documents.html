@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الوثائق | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<style>
+.doc-types-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:24px;}
+.doc-type-card{background:#fff;border-radius:12px;padding:18px;box-shadow:var(--shadow);border:1px solid var(--border);text-align:center;}
+.doc-type-card i{font-size:26px;color:var(--accent);margin-bottom:10px;}
+.doc-type-card h4{font-size:13px;font-weight:700;margin-bottom:4px;}
+.doc-type-card span{font-size:11px;color:var(--text-gray);}
+</style>
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>الوثائق</h2>
+        <p>وثائق التلاميذ والأساتذة والموظفين</p>
+      </div>
+
+      <div class="doc-types-grid">
+        <div class="doc-type-card"><i class="fa-solid fa-file-lines"></i><h4>شهادة الميلاد</h4><span>وثيقة مطلوبة</span></div>
+        <div class="doc-type-card"><i class="fa-solid fa-image"></i><h4>صورة شخصية</h4><span>وثيقة مطلوبة</span></div>
+        <div class="doc-type-card"><i class="fa-solid fa-file-signature"></i><h4>وثيقة التسجيل</h4><span>وثيقة مطلوبة</span></div>
+        <div class="doc-type-card"><i class="fa-solid fa-id-card"></i><h4>وثائق الولي</h4><span>وثيقة مطلوبة</span></div>
+        <div class="doc-type-card"><i class="fa-solid fa-folder-plus"></i><h4>وثائق إضافية</h4><span>اختياري</span></div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <select id="ownerTypeFilter" style="padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;">
+          <option value="student">وثائق التلاميذ</option>
+          <option value="teacher">وثائق الأساتذة</option>
+          <option value="staff">وثائق الموظفين</option>
+        </select>
+      </div>
+
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>الاسم</th><th>شهادة الميلاد</th><th>صورة شخصية</th><th>وثيقة التسجيل</th><th>وثائق الولي</th></tr></thead>
+            <tbody id="docsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('documents');
+
+function docBadge(present){
+  return present
+    ? `<span class="badge badge-accepted"><i class="fa-solid fa-check"></i> متوفرة</span>`
+    : `<span class="badge badge-rejected"><i class="fa-solid fa-xmark"></i> ناقصة</span>`;
+}
+
+function loadDocuments(){
+  const type = document.getElementById('ownerTypeFilter').value;
+  const tbody = document.getElementById('docsBody');
+  let people = [];
+
+  if(type === 'student') people = DB.get('eliteStudents').map(s => ({name: `${s.firstname} ${s.lastname}`, id:s.id}));
+  if(type === 'teacher') people = DB.get('eliteTeachers').map(t => ({name: `${t.firstname} ${t.lastname}`, id:t.id}));
+  if(type === 'staff') people = DB.get('eliteStaff').map(s => ({name: `${s.firstname} ${s.lastname}`, id:s.id}));
+
+  if(people.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-folder-open"></i><p>لا توجد بيانات</p></div></td></tr>`;
+    return;
+  }
+
+  // Demo: نحدد عشوائيًا (ثابتًا حسب index) أي وثائق متوفرة، فقط للعرض التجريبي
+  tbody.innerHTML = people.map((p, i) => `
+    <tr>
+      <td><b>${p.name}</b></td>
+      <td>${docBadge(i % 4 !== 0)}</td>
+      <td>${docBadge(i % 3 !== 0)}</td>
+      <td>${docBadge(true)}</td>
+      <td>${docBadge(i % 5 !== 0)}</td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('ownerTypeFilter').addEventListener('change', loadDocuments);
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadDocuments();
+</script>
+</body>
+</html>
