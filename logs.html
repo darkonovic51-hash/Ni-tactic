@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سجل العمليات | أكاديمية النخبة</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="admin-layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main-panel">
+    <div class="topbar">
+      <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
+      <div class="topbar-right">
+        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-admin"><div class="topbar-admin-avatar">AD</div><div><span>المدير</span><small>admin</small></div></div>
+      </div>
+    </div>
+
+    <div class="dash-content">
+      <div class="dash-header">
+        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+        <h2>سجل العمليات</h2>
+        <p>سجل كامل لكل العمليات التي تمت داخل النظام</p>
+      </div>
+
+      <div class="panel">
+        <div style="overflow-x:auto;">
+          <table class="dtable">
+            <thead><tr><th>العملية</th><th>التاريخ</th><th>الساعة</th></tr></thead>
+            <tbody id="logsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="shared.js"></script>
+<script>
+requireAdminAuth();
+renderSidebar('logs');
+
+function loadLogs(){
+  const logs = DB.get('eliteLogs');
+  const tbody = document.getElementById('logsBody');
+  if(logs.length === 0){
+    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>لا توجد عمليات مسجلة بعد</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = logs.map(l => `
+    <tr><td>${l.text}</td><td>${l.date}</td><td>${l.time}</td></tr>
+  `).join('');
+}
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key === 'Enter' && this.value.trim()){
+    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  }
+});
+
+loadLogs();
+</script>
+</body>
+</html>
