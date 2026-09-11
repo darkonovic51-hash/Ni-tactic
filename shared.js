@@ -131,6 +131,9 @@ function renderSidebar(activeKey){
   `;
   const sidebarEl = document.getElementById('sidebar');
   if(sidebarEl) sidebarEl.innerHTML = sidebarHtml;
+
+  // بعد بناء الشريط الجانبي، نفعّل زر الفتح الخاص بالجوال
+  setupMobileSidebarToggle();
 }
 
 /* ============ TOPBAR GLOBAL SEARCH ============ */
@@ -154,6 +157,46 @@ function globalSearch(query){
   const staff = DB.get('eliteStaff').filter(s => `${s.firstname} ${s.lastname}`.includes(query));
 
   return { students, parents, teachers, staff, requests };
+}
+
+/* ============ MOBILE SIDEBAR TOGGLE ============ */
+function setupMobileSidebarToggle(){
+  const sidebar = document.getElementById('sidebar');
+  const topbar = document.querySelector('.topbar');
+  if(!sidebar || !topbar) return;
+
+  // تفادي تكرار إضافة الزر أو الـ Overlay إذا تم استدعاء الدالة أكثر من مرة
+  if(topbar.querySelector('.sidebar-toggle-btn')){
+    return;
+  }
+
+  const toggleBtn = document.createElement('button');
+  toggleBtn.className = 'sidebar-toggle-btn';
+  toggleBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+  topbar.insertBefore(toggleBtn, topbar.firstChild);
+
+  let overlay = document.querySelector('.sidebar-overlay');
+  if(!overlay){
+    overlay = document.createElement('div');
+    overlay.className = 'sidebar-overlay';
+    document.body.appendChild(overlay);
+  }
+
+  function closeSidebar(){
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+  }
+  function toggleSidebarOpen(){
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+  }
+
+  toggleBtn.addEventListener('click', toggleSidebarOpen);
+  overlay.addEventListener('click', closeSidebar);
+  // إغلاق تلقائي عند الضغط على أي رابط داخل القائمة (على الجوال)
+  sidebar.addEventListener('click', function(e){
+    if(e.target.closest('a')) closeSidebar();
+  });
 }
 
 /* ============ SEED DEMO DATA (runs once) ============ */
