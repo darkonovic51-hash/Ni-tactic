@@ -3,44 +3,292 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مساحة الإدارة | أكاديمية النخبة</title>
+<title>دخول الإدارة | أكاديمية النخبة للتعليم والتكوين</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<style>
+/* ============ SPLIT-SCREEN LOGIN LAYOUT ============ */
+.login-split{min-height:100vh;display:flex;}
+.login-visual{
+  flex:1.1;
+  position:relative;
+  background:linear-gradient(150deg,var(--primary-dark),var(--primary) 55%,var(--secondary));
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:60px;
+  overflow:hidden;
+}
+.login-visual::before{
+  content:'';position:absolute;width:420px;height:420px;
+  background:radial-gradient(circle,rgba(201,151,63,0.22),transparent 70%);
+  top:-120px;left:-100px;
+}
+.login-visual::after{
+  content:'';position:absolute;width:320px;height:320px;
+  background:radial-gradient(circle,rgba(201,151,63,0.14),transparent 70%);
+  bottom:-100px;right:-80px;
+}
+.lv-pattern{position:absolute;inset:0;opacity:0.06;background-image:
+  radial-gradient(circle at 20% 20%, #fff 1px, transparent 1px),
+  radial-gradient(circle at 60% 70%, #fff 1px, transparent 1px);
+  background-size:60px 60px, 90px 90px;
+}
+.lv-content{position:relative;z-index:1;max-width:480px;}
+.lv-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,151,63,0.15);border:1px solid rgba(201,151,63,0.4);color:var(--accent-light);padding:8px 18px;border-radius:30px;font-size:13px;font-weight:600;margin-bottom:26px;}
+.lv-content h1{font-size:34px;font-weight:900;line-height:1.4;margin-bottom:16px;color:#fff;}
+.lv-content h1 span{color:var(--accent);}
+.lv-content p{font-size:15px;color:rgba(255,255,255,0.8);margin-bottom:36px;}
+.lv-features{display:flex;flex-direction:column;gap:16px;}
+.lv-feature{display:flex;align-items:center;gap:14px;}
+.lv-feature i{width:38px;height:38px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--accent-light);font-size:15px;flex-shrink:0;}
+.lv-feature span{font-size:13.5px;color:rgba(255,255,255,0.85);font-weight:600;}
+
+.login-form-side{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--background);
+  padding:40px 24px;
+}
+.login-card{width:100%;max-width:400px;}
+.login-card-header{text-align:center;margin-bottom:30px;}
+.login-card-header .logo-icon{margin:0 auto 18px;width:56px;height:56px;font-size:26px;}
+.login-card-header h2{font-size:21px;margin-bottom:6px;}
+.login-card-header p{font-size:13px;color:var(--text-muted);}
+
+.password-field-wrap{position:relative;}
+.password-toggle-btn{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--text-muted);
+  font-size:15px;padding:4px;
+}
+.password-toggle-btn:hover{color:var(--primary);}
+
+.remember-row{display:flex;align-items:center;justify-content:space-between;margin:6px 0 20px;}
+.remember-check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-muted);cursor:pointer;}
+.remember-check input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;}
+
+.login-submit-btn{width:100%;justify-content:center;padding:14px;font-size:15px;position:relative;}
+.login-submit-btn.loading{color:transparent !important;pointer-events:none;}
+.login-submit-btn.loading::after{
+  content:'';position:absolute;width:18px;height:18px;
+  border:2.5px solid rgba(10,39,56,0.3);border-top-color:var(--primary-dark);
+  border-radius:50%;animation:spin .6s linear infinite;
+}
+
+.security-note{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--info-soft);border:1px solid rgba(45,106,127,0.2);
+  border-radius:10px;padding:12px 14px;margin-top:22px;
+}
+.security-note i{color:var(--info);font-size:14px;margin-top:2px;flex-shrink:0;}
+.security-note span{font-size:11.5px;color:var(--text-muted);line-height:1.6;}
+
+.session-checking-overlay{
+  position:fixed;inset:0;background:var(--background);z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+}
+
+@media(max-width:900px){
+  .login-visual{display:none;}
+  .login-form-side{flex:1;}
+}
+</style>
 </head>
 <body>
 
-<section class="login-page">
-  <div class="login-box">
-    <div class="logo-icon" style="margin:0 auto 16px;"><i class="fa-solid fa-lock"></i></div>
-    <h2>مساحة الإدارة</h2>
-    <p>الدخول مخصص لمدير المؤسسة فقط</p>
-    <div class="login-error" id="loginError">اسم المستخدم أو رمز الدخول غير صحيح</div>
-    <form id="adminLoginForm">
-      <div class="form-field"><label>اسم المستخدم</label><input type="text" id="adminUser" required autocomplete="username"></div>
-      <div class="form-field"><label>رمز الدخول</label><input type="password" id="adminPass" required autocomplete="current-password"></div>
-      <button type="submit" class="btn btn-dark" style="width:100%;justify-content:center;margin-top:10px;">دخول</button>
-    </form>
-    <div class="demo-note"><i class="fa-solid fa-circle-info"></i> بيانات Demo — admin / Elite@2026</div>
-    <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-right"></i> العودة للصفحة الرئيسية</a>
-  </div>
-</section>
+<!-- Prevents a flash of the login form before the session check redirects -->
+<div class="session-checking-overlay" id="sessionCheckingOverlay">
+  <div class="spinner"></div>
+</div>
 
+<div class="login-split" id="loginSplit" style="visibility:hidden;">
+
+  <!-- ============ LEFT VISUAL PANEL ============ -->
+  <div class="login-visual">
+    <div class="lv-pattern"></div>
+    <div class="lv-content">
+      <div class="lv-badge"><i class="fa-solid fa-star"></i> <span id="lvSlogan">نحو تعليم أفضل... نحو مستقبل أقوى</span></div>
+      <h1>نظام إدارة <span>أكاديمية النخبة</span><br>للتعليم والتكوين</h1>
+      <p id="lvDesc">لوحة تحكم إدارية متكاملة تتيح للمدير متابعة كل ما يخص المؤسسة التعليمية بدقة واحترافية.</p>
+      <div class="lv-features">
+        <div class="lv-feature"><i class="fa-solid fa-user-graduate"></i><span>إدارة كاملة لملفات التلاميذ والأولياء</span></div>
+        <div class="lv-feature"><i class="fa-solid fa-sack-dollar"></i><span>متابعة مالية دقيقة للمدفوعات والإيصالات</span></div>
+        <div class="lv-feature"><i class="fa-solid fa-shield-halved"></i><span>وصول مخصص للمدير فقط</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ RIGHT LOGIN FORM ============ -->
+  <div class="login-form-side">
+    <div class="login-card">
+      <div class="login-card-header">
+        <div class="logo-icon" style="margin:0 auto 18px;"><i class="fa-solid fa-graduation-cap"></i></div>
+        <h2>مساحة الإدارة</h2>
+        <p>الدخول مخصص لمدير المؤسسة فقط</p>
+      </div>
+
+      <div class="login-error" id="loginError"><i class="fa-solid fa-circle-exclamation"></i> اسم المستخدم أو كلمة المرور غير صحيحة</div>
+
+      <form id="adminLoginForm" novalidate>
+        <div class="form-field" style="margin-bottom:16px;">
+          <label for="adminUser">اسم المستخدم</label>
+          <input type="text" id="adminUser" name="username" autocomplete="username" placeholder="أدخل اسم المستخدم" required>
+        </div>
+
+        <div class="form-field" style="margin-bottom:6px;">
+          <label for="adminPass">كلمة المرور</label>
+          <div class="password-field-wrap">
+            <input type="password" id="adminPass" name="password" autocomplete="current-password" placeholder="أدخل كلمة المرور" required>
+            <button type="button" class="password-toggle-btn" id="togglePasswordBtn" aria-label="إظهار كلمة المرور">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="remember-row">
+          <label class="remember-check">
+            <input type="checkbox" id="rememberMe">
+            تذكرني على هذا الجهاز
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-dark login-submit-btn" id="loginSubmitBtn">
+          <i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول
+        </button>
+      </form>
+
+      <div class="security-note">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>هذه نسخة تجريبية (Prototype) لأغراض العرض فقط. في النسخة الإنتاجية النهائية، يجب استبدال هذا النظام بمصادقة آمنة عبر خادم (Backend)، مع كلمات مرور مشفّرة وصلاحيات محمية على مستوى الخادم.</span>
+      </div>
+
+      <a href="index.html" class="back-home"><i class="fa-solid fa-arrow-right"></i> العودة للصفحة الرئيسية</a>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-document.getElementById('adminLoginForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const u = document.getElementById('adminUser').value.trim();
-  const p = document.getElementById('adminPass').value.trim();
-  const errorBox = document.getElementById('loginError');
-  if(u === ADMIN_CREDENTIALS.username && p === ADMIN_CREDENTIALS.password){
-    sessionStorage.setItem('eliteAdminLoggedIn', 'true');
-    logAction('تسجيل دخول المدير');
+/* =========================================================================
+   PROTOTYPE-ONLY AUTHENTICATION NOTICE
+   -------------------------------------------------------------------------
+   This login page performs authentication entirely on the client side by
+   calling EliteAcademy.auth.login(), which checks the credentials against a
+   constant defined inside shared.js. This is convenient for demonstrating
+   the system's UI/UX flow, but it is NOT secure: anyone who reads the
+   client-side JavaScript can see how the check works, and the "session" is
+   just a flag stored in localStorage/sessionStorage with no server-side
+   verification whatsoever.
+
+   A production deployment of this system MUST replace this entire flow
+   with:
+     - A secure backend authentication endpoint (e.g. POST /api/login)
+     - Hashed + salted password storage (never plaintext)
+     - Server-issued session tokens (e.g. JWT / secure HTTP-only cookies)
+     - Server-side authorization checks on every protected route/API call
+     - Rate limiting / brute-force protection
+   ========================================================================= */
+
+/* ============ SESSION GUARD: redirect if already authenticated ============ */
+(function checkExistingSession(){
+  const session = EliteAcademy.auth.getSession();
+  if(session && session.authenticated === true && session.role === 'director'){
     window.location.href = 'dashboard.html';
-  } else {
-    errorBox.style.display = 'block';
+    return; // keep the overlay up during redirect
   }
+  // No valid session — reveal the login page
+  document.getElementById('sessionCheckingOverlay').style.display = 'none';
+  document.getElementById('loginSplit').style.visibility = 'visible';
+})();
+
+/* ============ LOAD DYNAMIC INSTITUTION SETTINGS ============ */
+(function applySettings(){
+  const s = EliteAcademy.utils.getSettings();
+  document.title = `دخول الإدارة | ${s.institutionName}`;
+  document.getElementById('lvSlogan').textContent = s.slogan;
+  document.getElementById('lvDesc').textContent =
+    `لوحة تحكم إدارية متكاملة تتيح لمدير ${s.institutionName} متابعة كل ما يخص المؤسسة بدقة واحترافية.`;
+})();
+
+/* ============ SHOW/HIDE PASSWORD ============ */
+const passwordInput = document.getElementById('adminPass');
+const toggleBtn = document.getElementById('togglePasswordBtn');
+toggleBtn.addEventListener('click', function(){
+  const isHidden = passwordInput.type === 'password';
+  passwordInput.type = isHidden ? 'text' : 'password';
+  this.innerHTML = isHidden
+    ? '<i class="fa-solid fa-eye-slash"></i>'
+    : '<i class="fa-solid fa-eye"></i>';
+  this.setAttribute('aria-label', isHidden ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور');
 });
+
+/* ============ PRE-FILL REMEMBERED USERNAME (not password) ============ */
+(function prefillRememberedUsername(){
+  const remembered = localStorage.getItem('eliteAcademy_rememberedUsername');
+  if(remembered){
+    document.getElementById('adminUser').value = remembered;
+    document.getElementById('rememberMe').checked = true;
+  }
+})();
+
+/* ============ LOGIN SUBMIT ============ */
+const form = document.getElementById('adminLoginForm');
+const errorBox = document.getElementById('loginError');
+const submitBtn = document.getElementById('loginSubmitBtn');
+
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+
+  const username = document.getElementById('adminUser').value.trim();
+  const password = document.getElementById('adminPass').value;
+  const rememberMe = document.getElementById('rememberMe').checked;
+
+  errorBox.classList.remove('active');
+  errorBox.style.display = 'none';
+
+  if(EliteAcademy.utils.isEmpty(username) || EliteAcademy.utils.isEmpty(password)){
+    showLoginError('يرجى إدخال اسم المستخدم وكلمة المرور');
+    return;
+  }
+
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
+
+  // Small delay purely for perceived polish on the loading state — the
+  // actual check is synchronous (client-side prototype auth).
+  setTimeout(() => {
+    const success = EliteAcademy.auth.login(username, password);
+
+    if(success){
+      if(rememberMe){
+        localStorage.setItem('eliteAcademy_rememberedUsername', username);
+      } else {
+        localStorage.removeItem('eliteAcademy_rememberedUsername');
+      }
+      submitBtn.innerHTML = '<i class="fa-solid fa-check"></i> تم بنجاح، جارٍ التحويل...';
+      window.location.href = 'dashboard.html';
+    } else {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      showLoginError('اسم المستخدم أو كلمة المرور غير صحيحة');
+    }
+  }, 550);
+});
+
+function showLoginError(message){
+  errorBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${message}`;
+  errorBox.style.display = 'block';
+  passwordInput.value = '';
+  passwordInput.focus();
+}
 </script>
 
 </body>
