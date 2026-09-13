@@ -8,28 +8,70 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 <style>
-.finance-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
-@media(max-width:900px){.finance-cards{grid-template-columns:1fr 1fr;}}
-.pay-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;justify-content:space-between;}
-.pay-toolbar input,.pay-toolbar select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
+.page-actions-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px;}
+.page-actions-btns{display:flex;gap:8px;flex-wrap:wrap;}
 
-/* RECEIPT */
-.receipt-box{background:#fff;border:2px dashed var(--border);border-radius:14px;padding:30px;max-width:420px;margin:0 auto;}
-.receipt-head{text-align:center;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:16px;}
-.receipt-head .logo-icon{margin:0 auto 10px;}
-.receipt-head h3{font-size:16px;}
-.receipt-head span{font-size:11px;color:var(--text-gray);}
-.receipt-row{display:flex;justify-content:space-between;padding:8px 0;font-size:13px;border-bottom:1px dashed var(--border);}
+.top-tabs{display:flex;gap:6px;background:var(--surface);border-radius:12px;padding:6px;box-shadow:var(--shadow-sm);margin-bottom:20px;width:fit-content;flex-wrap:wrap;}
+.top-tab{padding:9px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);border:none;background:none;font-family:'Cairo',sans-serif;}
+.top-tab.active{background:var(--primary);color:#fff;}
+.view-content{display:none;}
+.view-content.active{display:block;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:1100px){ .kpi-row{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:600px){ .kpi-row{grid-template-columns:1fr 1fr;} }
+
+.search-bar-wrap{position:relative;margin-bottom:16px;}
+.search-bar-wrap i{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--text-muted);}
+.search-bar-wrap input{width:100%;padding:14px 46px 14px 18px;border:1.5px solid var(--border);border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;background:var(--surface);box-shadow:var(--shadow-sm);}
+.search-bar-wrap input:focus{outline:none;border-color:var(--accent);}
+.search-results-list{background:var(--surface);border:1px solid var(--border);border-radius:9px;box-shadow:var(--shadow-md);margin-top:6px;max-height:240px;overflow-y:auto;}
+.sr-row{padding:10px 16px;cursor:pointer;font-size:12.8px;display:flex;justify-content:space-between;}
+.sr-row:hover{background:var(--surface-soft);}
+
+/* STUDENT FINANCIAL PROFILE */
+.sfp-header{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px;margin-bottom:16px;}
+.sfp-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--accent-light);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex-shrink:0;}
+.sfp-fin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:800px){ .sfp-fin-grid{grid-template-columns:1fr 1fr;} }
+.sfp-box{border-radius:var(--radius-md);padding:15px;border:1px solid var(--border);text-align:center;}
+.sfp-box.paid{background:var(--success-soft);}
+.sfp-box.remaining{background:var(--danger-soft);}
+.sfp-box span{display:block;font-size:10.5px;color:var(--text-muted);margin-bottom:3px;}
+.sfp-box b{font-size:16px;}
+
+.filters-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;}
+.filters-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px;}
+.filters-grid select, .filters-grid input{padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'Cairo',sans-serif;font-size:12.5px;background:var(--surface-soft);width:100%;}
+.filters-actions{display:flex;gap:8px;justify-content:flex-end;}
+@media(max-width:900px){ .filters-grid{grid-template-columns:1fr 1fr;} }
+
+.wide-modal{max-width:640px !important;}
+.modal-section-title{display:flex;align-items:center;gap:10px;margin:22px 0 14px;padding-bottom:10px;border-bottom:2px solid var(--surface-soft);}
+.modal-section-title:first-child{margin-top:0;}
+.modal-section-title i{width:32px;height:32px;background:var(--warning-soft);color:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.modal-section-title h4{font-size:14.5px;font-weight:800;color:var(--primary);}
+
+/* RECEIPT (print-ready) */
+.receipt-preview{background:var(--surface);border:2px dashed var(--border-strong);border-radius:var(--radius-md);padding:26px;max-width:420px;margin:0 auto;}
+.receipt-head{text-align:center;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:14px;}
+.receipt-head .logo-icon{margin:0 auto 8px;}
+.receipt-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px dashed var(--border);}
 .receipt-row b{font-weight:800;}
-.receipt-total{background:var(--bg-light);padding:14px;border-radius:10px;text-align:center;margin-top:14px;}
-.receipt-total span{display:block;font-size:11px;color:var(--text-gray);}
-.receipt-total b{font-size:22px;color:var(--primary);}
+.receipt-total{background:var(--surface-soft);padding:12px;border-radius:9px;text-align:center;margin-top:12px;}
+.receipt-total span{display:block;font-size:10.5px;color:var(--text-muted);}
+.receipt-total b{font-size:19px;color:var(--primary);}
+.receipt-signature{margin-top:26px;padding-top:16px;border-top:1px dashed var(--border);text-align:center;font-size:11px;color:var(--text-muted);}
+.receipt-signature .sig-line{margin-top:30px;border-top:1px solid var(--text-muted);width:140px;margin-inline:auto;padding-top:4px;}
+
+.void-badge{background:var(--danger-soft);color:var(--danger);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:800;margin-right:6px;}
 </style>
 </head>
 <body>
 
 <div class="admin-layout">
   <aside class="sidebar" id="sidebar"></aside>
+
   <div class="main-panel">
     <div class="topbar">
       <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
@@ -40,225 +82,713 @@
     </div>
 
     <div class="dash-content">
-      <div class="dash-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;">
+      <div class="breadcrumb"><a href="dashboard.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><span>المالية والمدفوعات</span></div>
+
+      <div class="page-actions-row">
         <div>
           <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
-          <h2>المالية والمدفوعات</h2>
-          <p>رسوم التسجيل، الأقساط، والمدفوعات (الدينار الجزائري - دج)</p>
+          <h2 style="font-size:22px;font-weight:800;">المالية والمدفوعات</h2>
+          <p style="font-size:13px;color:var(--text-muted);">إدارة الرسوم والمدفوعات والديون والمصاريف</p>
         </div>
-        <button class="btn btn-primary" onclick="openPaymentModal()"><i class="fa-solid fa-plus"></i> تسجيل دفعة جديدة</button>
+        <div class="page-actions-btns">
+          <button class="btn btn-outline btn-sm" onclick="goToReport('financial-summary')"><i class="fa-solid fa-chart-simple"></i> التقارير المالية</button>
+          <button class="btn btn-outline btn-sm" onclick="openAddExpenseModal()"><i class="fa-solid fa-file-invoice-dollar"></i> إضافة مصروف</button>
+          <button class="btn btn-primary" onclick="openPaymentModal()"><i class="fa-solid fa-money-bill-transfer"></i> تسجيل دفعة</button>
+        </div>
       </div>
 
-      <div class="finance-cards">
-        <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-sack-dollar"></i></div><div><div class="dstat-num" id="totalCollected">0</div><div class="dstat-label">المبالغ المحصلة (دج)</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-circle-exclamation"></i></div><div><div class="dstat-num" id="totalRemaining">720,000</div><div class="dstat-label">المبالغ المتبقية (دج)</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-coins"></i></div><div><div class="dstat-num" id="regFeeDisplay">5,000</div><div class="dstat-label">رسوم التسجيل (دج)</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-calendar-days"></i></div><div><div class="dstat-num" id="monthlyFeeDisplay">12,000</div><div class="dstat-label">القسط الشهري (دج)</div></div></div>
+      <!-- FINANCIAL KPIs -->
+      <div class="kpi-row" id="kpiRow"></div>
+
+      <!-- TABS -->
+      <div class="top-tabs">
+        <button class="top-tab active" data-tab="overview" onclick="switchTab('overview')">نظرة عامة</button>
+        <button class="top-tab" data-tab="students" onclick="switchTab('students')">بحث مالي عن طالب</button>
+        <button class="top-tab" data-tab="payments" onclick="switchTab('payments')">سجل المدفوعات</button>
+        <button class="top-tab" data-tab="expenses" onclick="switchTab('expenses')">المصاريف والرواتب</button>
       </div>
 
-      <div class="pay-toolbar">
-        <input type="text" id="paySearch" placeholder="بحث برقم البطاقة، اسم التلميذ، رقم الوصل...">
-        <select id="payReasonFilter">
-          <option value="">كل الأسباب</option>
-          <option value="رسوم التسجيل">رسوم التسجيل</option>
-          <option value="القسط الشهري">القسط الشهري</option>
-        </select>
+      <!-- ============ TAB: OVERVIEW ============ -->
+      <div class="view-content active" id="view-overview">
+        <div class="panel" style="margin-bottom:16px;">
+          <div class="panel-head"><h3>آخر المدفوعات</h3><button class="btn btn-sm btn-outline" onclick="switchTab('payments')">عرض الكل</button></div>
+          <div style="overflow-x:auto;"><table class="dtable"><thead><tr><th>رقم الوصل</th><th>الطالب</th><th>المبلغ</th><th>النوع</th><th>التاريخ</th></tr></thead><tbody id="recentPaymentsBody"></tbody></table></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>الطلبة الأكثر مديونية</h3></div>
+          <div style="overflow-x:auto;"><table class="dtable"><thead><tr><th>الطالب</th><th>رقم البطاقة</th><th>المتبقي</th><th></th></tr></thead><tbody id="topDebtorsBody"></tbody></table></div>
+        </div>
       </div>
 
-      <div class="panel">
-        <div style="overflow-x:auto;">
-          <table class="dtable">
-            <thead><tr><th>رقم الوصل</th><th>التلميذ</th><th>رقم البطاقة</th><th>المبلغ</th><th>السبب</th><th>الطريقة</th><th>التاريخ</th><th></th></tr></thead>
-            <tbody id="paymentsBody"></tbody>
-          </table>
+      <!-- ============ TAB: STUDENT FINANCIAL SEARCH ============ -->
+      <div class="view-content" id="view-students">
+        <div class="search-bar-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="studentFinSearch" placeholder="ابحث برقم البطاقة، اسم الطالب، اسم الولي، هاتف الولي...">
+        </div>
+        <div id="studentFinSearchResults" class="search-results-list" style="display:none;"></div>
+        <div id="studentFinProfile"><div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>ابحث عن طالب لعرض ملفه المالي الكامل</p></div></div>
+      </div>
+
+      <!-- ============ TAB: PAYMENTS HISTORY ============ -->
+      <div class="view-content" id="view-payments">
+        <div class="filters-bar">
+          <div class="filters-grid">
+            <input type="text" id="payFilterSearch" placeholder="بحث برقم الوصل أو اسم الطالب...">
+            <input type="date" id="payFilterDate" title="التاريخ">
+            <select id="payFilterType"><option value="">النوع (الكل)</option><option>رسوم التسجيل</option><option>القسط الشهري</option><option>قسط إضافي</option><option>مبلغ آخر</option></select>
+            <select id="payFilterMethod"><option value="">الطريقة (الكل)</option><option>نقداً</option><option>تحويل</option><option>أخرى</option></select>
+            <select id="payFilterStatus"><option value="">الحالة (الكل)</option><option value="ساري">ساري</option><option value="ملغى">ملغى</option></select>
+          </div>
+          <div class="filters-actions">
+            <button class="btn btn-ghost btn-sm" onclick="resetPaymentFilters()"><i class="fa-solid fa-rotate-left"></i> إعادة تعيين</button>
+            <button class="btn btn-dark btn-sm" onclick="applyPaymentFilters()"><i class="fa-solid fa-filter"></i> تطبيق</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>رقم الوصل</th><th>الطالب</th><th>النوع</th><th>المبلغ</th><th>الطريقة</th><th>التاريخ</th><th>بواسطة</th><th>إجراءات</th></tr></thead>
+              <tbody id="paymentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="pagination" id="paymentsPagination"></div>
+      </div>
+
+      <!-- ============ TAB: EXPENSES ============ -->
+      <div class="view-content" id="view-expenses">
+        <div class="kpi-row" style="grid-template-columns:repeat(3,1fr);" id="expenseKpiRow"></div>
+        <div class="filters-bar">
+          <div class="filters-grid" style="grid-template-columns:repeat(3,1fr);">
+            <select id="expFilterCategory"><option value="">الفئة (الكل)</option><option>إيجار</option><option>فواتير</option><option>صيانة</option><option>مستلزمات</option><option>رواتب</option><option>أخرى</option></select>
+            <input type="date" id="expFilterDate" title="التاريخ">
+            <select id="expFilterStatus"><option value="">الحالة (الكل)</option><option value="نشط">نشط</option><option value="ملغى">ملغى</option></select>
+          </div>
+          <div class="filters-actions">
+            <button class="btn btn-ghost btn-sm" onclick="resetExpenseFilters()"><i class="fa-solid fa-rotate-left"></i> إعادة تعيين</button>
+            <button class="btn btn-dark btn-sm" onclick="applyExpenseFilters()"><i class="fa-solid fa-filter"></i> تطبيق</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div style="overflow-x:auto;">
+            <table class="dtable">
+              <thead><tr><th>الفئة</th><th>الوصف</th><th>المبلغ</th><th>الطريقة</th><th>التاريخ</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+              <tbody id="expensesTableBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ADD PAYMENT MODAL -->
+<!-- ============ RECORD PAYMENT MODAL ============ -->
 <div class="modal-overlay" id="paymentModal">
-  <div class="success-modal" style="max-width:480px;text-align:right;">
+  <div class="success-modal wide-modal" style="text-align:right;max-height:88vh;overflow-y:auto;">
     <h3 style="margin-bottom:16px;">تسجيل دفعة جديدة</h3>
     <form id="paymentForm">
-      <div class="form-field" style="margin-bottom:12px;">
-        <label>رقم بطاقة التلميذ أو الاسم</label>
-        <input type="text" id="paySearchStudent" placeholder="ابحث عن التلميذ..." required>
-        <div id="studentSuggestions" style="font-size:12px;color:var(--text-gray);margin-top:4px;"></div>
+      <div class="form-field" style="margin-bottom:8px;">
+        <label>الطالب <span class="req">*</span></label>
+        <input type="text" id="paySearchStudent" placeholder="ابحث برقم البطاقة أو اسم الطالب...">
       </div>
-      <input type="hidden" id="selectedStudentId">
-      <div class="form-field" style="margin-bottom:12px;">
-        <label>سبب الدفع</label>
-        <select id="payReason">
-          <option value="رسوم التسجيل">رسوم التسجيل</option>
-          <option value="القسط الشهري">القسط الشهري</option>
-          <option value="أخرى">أخرى</option>
-        </select>
+      <div id="paySearchResults" style="font-size:12.5px;max-height:140px;overflow-y:auto;margin-bottom:6px;"></div>
+      <div id="paySelectedStudentBox" style="display:none;background:var(--success-soft);color:var(--success);padding:10px 14px;border-radius:9px;font-size:12.5px;font-weight:700;margin-bottom:14px;"></div>
+      <input type="hidden" id="paySelectedStudentId">
+
+      <div class="form-grid">
+        <div class="form-field"><label>تاريخ الدفع <span class="req">*</span></label><input type="date" id="payDate"></div>
+        <div class="form-field"><label>المبلغ (دج) <span class="req">*</span></label><input type="number" id="payAmount" min="1"></div>
+        <div class="form-field"><label>نوع الدفعة</label>
+          <select id="payType"><option>رسوم التسجيل</option><option>القسط الشهري</option><option>قسط إضافي</option><option>مبلغ آخر</option></select>
+        </div>
+        <div class="form-field"><label>طريقة الدفع</label><select id="payMethod"><option>نقداً</option><option>تحويل</option><option>أخرى</option></select></div>
+        <div class="form-field"><label>السنة الدراسية</label><select id="payAcademicYear"></select></div>
+        <div class="form-field"><label>الشهر / الفترة</label><input type="text" id="payPeriod" placeholder="مثال: سبتمبر 2026"></div>
+        <div class="form-field full"><label>وصف الإيصال</label><input type="text" id="payDescription" placeholder="مثال: دفعة القسط الشهري لشهر سبتمبر"></div>
+        <div class="form-field full"><label>ملاحظات</label><textarea id="payNotes"></textarea></div>
       </div>
-      <div class="form-field" style="margin-bottom:12px;">
-        <label>المبلغ (دج)</label>
-        <input type="number" id="payAmount" required>
-      </div>
-      <div class="form-field" style="margin-bottom:12px;">
-        <label>طريقة الدفع</label>
-        <select id="payMethod"><option value="نقدًا">نقدًا</option><option value="تحويل بنكي">تحويل بنكي</option></select>
-      </div>
-      <div style="display:flex;gap:10px;">
-        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;">تسجيل وإنشاء الوصل</button>
+
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;">تسجيل الدفعة وإصدار الإيصال</button>
         <button type="button" class="btn btn-danger" onclick="closePaymentModal()">إلغاء</button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- RECEIPT MODAL -->
+<!-- ============ RECEIPT MODAL ============ -->
 <div class="modal-overlay" id="receiptModal">
   <div class="success-modal" style="max-width:460px;">
-    <div class="receipt-box" id="receiptContent"></div>
+    <div class="receipt-preview printable-area" id="receiptContent"></div>
     <div style="display:flex;gap:10px;margin-top:16px;">
-      <button class="btn btn-dark" style="flex:1;justify-content:center;" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة الوصل</button>
-      <button class="btn" style="background:var(--bg-light);flex:1;justify-content:center;" onclick="closeReceiptModal()">إغلاق</button>
+      <button class="btn btn-dark" style="flex:1;justify-content:center;" onclick="printReceipt()"><i class="fa-solid fa-print"></i> طباعة الإيصال</button>
+      <button class="btn" style="background:var(--surface-soft);flex:1;justify-content:center;" onclick="closeReceiptModal()">إغلاق</button>
     </div>
   </div>
 </div>
 
+<!-- ============ VOID/CORRECT PAYMENT MODAL ============ -->
+<div class="modal-overlay" id="voidModal">
+  <div class="success-modal" style="max-width:440px;text-align:right;">
+    <h3 style="margin-bottom:14px;">إلغاء / تصحيح الدفعة</h3>
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">لن يُحذف السجل الأصلي أبدًا — سيُعلَّم كـ "ملغى" مع الاحتفاظ به في السجل المالي للمراجعة.</p>
+    <div class="form-field" style="margin-bottom:14px;"><label>سبب الإلغاء / التصحيح <span class="req">*</span></label><textarea id="voidReasonInput" rows="3"></textarea></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-danger" style="flex:1;justify-content:center;" onclick="confirmVoidPayment()">تأكيد الإلغاء</button>
+      <button class="btn" style="background:var(--surface-soft);" onclick="closeVoidModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADD/EDIT EXPENSE MODAL ============ -->
+<div class="modal-overlay" id="expenseModal">
+  <div class="success-modal" style="max-width:520px;text-align:right;">
+    <h3 id="expenseModalTitle" style="margin-bottom:16px;">إضافة مصروف جديد</h3>
+    <form id="expenseForm">
+      <input type="hidden" id="editingExpenseId">
+      <div class="form-grid">
+        <div class="form-field" data-field="category"><label>الفئة <span class="req">*</span></label>
+          <select name="category"><option>إيجار</option><option>فواتير</option><option>صيانة</option><option>مستلزمات</option><option>رواتب</option><option>أخرى</option></select>
+          <span class="error-text">مطلوب</span>
+        </div>
+        <div class="form-field" data-field="amount"><label>المبلغ (دج) <span class="req">*</span></label><input type="number" name="amount" min="1"><span class="error-text">مطلوب</span></div>
+        <div class="form-field" data-field="date"><label>التاريخ <span class="req">*</span></label><input type="date" name="date"><span class="error-text">مطلوب</span></div>
+        <div class="form-field"><label>طريقة الدفع</label><select name="method"><option>نقداً</option><option>تحويل</option><option>أخرى</option></select></div>
+        <div class="form-field full"><label>الوصف</label><input type="text" name="description" placeholder="مثال: راتب شهر سبتمبر - الأساتذة"></div>
+        <div class="form-field full"><label>مرجع / وثيقة (اختياري)</label><input type="text" name="reference" placeholder="رقم الفاتورة أو المرجع"></div>
+        <div class="form-field full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;" id="expenseFormSubmitBtn">حفظ المصروف</button>
+        <button type="button" class="btn btn-danger" onclick="closeExpenseModal()">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-requireAdminAuth();
-renderSidebar('payment');
+EliteAcademy.auth.requireAuth();
+EliteAcademy.navigation.renderSidebar('payment');
 
-let selectedStudent = null;
+const K = EliteAcademy.storage.keys;
+const getData = EliteAcademy.storage.getData;
 
-function loadFinanceStats(){
-  const payments = DB.get('elitePayments');
-  const settings = DB.getSettings();
-  const total = payments.reduce((sum,p)=> sum + Number(p.amount||0), 0);
-  document.getElementById('totalCollected').textContent = total.toLocaleString('en-US');
-  document.getElementById('regFeeDisplay').textContent = Number(settings.registrationFee).toLocaleString('en-US');
-  document.getElementById('monthlyFeeDisplay').textContent = Number(settings.monthlyFee).toLocaleString('en-US');
+let selectedPaymentStudent = null;
+let currentVoidPaymentId = null;
+let filteredPayments = [];
+let paymentsCurrentPage = 1;
+const PAY_PAGE_SIZE = 12;
+
+function initials(f,l){ return (f[0]||'') + (l[0]||''); }
+
+/* ============ RECEIPT NUMBER GENERATOR (immutable, never reused) ============ */
+function generateReceiptNumberLocal(){
+  const settings = EliteAcademy.utils.getSettings();
+  const next = (settings.lastReceiptNumber || 0) + 1;
+  EliteAcademy.utils.updateSettings({ lastReceiptNumber: next });
+  return `REC-${new Date().getFullYear()}-${String(next).padStart(6,'0')}`;
 }
 
-function loadPayments(){
-  const q = document.getElementById('paySearch').value.trim();
-  const reason = document.getElementById('payReasonFilter').value;
-  let payments = DB.get('elitePayments');
+/* ============ FINANCIAL CALCULATIONS ============ */
+function getStudentFinancials(studentId){
+  const settings = EliteAcademy.utils.getSettings();
+  const payments = getData(K.payments).filter(p => p.studentId===studentId && p.status!=='ملغى');
+  const student = EliteAcademy.storage.findById(K.students, studentId);
+  const discount = Number(student?.discount || 0);
 
-  payments = payments.filter(p => {
-    const matchQ = !q || p.cardNumber.includes(q) || p.studentName.includes(q) || p.receiptNumber.includes(q);
-    const matchReason = !reason || p.reason === reason;
-    return matchQ && matchReason;
-  });
+  const expected = Number(settings.registrationFee||0) + Number(settings.monthlyFee||0) - discount;
+  const paid = payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
+  const remaining = Math.max(expected - paid, 0);
 
-  const tbody = document.getElementById('paymentsBody');
-  if(payments.length === 0){
-    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>لا توجد مدفوعات مطابقة</p></div></td></tr>`;
-    return;
-  }
+  let status = 'غير مدفوع';
+  if(paid >= expected && expected > 0) status = 'مدفوع بالكامل';
+  else if(paid > 0) status = 'مدفوع جزئياً';
+  if(remaining > 0 && paid === 0) status = 'غير مدفوع';
 
-  tbody.innerHTML = payments.slice().reverse().map(p => `
-    <tr>
-      <td><b>${p.receiptNumber}</b></td>
-      <td>${p.studentName}</td>
-      <td>${p.cardNumber}</td>
-      <td>${Number(p.amount).toLocaleString('en-US')} دج</td>
-      <td>${p.reason}</td>
-      <td>${p.method}</td>
-      <td>${p.date}</td>
-      <td><button class="btn btn-sm btn-dark" onclick="showReceipt('${p.id}')"><i class="fa-solid fa-receipt"></i></button></td>
-    </tr>
+  return { expected, paid, remaining, status, discount };
+}
+
+function getAllDebtors(){
+  return getData(K.students).filter(s => s.status !== 'مؤرشف').map(s => ({ student:s, fin:getStudentFinancials(s.id) })).filter(x => x.fin.remaining > 0).sort((a,b)=>b.fin.remaining-a.fin.remaining);
+}
+
+/* ============ TAB SWITCHING ============ */
+function switchTab(tab){
+  document.querySelectorAll('.top-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  document.querySelectorAll('.view-content').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+  if(tab==='payments') refreshPaymentsTab();
+  if(tab==='expenses') refreshExpensesTab();
+}
+
+/* ============ FINANCIAL KPIs ============ */
+function renderKpis(){
+  const settings = EliteAcademy.utils.getSettings();
+  const payments = getData(K.payments).filter(p=>p.status!=='ملغى');
+  const expenses = getData(K.expenses).filter(e=>e.status!=='ملغى');
+  const students = getData(K.students).filter(s=>s.status!=='مؤرشف');
+
+  const totalExpected = students.reduce((sum,s)=>sum + getStudentFinancials(s.id).expected, 0);
+  const totalPaid = payments.reduce((sum,p)=>sum+Number(p.amount||0),0);
+  const totalRemaining = Math.max(totalExpected - totalPaid, 0);
+  const totalExpenses = expenses.reduce((sum,e)=>sum+Number(e.amount||0),0);
+  const netRevenue = totalPaid - totalExpenses;
+  const debtorsCount = getAllDebtors().length;
+
+  const kpis = [
+    { label:'إجمالي المستحقات', value:EliteAcademy.utils.formatCurrency(totalExpected), color:'blue' },
+    { label:'إجمالي المدفوعات', value:EliteAcademy.utils.formatCurrency(totalPaid), color:'green' },
+    { label:'المبالغ المتبقية', value:EliteAcademy.utils.formatCurrency(totalRemaining), color:'red' },
+    { label:'المصاريف', value:EliteAcademy.utils.formatCurrency(totalExpenses), color:'gold' },
+    { label:'صافي الإيرادات', value:EliteAcademy.utils.formatCurrency(netRevenue), color:'green' },
+    { label:'عدد الطلبة المدينين', value:debtorsCount, color:'red' }
+  ];
+  document.getElementById('kpiRow').innerHTML = kpis.map(k => `
+    <div class="dstat-card"><div class="dstat-icon ${k.color}"><i class="fa-solid fa-sack-dollar"></i></div><div><div class="dstat-num" style="font-size:15px;">${k.value}</div><div class="dstat-label">${k.label}</div></div></div>
   `).join('');
 }
 
-function openPaymentModal(){ document.getElementById('paymentModal').classList.add('active'); }
-function closePaymentModal(){
-  document.getElementById('paymentModal').classList.remove('active');
-  document.getElementById('paymentForm').reset();
-  selectedStudent = null;
-  document.getElementById('studentSuggestions').innerHTML = '';
+/* ============ OVERVIEW TAB ============ */
+function renderOverview(){
+  const payments = getData(K.payments).filter(p=>p.status!=='ملغى').slice().reverse().slice(0,8);
+  document.getElementById('recentPaymentsBody').innerHTML = payments.length ? payments.map(p => `
+    <tr><td data-label="رقم الوصل" class="ltr">${p.receiptNumber}</td><td data-label="الطالب">${p.studentName}</td><td data-label="المبلغ">${EliteAcademy.utils.formatCurrency(p.amount)}</td><td data-label="النوع">${p.type||p.reason}</td><td data-label="التاريخ">${p.date}</td></tr>
+  `).join('') : `<tr><td colspan="5"><div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>لا توجد مدفوعات بعد</p></div></td></tr>`;
+
+  const debtors = getAllDebtors().slice(0,8);
+  document.getElementById('topDebtorsBody').innerHTML = debtors.length ? debtors.map(d => `
+    <tr>
+      <td data-label="الطالب">${d.student.firstname} ${d.student.lastname}</td>
+      <td data-label="رقم البطاقة" class="ltr">${d.student.cardNumber}</td>
+      <td data-label="المتبقي"><b style="color:var(--danger);">${EliteAcademy.utils.formatCurrency(d.fin.remaining)}</b></td>
+      <td data-label=""><button class="btn btn-sm btn-outline" onclick="switchTab('students'); selectStudentForFinance('${d.student.id}');">عرض</button></td>
+    </tr>
+  `).join('') : `<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-circle-check"></i><p>لا يوجد طلبة مدينون حاليًا</p></div></td></tr>`;
 }
+
+/* ============ STUDENT FINANCIAL SEARCH ============ */
+document.getElementById('studentFinSearch').addEventListener('input', function(){
+  const q = this.value.trim();
+  const box = document.getElementById('studentFinSearchResults');
+  if(!q){ box.style.display='none'; return; }
+
+  const students = getData(K.students).filter(s => s.status!=='مؤرشف' && (
+    s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q) ||
+    (s.parentName && s.parentName.includes(q)) || (s.parentPhone && s.parentPhone.includes(q))
+  )).slice(0,8);
+
+  box.style.display = 'block';
+  box.innerHTML = students.length ? students.map(s => `
+    <div class="sr-row" onclick="selectStudentForFinance('${s.id}')"><span>${s.firstname} ${s.lastname} — ${s.level}</span><span class="ltr" style="color:var(--text-muted);">${s.cardNumber}</span></div>
+  `).join('') : `<div style="padding:14px;color:var(--text-muted);font-size:12px;">لا توجد نتائج</div>`;
+});
+
+function selectStudentForFinance(studentId){
+  document.getElementById('studentFinSearchResults').style.display = 'none';
+  const student = EliteAcademy.storage.findById(K.students, studentId);
+  document.getElementById('studentFinSearch').value = `${student.firstname} ${student.lastname}`;
+  renderStudentFinancialProfile(studentId);
+}
+
+function statusBadgeFin(status){
+  const map = { 'مدفوع بالكامل':'badge-accepted', 'مدفوع جزئياً':'badge-progress', 'غير مدفوع':'badge-rejected', 'متأخر':'badge-rejected' };
+  return map[status] || 'badge-progress';
+}
+
+function renderStudentFinancialProfile(studentId){
+  const student = EliteAcademy.storage.findById(K.students, studentId);
+  const fin = getStudentFinancials(studentId);
+  const payments = getData(K.payments).filter(p => p.studentId===studentId).sort((a,b)=>new Date(b.date)-new Date(a.date));
+
+  // parent aggregate if multiple children
+  const siblings = getData(K.students).filter(s => s.parentId === student.parentId && s.status!=='مؤرشف');
+  let aggregateHtml = '';
+  if(siblings.length > 1){
+    let aggExpected=0, aggPaid=0;
+    siblings.forEach(s => { const f = getStudentFinancials(s.id); aggExpected+=f.expected; aggPaid+=f.paid; });
+    const aggRemaining = Math.max(aggExpected-aggPaid,0);
+    aggregateHtml = `
+      <div class="panel" style="margin-bottom:16px;padding:16px 18px;">
+        <h4 style="font-size:13px;margin-bottom:10px;">الملخص المالي الإجمالي للولي (${siblings.length} طلبة)</h4>
+        <div class="sfp-fin-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:0;">
+          <div class="sfp-box"><span>المتوقع</span><b>${EliteAcademy.utils.formatCurrency(aggExpected)}</b></div>
+          <div class="sfp-box paid"><span>المدفوع</span><b>${EliteAcademy.utils.formatCurrency(aggPaid)}</b></div>
+          <div class="sfp-box remaining"><span>المتبقي</span><b>${EliteAcademy.utils.formatCurrency(aggRemaining)}</b></div>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('studentFinProfile').innerHTML = `
+    <div class="sfp-header">
+      <div class="sfp-avatar">${initials(student.firstname,student.lastname)}</div>
+      <div style="flex:1;">
+        <div style="font-size:16px;font-weight:800;">${student.firstname} ${student.lastname}</div>
+        <div style="font-size:12px;color:var(--text-muted);">${student.level} — ${student.section} — بطاقة: <span class="ltr">${student.cardNumber}</span></div>
+        <div style="font-size:12px;color:var(--text-muted);">الولي: ${student.parentName}</div>
+      </div>
+      <span class="badge ${statusBadgeFin(fin.status)}" style="font-size:12px;padding:8px 16px;">${fin.status}</span>
+      <button class="btn btn-primary btn-sm" onclick="openPaymentModal('${student.id}')"><i class="fa-solid fa-plus"></i> تسجيل دفعة</button>
+    </div>
+
+    ${aggregateHtml}
+
+    <div class="sfp-fin-grid">
+      <div class="sfp-box"><span>رسوم التسجيل</span><b>${EliteAcademy.utils.formatCurrency(EliteAcademy.utils.getSettings().registrationFee)}</b></div>
+      <div class="sfp-box"><span>القسط الشهري</span><b>${EliteAcademy.utils.formatCurrency(EliteAcademy.utils.getSettings().monthlyFee)}</b></div>
+      <div class="sfp-box"><span>التخفيض</span><b>${EliteAcademy.utils.formatCurrency(fin.discount)}</b></div>
+      <div class="sfp-box paid"><span>إجمالي المدفوع</span><b>${EliteAcademy.utils.formatCurrency(fin.paid)}</b></div>
+    </div>
+    <div class="sfp-fin-grid" style="grid-template-columns:1fr;">
+      <div class="sfp-box remaining"><span>المبلغ المتبقي</span><b style="font-size:22px;">${EliteAcademy.utils.formatCurrency(fin.remaining)}</b></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>سجل المدفوعات</h3></div>
+      <div style="overflow-x:auto;">
+        <table class="dtable">
+          <thead><tr><th>رقم الوصل</th><th>النوع</th><th>المبلغ</th><th>الطريقة</th><th>التاريخ</th><th>إجراءات</th></tr></thead>
+          <tbody>
+            ${payments.length ? payments.map(p => `
+              <tr>
+                <td data-label="رقم الوصل" class="ltr">${p.receiptNumber} ${p.status==='ملغى'?'<span class="void-badge">ملغى</span>':''}</td>
+                <td data-label="النوع">${p.type||p.reason}</td>
+                <td data-label="المبلغ">${EliteAcademy.utils.formatCurrency(p.amount)}</td>
+                <td data-label="الطريقة">${p.method}</td>
+                <td data-label="التاريخ">${p.date}</td>
+                <td data-label="إجراءات">
+                  <div class="row-actions">
+                    <button class="btn btn-sm btn-outline" onclick="showReceipt('${p.id}')"><i class="fa-solid fa-receipt"></i></button>
+                    ${p.status!=='ملغى' ? `<button class="btn btn-sm btn-danger" onclick="openVoidModal('${p.id}')"><i class="fa-solid fa-ban"></i></button>` : ''}
+                  </div>
+                </td>
+              </tr>`).join('') : `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>لا توجد مدفوعات مسجلة لهذا الطالب</p></div></td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+/* ============ PAYMENT MODAL ============ */
+function openPaymentModal(prefilledStudentId){
+  document.getElementById('paymentForm').reset();
+  document.getElementById('payDate').value = new Date().toISOString().split('T')[0];
+  const years = getData(K.academicYears);
+  document.getElementById('payAcademicYear').innerHTML = years.map(y=>`<option value="${y.id}" ${y.isCurrent?'selected':''}>${y.label}</option>`).join('');
+
+  selectedPaymentStudent = null;
+  document.getElementById('paySelectedStudentBox').style.display = 'none';
+  document.getElementById('paySearchResults').innerHTML = '';
+  document.getElementById('paySearchStudent').value = '';
+
+  if(prefilledStudentId){
+    const student = EliteAcademy.storage.findById(K.students, prefilledStudentId);
+    selectPaymentStudent(prefilledStudentId, `${student.firstname} ${student.lastname}`);
+  }
+
+  document.getElementById('paymentModal').classList.add('active');
+}
+function closePaymentModal(){ document.getElementById('paymentModal').classList.remove('active'); }
 
 document.getElementById('paySearchStudent').addEventListener('input', function(){
   const q = this.value.trim();
-  const box = document.getElementById('studentSuggestions');
+  const box = document.getElementById('paySearchResults');
   if(!q){ box.innerHTML=''; return; }
-  const students = DB.get('eliteStudents').filter(s =>
-    s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q)
-  ).slice(0,5);
-  box.innerHTML = students.map(s =>
-    `<div style="cursor:pointer;padding:4px 0;" onclick="selectStudent('${s.id}','${s.firstname} ${s.lastname}')">💠 ${s.firstname} ${s.lastname} — ${s.cardNumber}</div>`
-  ).join('') || 'لا توجد نتائج';
+  const students = getData(K.students).filter(s => s.status!=='مؤرشف' && (s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q))).slice(0,6);
+  box.innerHTML = students.length ? students.map(s => `
+    <div style="cursor:pointer;padding:7px 10px;border-radius:7px;" onmouseover="this.style.background='var(--surface-soft)'" onmouseout="this.style.background=''" onclick="selectPaymentStudent('${s.id}','${s.firstname} ${s.lastname}')">
+      <i class="fa-solid fa-user-graduate" style="color:var(--accent);"></i> ${s.firstname} ${s.lastname} <span class="ltr" style="color:var(--text-muted);">— ${s.cardNumber}</span>
+    </div>`).join('') : `<div style="color:var(--text-muted);padding:6px;">لا توجد نتائج</div>`;
 });
 
-function selectStudent(id, name){
-  selectedStudent = DB.get('eliteStudents').find(s => s.id === id);
+function selectPaymentStudent(id, name){
+  selectedPaymentStudent = EliteAcademy.storage.findById(K.students, id);
+  document.getElementById('paySelectedStudentId').value = id;
   document.getElementById('paySearchStudent').value = name;
-  document.getElementById('studentSuggestions').innerHTML = `<span style="color:var(--success);">✓ تم اختيار التلميذ</span>`;
+  document.getElementById('paySearchResults').innerHTML = '';
+  const fin = getStudentFinancials(id);
+  document.getElementById('paySelectedStudentBox').style.display = 'block';
+  document.getElementById('paySelectedStudentBox').innerHTML = `<i class="fa-solid fa-check"></i> ${name} — المتبقي حاليًا: ${EliteAcademy.utils.formatCurrency(fin.remaining)}`;
 }
 
 document.getElementById('paymentForm').addEventListener('submit', function(e){
   e.preventDefault();
-  if(!selectedStudent){ alert('يرجى اختيار تلميذ من القائمة'); return; }
+  if(!selectedPaymentStudent){ EliteAcademy.notifications.showWarning('يرجى اختيار طالب من القائمة'); return; }
+  const amount = Number(document.getElementById('payAmount').value);
+  if(!amount || amount <= 0){ EliteAcademy.notifications.showWarning('يرجى إدخال مبلغ صحيح'); return; }
 
-  const receiptNumber = generateReceiptNumber();
-  const payment = {
-    id: uid('pay'),
+  const receiptNumber = generateReceiptNumberLocal();
+  const session = EliteAcademy.auth.getSession();
+  const payment = EliteAcademy.storage.saveRecord(K.payments, {
     receiptNumber,
-    studentId: selectedStudent.id,
-    studentName: `${selectedStudent.firstname} ${selectedStudent.lastname}`,
-    cardNumber: selectedStudent.cardNumber,
-    amount: document.getElementById('payAmount').value,
-    reason: document.getElementById('payReason').value,
+    studentId: selectedPaymentStudent.id,
+    studentName: `${selectedPaymentStudent.firstname} ${selectedPaymentStudent.lastname}`,
+    cardNumber: selectedPaymentStudent.cardNumber,
+    amount, type: document.getElementById('payType').value,
+    reason: document.getElementById('payType').value,
     method: document.getElementById('payMethod').value,
-    date: new Date().toISOString().split('T')[0]
-  };
+    academicYearId: document.getElementById('payAcademicYear').value,
+    period: document.getElementById('payPeriod').value || '',
+    description: document.getElementById('payDescription').value || '',
+    notes: document.getElementById('payNotes').value || '',
+    date: document.getElementById('payDate').value,
+    status: 'ساري',
+    createdBy: (session && session.username) || 'admin',
+    isDemo:false
+  });
 
-  const payments = DB.get('elitePayments');
-  payments.push(payment);
-  DB.set('elitePayments', payments);
-  logAction(`تم تسجيل دفعة بقيمة ${Number(payment.amount).toLocaleString('en-US')} دج للتلميذ ${payment.studentName}`);
-
+  EliteAcademy.utils.logAction('create','payments', payment.id, `تم تسجيل دفعة بقيمة ${EliteAcademy.utils.formatCurrency(amount)} للطالب ${payment.studentName} (وصل ${receiptNumber})`, 'success');
+  EliteAcademy.notifications.showSuccess('تم تسجيل الدفعة بنجاح');
   closePaymentModal();
-  loadFinanceStats();
-  loadPayments();
+  refreshAll();
   showReceipt(payment.id);
 });
 
+/* ============ RECEIPT ============ */
 function showReceipt(paymentId){
-  const payment = DB.get('elitePayments').find(p => p.id === paymentId);
-  if(!payment) return;
-  const settings = DB.getSettings();
+  const p = EliteAcademy.storage.findById(K.payments, paymentId);
+  const student = EliteAcademy.storage.findById(K.students, p.studentId);
+  const settings = EliteAcademy.utils.getSettings();
+  const fin = getStudentFinancials(p.studentId);
 
   document.getElementById('receiptContent').innerHTML = `
     <div class="receipt-head">
-      <div class="logo-icon" style="margin:0 auto 10px;"><i class="fa-solid fa-graduation-cap"></i></div>
-      <h3>${settings.institutionName}</h3>
-      <span>وصل استلام دفعة</span>
+      <div class="logo-icon" style="margin:0 auto 8px;"><i class="fa-solid fa-graduation-cap"></i></div>
+      <h3 style="font-size:15px;">${settings.institutionName}</h3>
+      <span style="font-size:10.5px;color:var(--text-muted);">إيصال استلام دفعة</span>
+      ${p.status==='ملغى' ? `<div style="color:var(--danger);font-weight:800;font-size:12px;margin-top:6px;">هذا الإيصال ملغى</div>` : ''}
     </div>
-    <div class="receipt-row"><span>رقم الوصل</span><b>${payment.receiptNumber}</b></div>
-    <div class="receipt-row"><span>اسم التلميذ</span><b>${payment.studentName}</b></div>
-    <div class="receipt-row"><span>رقم بطاقة التلميذ</span><b>${payment.cardNumber}</b></div>
-    <div class="receipt-row"><span>سبب الدفع</span><b>${payment.reason}</b></div>
-    <div class="receipt-row"><span>طريقة الدفع</span><b>${payment.method}</b></div>
-    <div class="receipt-row"><span>التاريخ</span><b>${payment.date}</b></div>
-    <div class="receipt-row"><span>اسم المدير</span><b>المدير</b></div>
-    <div class="receipt-total"><span>المبلغ المدفوع</span><b>${Number(payment.amount).toLocaleString('en-US')} دج</b></div>
+    <div class="receipt-row"><span>رقم الإيصال</span><b class="ltr">${p.receiptNumber}</b></div>
+    <div class="receipt-row"><span>التاريخ</span><b>${p.date}</b></div>
+    <div class="receipt-row"><span>اسم الطالب</span><b>${student ? student.firstname+' '+student.lastname : p.studentName}</b></div>
+    <div class="receipt-row"><span>رقم البطاقة</span><b class="ltr">${p.cardNumber}</b></div>
+    <div class="receipt-row"><span>الولي</span><b>${student ? student.parentName : '—'}</b></div>
+    <div class="receipt-row"><span>الوصف</span><b>${p.description || p.type || p.reason}</b></div>
+    <div class="receipt-row"><span>طريقة الدفع</span><b>${p.method}</b></div>
+    <div class="receipt-row"><span>السنة الدراسية</span><b>${settings.academicYear}</b></div>
+    <div class="receipt-row"><span>المبلغ المتبقي بعد الدفع</span><b>${EliteAcademy.utils.formatCurrency(fin.remaining)}</b></div>
+    <div class="receipt-total"><span>المبلغ المدفوع</span><b>${EliteAcademy.utils.formatCurrency(p.amount)}</b></div>
+    <div class="receipt-signature">توقيع المدير<div class="sig-line"></div></div>
   `;
   document.getElementById('receiptModal').classList.add('active');
 }
-
 function closeReceiptModal(){ document.getElementById('receiptModal').classList.remove('active'); }
+function printReceipt(){ window.print(); }
 
-document.getElementById('paySearch').addEventListener('input', loadPayments);
-document.getElementById('payReasonFilter').addEventListener('change', loadPayments);
-document.getElementById('topSearchInput').addEventListener('keypress', function(e){
-  if(e.key === 'Enter' && this.value.trim()){
-    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+/* ============ VOID / CORRECT PAYMENT ============ */
+function openVoidModal(paymentId){
+  currentVoidPaymentId = paymentId;
+  document.getElementById('voidReasonInput').value = '';
+  document.getElementById('voidModal').classList.add('active');
+}
+function closeVoidModal(){ document.getElementById('voidModal').classList.remove('active'); }
+function confirmVoidPayment(){
+  const reason = document.getElementById('voidReasonInput').value.trim();
+  if(!reason){ EliteAcademy.notifications.showWarning('يرجى كتابة سبب الإلغاء'); return; }
+  const p = EliteAcademy.storage.findById(K.payments, currentVoidPaymentId);
+  EliteAcademy.storage.updateRecord(K.payments, currentVoidPaymentId, { status:'ملغى', voidReason:reason, voidedAt:new Date().toISOString() });
+  EliteAcademy.utils.logAction('update','payments', currentVoidPaymentId, `تم إلغاء الدفعة ${p.receiptNumber} — السبب: ${reason}`, 'danger');
+  EliteAcademy.notifications.showWarning('تم إلغاء الدفعة، وبقي السجل محفوظًا للمراجعة');
+  closeVoidModal();
+  refreshAll();
+  if(document.getElementById('studentFinProfile').innerHTML.includes(p.studentId)) {} // no-op guard
+  if(selectedFinStudentVisible(p.studentId)) renderStudentFinancialProfile(p.studentId);
+}
+function selectedFinStudentVisible(studentId){
+  return document.getElementById('studentFinSearch').value.trim() !== '' && document.getElementById('view-students').classList.contains('active');
+}
+
+/* ============ PAYMENTS TAB (full history + filters) ============ */
+function getFilteredPayments(){
+  const q = document.getElementById('payFilterSearch').value.trim();
+  const date = document.getElementById('payFilterDate').value;
+  const type = document.getElementById('payFilterType').value;
+  const method = document.getElementById('payFilterMethod').value;
+  const status = document.getElementById('payFilterStatus').value;
+
+  let list = getData(K.payments);
+  if(q) list = list.filter(p => p.receiptNumber.toLowerCase().includes(q.toLowerCase()) || (p.studentName && p.studentName.includes(q)));
+  if(date) list = list.filter(p => p.date === date);
+  if(type) list = list.filter(p => (p.type||p.reason) === type);
+  if(method) list = list.filter(p => p.method === method);
+  if(status) list = list.filter(p => (p.status||'ساري') === status);
+
+  return list.sort((a,b)=>new Date(b.date)-new Date(a.date));
+}
+function applyPaymentFilters(){ filteredPayments = getFilteredPayments(); paymentsCurrentPage=1; renderPaymentsTable(); }
+function resetPaymentFilters(){
+  ['payFilterSearch','payFilterDate','payFilterType','payFilterMethod','payFilterStatus'].forEach(id=>document.getElementById(id).value='');
+  applyPaymentFilters();
+}
+function refreshPaymentsTab(){ filteredPayments = getFilteredPayments(); renderPaymentsTable(); }
+document.getElementById('payFilterSearch').addEventListener('input', applyPaymentFilters);
+
+function renderPaymentsTable(){
+  const tbody = document.getElementById('paymentsTableBody');
+  if(filteredPayments.length === 0){
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="fa-solid fa-sack-dollar"></i><p>لا توجد مدفوعات مطابقة</p></div></td></tr>`;
+    document.getElementById('paymentsPagination').innerHTML=''; return;
   }
+  const start = (paymentsCurrentPage-1)*PAY_PAGE_SIZE;
+  const pageItems = filteredPayments.slice(start, start+PAY_PAGE_SIZE);
+
+  tbody.innerHTML = pageItems.map(p => `
+    <tr>
+      <td data-label="رقم الوصل" class="ltr">${p.receiptNumber} ${p.status==='ملغى'?'<span class="void-badge">ملغى</span>':''}</td>
+      <td data-label="الطالب">${p.studentName}</td>
+      <td data-label="النوع">${p.type||p.reason}</td>
+      <td data-label="المبلغ">${EliteAcademy.utils.formatCurrency(p.amount)}</td>
+      <td data-label="الطريقة">${p.method}</td>
+      <td data-label="التاريخ">${p.date}</td>
+      <td data-label="بواسطة">${p.createdBy||'admin'}</td>
+      <td data-label="إجراءات">
+        <div class="row-actions">
+          <button class="btn btn-sm btn-outline" onclick="showReceipt('${p.id}')"><i class="fa-solid fa-eye"></i></button>
+          <button class="btn btn-sm btn-outline" onclick="showReceipt('${p.id}')"><i class="fa-solid fa-print"></i></button>
+          ${p.status!=='ملغى' ? `<button class="btn btn-sm btn-danger" onclick="openVoidModal('${p.id}')"><i class="fa-solid fa-ban"></i></button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+
+  const totalPages = Math.ceil(filteredPayments.length/PAY_PAGE_SIZE);
+  const pagEl = document.getElementById('paymentsPagination');
+  if(totalPages<=1){ pagEl.innerHTML=''; return; }
+  let html=''; for(let i=1;i<=totalPages;i++) html+=`<button class="${i===paymentsCurrentPage?'active':''}" onclick="goToPayPage(${i})">${i}</button>`;
+  pagEl.innerHTML = html;
+}
+function goToPayPage(p){ paymentsCurrentPage=p; renderPaymentsTable(); }
+
+/* ============ EXPENSES TAB ============ */
+function refreshExpensesTab(){ renderExpenseKpis(); renderExpensesTable(); }
+
+function renderExpenseKpis(){
+  const expenses = getData(K.expenses).filter(e=>e.status!=='ملغى');
+  const total = expenses.reduce((sum,e)=>sum+Number(e.amount||0),0);
+  const salaries = expenses.filter(e=>e.category==='رواتب').reduce((sum,e)=>sum+Number(e.amount||0),0);
+  const other = total - salaries;
+
+  document.getElementById('expenseKpiRow').innerHTML = `
+    <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-money-bill-transfer"></i></div><div><div class="dstat-num" style="font-size:15px;">${EliteAcademy.utils.formatCurrency(total)}</div><div class="dstat-label">إجمالي المصاريف</div></div></div>
+    <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-hand-holding-dollar"></i></div><div><div class="dstat-num" style="font-size:15px;">${EliteAcademy.utils.formatCurrency(salaries)}</div><div class="dstat-label">الرواتب</div></div></div>
+    <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-receipt"></i></div><div><div class="dstat-num" style="font-size:15px;">${EliteAcademy.utils.formatCurrency(other)}</div><div class="dstat-label">مصاريف أخرى</div></div></div>
+  `;
+}
+
+function getFilteredExpenses(){
+  const category = document.getElementById('expFilterCategory').value;
+  const date = document.getElementById('expFilterDate').value;
+  const status = document.getElementById('expFilterStatus').value;
+  let list = getData(K.expenses);
+  if(category) list = list.filter(e=>e.category===category);
+  if(date) list = list.filter(e=>e.date===date);
+  if(status) list = list.filter(e=>(e.status||'نشط')===status);
+  return list.sort((a,b)=>new Date(b.date)-new Date(a.date));
+}
+function applyExpenseFilters(){ renderExpensesTable(); }
+function resetExpenseFilters(){
+  ['expFilterCategory','expFilterDate','expFilterStatus'].forEach(id=>document.getElementById(id).value='');
+  renderExpensesTable();
+}
+
+function renderExpensesTable(){
+  const expenses = getFilteredExpenses();
+  const tbody = document.getElementById('expensesTableBody');
+  tbody.innerHTML = expenses.length ? expenses.map(e => `
+    <tr>
+      <td data-label="الفئة">${e.category}</td>
+      <td data-label="الوصف">${e.description||e.reason||'—'}</td>
+      <td data-label="المبلغ">${EliteAcademy.utils.formatCurrency(e.amount)}</td>
+      <td data-label="الطريقة">${e.method||'—'}</td>
+      <td data-label="التاريخ">${e.date}</td>
+      <td data-label="الحالة"><span class="badge ${(e.status||'نشط')==='نشط'?'badge-accepted':'badge-rejected'}">${e.status||'نشط'}</span></td>
+      <td data-label="إجراءات">
+        <div class="row-actions">
+          <button class="btn btn-sm btn-outline" onclick="openEditExpenseModal('${e.id}')"><i class="fa-solid fa-pen"></i></button>
+          ${(e.status||'نشط')!=='ملغى' ? `<button class="btn btn-sm btn-danger" onclick="archiveExpense('${e.id}')"><i class="fa-solid fa-box-archive"></i></button>` : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('') : `<tr><td colspan="7"><div class="empty-state"><i class="fa-solid fa-file-invoice-dollar"></i><p>لا توجد مصاريف مسجلة</p></div></td></tr>`;
+}
+
+function openAddExpenseModal(){
+  document.getElementById('expenseForm').reset();
+  document.getElementById('editingExpenseId').value = '';
+  document.getElementById('expenseModalTitle').textContent = 'إضافة مصروف جديد';
+  document.getElementById('expenseModal').classList.add('active');
+  switchTab('expenses');
+}
+function openEditExpenseModal(id){
+  const e = EliteAcademy.storage.findById(K.expenses, id);
+  const form = document.getElementById('expenseForm');
+  form.reset();
+  document.getElementById('editingExpenseId').value = id;
+  document.getElementById('expenseModalTitle').textContent = 'تعديل المصروف';
+  form.category.value = e.category;
+  form.amount.value = e.amount;
+  form.date.value = e.date;
+  form.method.value = e.method||'نقداً';
+  form.description.value = e.description||e.reason||'';
+  form.reference.value = e.reference||'';
+  form.notes.value = e.notes||'';
+  document.getElementById('expenseModal').classList.add('active');
+}
+function closeExpenseModal(){ document.getElementById('expenseModal').classList.remove('active'); }
+
+document.getElementById('expenseForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  if(EliteAcademy.utils.isEmpty(data.category) || EliteAcademy.utils.isEmpty(data.amount) || EliteAcademy.utils.isEmpty(data.date)){
+    EliteAcademy.notifications.showError('يرجى تعبئة الفئة والمبلغ والتاريخ'); return;
+  }
+  const editingId = document.getElementById('editingExpenseId').value;
+  const payload = { category:data.category, amount:Number(data.amount), date:data.date, method:data.method, description:data.description||'', reference:data.reference||'', notes:data.notes||'', status:'نشط' };
+
+  if(editingId){
+    EliteAcademy.storage.updateRecord(K.expenses, editingId, payload);
+    EliteAcademy.utils.logAction('update','expenses', editingId, `تم تعديل مصروف: ${data.description||data.category}`, 'info');
+    EliteAcademy.notifications.showSuccess('تم تعديل المصروف');
+  } else {
+    const exp = EliteAcademy.storage.saveRecord(K.expenses, { ...payload, isDemo:false });
+    EliteAcademy.utils.logAction('create','expenses', exp.id, `تمت إضافة مصروف: ${data.description||data.category} بقيمة ${EliteAcademy.utils.formatCurrency(data.amount)}`, 'success');
+    EliteAcademy.notifications.showSuccess('تمت إضافة المصروف بنجاح');
+  }
+  closeExpenseModal();
+  refreshAll();
+  refreshExpensesTab();
 });
 
-loadFinanceStats();
-loadPayments();
+function archiveExpense(id){
+  EliteAcademy.modal.confirmAction('سيتم إلغاء هذا المصروف مع الاحتفاظ به في السجل للمراجعة.', () => {
+    EliteAcademy.storage.updateRecord(K.expenses, id, { status:'ملغى' });
+    EliteAcademy.utils.logAction('update','expenses', id, 'تم إلغاء مصروف', 'danger');
+    EliteAcademy.notifications.showSuccess('تم إلغاء المصروف');
+    refreshAll(); refreshExpensesTab();
+  }, { title:'تأكيد الإلغاء', confirmLabel:'إلغاء المصروف' });
+}
+
+/* ============ REPORTS CONNECTION ============ */
+function goToReport(type){ window.location.href = `reports.html?module=finance&type=${type}`; }
+
+/* ============ TOP SEARCH ============ */
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key==='Enter' && this.value.trim()) window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+});
+
+/* ============ REFRESH ============ */
+function refreshAll(){
+  renderKpis();
+  renderOverview();
+}
+
+/* ============ INIT ============ */
+refreshAll();
 </script>
 </body>
 </html>
