@@ -3,15 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>إعدادات المؤسسة | أكاديمية النخبة</title>
+<title>الإعدادات | أكاديمية النخبة</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<style>
+.settings-layout{display:grid;grid-template-columns:250px 1fr;gap:20px;align-items:start;}
+@media(max-width:900px){ .settings-layout{grid-template-columns:1fr;} }
+
+.settings-nav{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:10px;position:sticky;top:80px;}
+.settings-nav a{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:9px;font-size:12.8px;font-weight:700;color:var(--text-muted);cursor:pointer;}
+.settings-nav a:hover{background:var(--surface-soft);}
+.settings-nav a.active{background:var(--primary);color:#fff;}
+@media(max-width:900px){
+  .settings-nav{display:flex;overflow-x:auto;gap:4px;position:static;white-space:nowrap;}
+  .settings-nav a{flex-shrink:0;}
+}
+
+.settings-panel{display:none;}
+.settings-panel.active{display:block;animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:22px;margin-bottom:16px;}
+.settings-card h3{font-size:15px;font-weight:800;margin-bottom:4px;}
+.settings-card p.card-desc{font-size:12px;color:var(--text-muted);margin-bottom:18px;}
+.saved-msg{color:var(--success);font-weight:700;font-size:12.5px;display:none;align-items:center;gap:6px;}
+
+.color-field-row{display:flex;align-items:center;gap:10px;}
+.color-field-row input[type="color"]{width:44px;height:38px;border:1.5px solid var(--border);border-radius:8px;padding:2px;cursor:pointer;background:var(--surface);}
+.color-field-row input[type="text"]{flex:1;}
+
+.live-preview-box{background:var(--surface-soft);border:1px dashed var(--border-strong);border-radius:var(--radius-md);padding:18px;margin-top:16px;}
+.preview-header-mock{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:10px;color:#fff;margin-bottom:10px;}
+.preview-btn-mock{padding:8px 18px;border-radius:8px;font-weight:700;font-size:12px;display:inline-block;}
+
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);}
+.toggle-row:first-child{border-top:none;}
+.toggle-row b{font-size:12.8px;display:block;}
+.toggle-row span{font-size:11px;color:var(--text-muted);}
+
+.year-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);font-size:12.8px;font-weight:700;}
+.year-row:first-child{border-top:none;}
+
+.danger-zone{border:2px dashed var(--danger);background:var(--danger-soft);border-radius:var(--radius-md);padding:22px;}
+.danger-zone h3{color:var(--danger);}
+.danger-item{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid rgba(208,69,63,0.2);flex-wrap:wrap;gap:10px;}
+.danger-item:first-child{border-top:none;}
+.danger-item b{font-size:12.8px;display:block;}
+.danger-item span{font-size:11px;color:var(--text-muted);}
+
+.security-info-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--border);}
+.security-info-item:first-child{border-top:none;}
+.security-info-item i{width:34px;height:34px;background:var(--surface-soft);border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--info);flex-shrink:0;}
+
+.session-info-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border);font-size:12.5px;}
+.session-info-row:first-child{border-top:none;}
+</style>
 </head>
 <body>
 
 <div class="admin-layout">
   <aside class="sidebar" id="sidebar"></aside>
+
   <div class="main-panel">
     <div class="topbar">
       <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
@@ -22,87 +75,736 @@
     </div>
 
     <div class="dash-content">
+      <div class="breadcrumb"><a href="dashboard.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><span>الإعدادات</span></div>
       <div class="dash-header">
-        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
-        <h2>إعدادات المؤسسة</h2>
-        <p>يمكنك تعديل بيانات المؤسسة الأساسية من هنا</p>
+        <h2 style="font-size:22px;font-weight:800;">الإعدادات</h2>
+        <p style="font-size:13px;color:var(--text-muted);">تخصيص وإدارة إعدادات الأكاديمية والنظام</p>
       </div>
 
-      <div class="panel" style="padding:30px;max-width:800px;">
-        <form id="settingsForm">
-          <div class="form-grid">
-            <div class="form-field"><label>اسم المؤسسة</label><input type="text" id="s_name"></div>
-            <div class="form-field"><label>الاسم بالفرنسية</label><input type="text" id="s_nameFr"></div>
-            <div class="form-field full"><label>الشعار (Slogan)</label><input type="text" id="s_slogan"></div>
-            <div class="form-field full"><label>العنوان</label><input type="text" id="s_address"></div>
-            <div class="form-field"><label>الهاتف</label><input type="text" id="s_phone"></div>
-            <div class="form-field"><label>البريد الإلكتروني</label><input type="email" id="s_email"></div>
-            <div class="form-field"><label>ساعات العمل</label><input type="text" id="s_workHours"></div>
-            <div class="form-field"><label>السنة الدراسية الحالية</label>
-              <select id="s_schoolYear">
-                <option value="2025/2026">2025/2026</option>
-                <option value="2026/2027">2026/2027</option>
-                <option value="2027/2028">2027/2028</option>
-              </select>
+      <div class="settings-layout">
+        <!-- SETTINGS NAV -->
+        <nav class="settings-nav" id="settingsNav">
+          <a class="active" data-tab="institution" onclick="switchTab('institution')"><i class="fa-solid fa-building-columns"></i> معلومات المؤسسة</a>
+          <a data-tab="identity" onclick="switchTab('identity')"><i class="fa-solid fa-palette"></i> الهوية البصرية</a>
+          <a data-tab="year" onclick="switchTab('year')"><i class="fa-solid fa-calendar-days"></i> السنة الدراسية</a>
+          <a data-tab="students" onclick="switchTab('students')"><i class="fa-solid fa-user-graduate"></i> إعدادات الطلبة</a>
+          <a data-tab="finance" onclick="switchTab('finance')"><i class="fa-solid fa-sack-dollar"></i> إعدادات المالية</a>
+          <a data-tab="attendance" onclick="switchTab('attendance')"><i class="fa-solid fa-calendar-check"></i> إعدادات الحضور</a>
+          <a data-tab="documents" onclick="switchTab('documents')"><i class="fa-solid fa-folder-open"></i> إعدادات الوثائق</a>
+          <a data-tab="requests" onclick="switchTab('requests')"><i class="fa-solid fa-file-lines"></i> إعدادات الطلبات</a>
+          <a data-tab="notifications" onclick="switchTab('notifications')"><i class="fa-solid fa-bell"></i> إعدادات الإشعارات</a>
+          <a data-tab="system" onclick="switchTab('system')"><i class="fa-solid fa-gear"></i> إعدادات النظام</a>
+          <a data-tab="backup" onclick="switchTab('backup')"><i class="fa-solid fa-database"></i> النسخ الاحتياطي</a>
+          <a data-tab="about" onclick="switchTab('about')"><i class="fa-solid fa-circle-info"></i> حول النظام</a>
+        </nav>
+
+        <!-- SETTINGS CONTENT -->
+        <div>
+
+          <!-- ============ INSTITUTION ============ -->
+          <div class="settings-panel active" id="panel-institution">
+            <div class="settings-card">
+              <h3>معلومات المؤسسة</h3>
+              <p class="card-desc">هذه البيانات تظهر في الموقع العام، الإيصالات، بطاقات الطلبة، والتقارير.</p>
+              <form id="institutionForm">
+                <div class="form-grid">
+                  <div class="form-field"><label>الاسم بالعربية</label><input type="text" name="institutionName"></div>
+                  <div class="form-field"><label>الاسم بالإنجليزية</label><input type="text" name="institutionNameEn" class="ltr"></div>
+                  <div class="form-field"><label>الاسم بالفرنسية</label><input type="text" name="institutionNameFr" class="ltr"></div>
+                  <div class="form-field"><label>الشعار (Slogan)</label><input type="text" name="slogan"></div>
+                  <div class="form-field full"><label>وصف مختصر</label><textarea name="description"></textarea></div>
+                  <div class="form-field full"><label>العنوان</label><input type="text" name="address"></div>
+                  <div class="form-field"><label>الهاتف</label><input type="text" name="phone" class="ltr"></div>
+                  <div class="form-field"><label>هاتف إضافي</label><input type="text" name="secondaryPhone" class="ltr"></div>
+                  <div class="form-field"><label>البريد الإلكتروني</label><input type="email" name="email" class="ltr"></div>
+                  <div class="form-field"><label>الموقع الإلكتروني</label><input type="text" name="website" class="ltr" placeholder="www.example.dz"></div>
+                  <div class="form-field full"><label>ساعات العمل</label><input type="text" name="workingHours"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-institution"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
             </div>
-            <div class="form-field"><label>رسوم التسجيل (دج)</label><input type="number" id="s_regFee"></div>
-            <div class="form-field"><label>القسط الشهري (دج)</label><input type="number" id="s_monthlyFee"></div>
           </div>
-          <button type="submit" class="btn btn-primary" style="margin-top:20px;"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات</button>
-          <span id="savedMsg" style="display:none;color:var(--success);font-weight:700;font-size:13px;margin-right:14px;">✓ تم الحفظ بنجاح</span>
-        </form>
+
+          <!-- ============ VISUAL IDENTITY ============ -->
+          <div class="settings-panel" id="panel-identity">
+            <div class="settings-card">
+              <h3>الهوية البصرية</h3>
+              <p class="card-desc">تحكم بألوان النظام والشعار. التغييرات تُطبَّق مباشرة على كل صفحات الإدارة.</p>
+              <form id="identityForm">
+                <div class="form-grid">
+                  <div class="form-field">
+                    <label>اللون الأساسي</label>
+                    <div class="color-field-row"><input type="color" id="primaryColorPicker" name="primaryColor"><input type="text" id="primaryColorText" class="ltr" readonly></div>
+                  </div>
+                  <div class="form-field">
+                    <label>اللون الثانوي</label>
+                    <div class="color-field-row"><input type="color" id="secondaryColorPicker" name="secondaryColor"><input type="text" id="secondaryColorText" class="ltr" readonly></div>
+                  </div>
+                  <div class="form-field">
+                    <label>لون التمييز (Accent)</label>
+                    <div class="color-field-row"><input type="color" id="accentColorPicker" name="accentColor"><input type="text" id="accentColorText" class="ltr" readonly></div>
+                  </div>
+                  <div class="form-field"><label>كثافة الواجهة</label><select name="density"><option value="comfortable">مريحة (Comfortable)</option><option value="compact">مضغوطة (Compact)</option></select></div>
+                </div>
+
+                <div class="modal-section-title" style="margin-top:22px;"><i class="fa-solid fa-image"></i><h4 style="font-size:13.5px;">الشعار</h4></div>
+                <input type="file" id="logoInput" accept="image/*">
+                <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">نموذج تجريبي — يُحفظ اسم الملف فقط. الإنتاج يتطلب تخزينًا آمنًا على خادم/سحابة.</p>
+
+                <div class="live-preview-box">
+                  <p style="font-size:11.5px;font-weight:700;margin-bottom:10px;color:var(--text-muted);">معاينة حية</p>
+                  <div class="preview-header-mock" id="previewHeaderMock">
+                    <i class="fa-solid fa-graduation-cap"></i> <b id="previewInstName">أكاديمية النخبة</b>
+                  </div>
+                  <span class="preview-btn-mock" id="previewBtnMock" style="background:var(--accent);">زر تجريبي</span>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-identity"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- ============ ACADEMIC YEAR ============ -->
+          <div class="settings-panel" id="panel-year">
+            <div class="settings-card">
+              <h3>السنة الدراسية</h3>
+              <p class="card-desc">إدارة السنوات الدراسية للأكاديمية وتحديد السنة النشطة حاليًا.</p>
+              <div id="yearsListSettings"></div>
+              <div class="modal-section-title"><i class="fa-solid fa-plus"></i><h4 style="font-size:13.5px;">إضافة سنة دراسية جديدة</h4></div>
+              <div style="display:flex;gap:8px;">
+                <input type="text" id="newYearInputSettings" placeholder="مثال: 2028/2029" style="flex:1;">
+                <button class="btn btn-dark btn-sm" onclick="addYearSettings()"><i class="fa-solid fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ STUDENT SETTINGS ============ -->
+          <div class="settings-panel" id="panel-students">
+            <div class="settings-card">
+              <h3>إعدادات الطلبة</h3>
+              <p class="card-desc">هذه الإعدادات تحكم في القيم الافتراضية عند تسجيل طالب جديد فقط.</p>
+              <form id="studentsSettingsForm">
+                <div class="form-grid">
+                  <div class="form-field"><label>الحالة الافتراضية للطالب الجديد</label>
+                    <select name="defaultStudentStatus"><option value="نشط">نشط</option><option value="غير نشط">غير نشط</option></select>
+                  </div>
+                  <div class="form-field"><label>السنة الدراسية الافتراضية</label><select name="defaultAcademicYear" id="defaultYearSelect"></select></div>
+                  <div class="form-field">
+                    <label>بداية ترقيم بطاقة الطالب (8 أرقام)</label>
+                    <input type="number" name="lastCardNumber" min="0">
+                    <span class="helper-text">⚠️ لا يؤثر هذا على أرقام بطاقات الطلبة الحاليين إطلاقًا — تلك الأرقام ثابتة للأبد. يحدد فقط من أين يبدأ الترقيم للطالب القادم.</span>
+                  </div>
+                  <div class="form-field"><label>سلوك تاريخ التسجيل الافتراضي</label>
+                    <select name="defaultRegDateBehavior"><option value="today">تاريخ اليوم تلقائيًا</option><option value="manual">إدخال يدوي دائمًا</option></select>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-students"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- ============ FINANCE SETTINGS ============ -->
+          <div class="settings-panel" id="panel-finance">
+            <div class="settings-card">
+              <h3>إعدادات المالية</h3>
+              <p class="card-desc">القيم الافتراضية المستخدمة في المدفوعات والإيصالات الجديدة.</p>
+              <form id="financeSettingsForm">
+                <div class="form-grid">
+                  <div class="form-field"><label>العملة</label><input type="text" name="currency" class="ltr"></div>
+                  <div class="form-field"><label>رسوم التسجيل الافتراضية (دج)</label><input type="number" name="registrationFee"></div>
+                  <div class="form-field"><label>القسط الشهري الافتراضي (دج)</label><input type="number" name="monthlyFee"></div>
+                  <div class="form-field"><label>بادئة رقم الإيصال</label><input type="text" name="receiptPrefix" class="ltr" placeholder="REC"></div>
+                  <div class="form-field full"><label>طرق الدفع المتاحة (مفصولة بفاصلة)</label><input type="text" name="paymentMethods" placeholder="نقداً, تحويل, أخرى"></div>
+                  <div class="form-field full"><label>فئات المصاريف (مفصولة بفاصلة)</label><input type="text" name="expenseCategories" placeholder="إيجار, فواتير, صيانة, مستلزمات, رواتب, أخرى"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-finance"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- ============ ATTENDANCE SETTINGS ============ -->
+          <div class="settings-panel" id="panel-attendance">
+            <div class="settings-card">
+              <h3>إعدادات الحضور</h3>
+              <p class="card-desc">تخصيص سلوك تسجيل الحضور والغياب.</p>
+              <form id="attendanceSettingsForm">
+                <div class="form-grid">
+                  <div class="form-field full"><label>حالات الحضور المتاحة (مفصولة بفاصلة)</label><input type="text" name="attendanceStatuses" placeholder="حاضر, غائب, متأخر, غياب مبرر"></div>
+                  <div class="form-field"><label>الحالة الافتراضية عند فتح السجل</label><input type="text" name="defaultAttendanceStatus" placeholder="حاضر"></div>
+                  <div class="form-field"><label>حد التأخر (بالدقائق)</label><input type="number" name="lateThresholdMinutes" min="0"></div>
+                  <div class="form-field"><label>وقت بداية الدوام</label><input type="time" name="schoolStartTime"></div>
+                  <div class="form-field"><label>وقت نهاية الدوام</label><input type="time" name="schoolEndTime"></div>
+                  <div class="form-field full"><label>أيام الدوام</label>
+                    <div id="workingDaysCheckboxes" style="display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;"></div>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-attendance"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- ============ DOCUMENT SETTINGS ============ -->
+          <div class="settings-panel" id="panel-documents">
+            <div class="settings-card">
+              <h3>إعدادات الوثائق</h3>
+              <p class="card-desc">تخصيص إدارة الوثائق والترقيم والتنبيهات.</p>
+              <form id="documentsSettingsForm">
+                <div class="form-grid">
+                  <div class="form-field"><label>بادئة رقم الوثيقة</label><input type="text" name="documentPrefix" class="ltr" placeholder="DOC"></div>
+                  <div class="form-field"><label>فترة التنبيه قبل الانتهاء (بالأيام)</label><input type="number" name="expiryWarningDays" min="1"></div>
+                  <div class="form-field full"><label>أنواع الملفات المسموحة (مفصولة بفاصلة)</label><input type="text" name="allowedFileTypes" class="ltr" placeholder="pdf, jpg, png"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-documents"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- ============ REQUEST SETTINGS ============ -->
+          <div class="settings-panel" id="panel-requests">
+            <div class="settings-card">
+              <h3>إعدادات طلبات التسجيل</h3>
+              <p class="card-desc">تخصيص ترقيم طلبات التسجيل وحالاتها الافتراضية.</p>
+              <form id="requestsSettingsForm">
+                <div class="form-grid">
+                  <div class="form-field"><label>بادئة رقم الطلب</label><input type="text" name="requestPrefix" class="ltr" placeholder="REG"></div>
+                  <div class="form-field"><label>الحالة الافتراضية للطلب الجديد</label><input type="text" name="defaultRequestStatus" placeholder="جديد"></div>
+                  <div class="form-field full"><label>الحالات المتاحة (مفصولة بفاصلة)</label><input type="text" name="requestStatuses" placeholder="جديد, قيد الدراسة, تم التواصل, مقبول, مرفوض, مكتمل التسجيل"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-requests"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- ============ NOTIFICATIONS ============ -->
+          <div class="settings-panel" id="panel-notifications">
+            <div class="settings-card">
+              <h3>إعدادات الإشعارات</h3>
+              <p class="card-desc">تحكم بأي تنبيهات داخلية تظهر في لوحة التحكم. هذه إشعارات داخلية فقط وليست نظام مراسلة.</p>
+              <div id="notifToggles"></div>
+              <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                <button class="btn btn-primary" onclick="saveNotificationSettings()">حفظ التغييرات</button>
+                <span class="saved-msg" id="savedMsg-notifications"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ SYSTEM SETTINGS ============ -->
+          <div class="settings-panel" id="panel-system">
+            <div class="settings-card">
+              <h3>إعدادات النظام</h3>
+              <p class="card-desc">إعدادات عامة تتحكم في سلوك وشكل الواجهة.</p>
+              <form id="systemSettingsForm">
+                <div class="form-grid">
+                  <div class="form-field"><label>اللغة</label><select name="language"><option value="ar">العربية</option></select></div>
+                  <div class="form-field"><label>اتجاه الواجهة</label><select name="direction"><option value="rtl">من اليمين لليسار (RTL)</option></select></div>
+                  <div class="form-field"><label>صيغة التاريخ</label><select name="dateFormat"><option value="arabic">عربي (يوم/شهر/سنة)</option><option value="iso">ISO (سنة-شهر-يوم)</option></select></div>
+                  <div class="form-field"><label>صيغة الوقت</label><select name="timeFormat"><option value="24h">24 ساعة</option><option value="12h">12 ساعة</option></select></div>
+                  <div class="form-field"><label>عدد العناصر بكل صفحة</label><select name="pageSize"><option value="10">10</option><option value="12">12</option><option value="20">20</option><option value="50">50</option></select></div>
+                </div>
+                <div id="systemToggles" style="margin-top:10px;"></div>
+                <div style="display:flex;align-items:center;gap:14px;margin-top:18px;">
+                  <button type="submit" class="btn btn-primary">حفظ التغييرات</button>
+                  <span class="saved-msg" id="savedMsg-system"><i class="fa-solid fa-circle-check"></i> تم حفظ الإعدادات بنجاح</span>
+                </div>
+              </form>
+            </div>
+
+            <div class="settings-card">
+              <h3>الجلسة الحالية</h3>
+              <div id="sessionInfoBox"></div>
+              <button class="btn btn-danger" style="margin-top:16px;" onclick="logoutFromSettings()"><i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج</button>
+            </div>
+
+            <div class="settings-card">
+              <h3>معلومات الأمان</h3>
+              <p class="card-desc">هذه نسخة تجريبية (Prototype) — يرجى قراءة هذا القسم قبل استخدام النظام ببيانات حقيقية.</p>
+              <div class="security-info-item"><i class="fa-solid fa-triangle-exclamation" style="color:var(--warning);"></i><div><b style="font-size:12.5px;">النسخة الحالية</b><span style="display:block;font-size:11.5px;color:var(--text-muted);">مصادقة من جهة العميل (Client-side) فقط، وتخزين البيانات في localStorage المتصفح — غير آمن لبيانات حقيقية.</span></div></div>
+              <div class="security-info-item"><i class="fa-solid fa-shield-halved" style="color:var(--success);"></i><div><b style="font-size:12.5px;">المتطلبات للإنتاج</b><span style="display:block;font-size:11.5px;color:var(--text-muted);">مصادقة آمنة عبر خادم، تشفير كلمات المرور، صلاحيات على مستوى الخادم، HTTPS، قاعدة بيانات آمنة، سجل تدقيق دائم، وتخزين ملفات آمن.</span></div></div>
+            </div>
+          </div>
+
+          <!-- ============ BACKUP / RESTORE ============ -->
+          <div class="settings-panel" id="panel-backup">
+            <div class="settings-card">
+              <h3>النسخ الاحتياطي والاستعادة</h3>
+              <p class="card-desc">هذه نسخة احتياطية تجريبية تعتمد على متصفحك (localStorage). الإنتاج يجب أن يعتمد على نسخ احتياطي لقاعدة بيانات خادم حقيقية.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
+                <button class="btn btn-dark" onclick="downloadFullBackup()"><i class="fa-solid fa-download"></i> تنزيل نسخة احتياطية كاملة (JSON)</button>
+              </div>
+              <div class="modal-section-title"><i class="fa-solid fa-upload"></i><h4 style="font-size:13.5px;">استعادة من نسخة احتياطية</h4></div>
+              <input type="file" id="restoreFileInput" accept=".json" style="margin-bottom:10px;">
+              <div><button class="btn btn-outline" onclick="restoreFromBackup()"><i class="fa-solid fa-clock-rotate-left"></i> استعادة البيانات</button></div>
+              <p style="font-size:11px;color:var(--text-muted);margin-top:10px;">سيُطلب منك تأكيد قبل استبدال أي بيانات حالية.</p>
+            </div>
+
+            <div class="settings-card">
+              <h3 style="display:flex;align-items:center;gap:8px;"><i class="fa-solid fa-flask" style="color:var(--accent);"></i> بيانات تجريبية</h3>
+              <p class="card-desc">إدارة البيانات التجريبية (Demo) المُدرجة مسبقًا في النظام.</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn btn-outline" onclick="confirmReloadDemoData()"><i class="fa-solid fa-rotate"></i> إعادة تحميل البيانات التجريبية</button>
+                <button class="btn btn-danger" onclick="confirmDeleteDemoData()"><i class="fa-solid fa-trash"></i> حذف البيانات التجريبية فقط</button>
+              </div>
+            </div>
+
+            <div class="danger-zone">
+              <h3><i class="fa-solid fa-triangle-exclamation"></i> منطقة الخطر</h3>
+              <div class="danger-item">
+                <div><b>مسح كل بيانات التطبيق</b><span>يحذف كل شيء (طلبة، أولياء، مدفوعات، سجلات...) بشكل نهائي من هذا المتصفح.</span></div>
+                <button class="btn btn-danger btn-sm" onclick="confirmClearAllData()"><i class="fa-solid fa-bomb"></i> مسح كل شيء</button>
+              </div>
+              <div class="danger-item">
+                <div><b>إعادة ضبط النموذج التجريبي بالكامل</b><span>يمسح كل البيانات ويعيد زرع بيانات Demo الأصلية من جديد.</span></div>
+                <button class="btn btn-danger btn-sm" onclick="confirmResetPrototype()"><i class="fa-solid fa-arrows-rotate"></i> إعادة الضبط الكامل</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============ ABOUT ============ -->
+          <div class="settings-panel" id="panel-about">
+            <div class="settings-card">
+              <h3>حول النظام</h3>
+              <div class="info-grid-2">
+                <div class="info-item"><span>اسم النظام</span><b>Elite Academy Management System</b></div>
+                <div class="info-item"><span>الإصدار</span><b>Prototype 1.0</b></div>
+                <div class="info-item"><span>طبقة البيانات</span><b class="ltr">localStorage (+ Firebase sync اختياري)</b></div>
+                <div class="info-item"><span>الغرض</span><b>نموذج تجريبي لعرض واجهة نظام إدارة أكاديمية خاصة</b></div>
+              </div>
+              <p style="font-size:11.5px;color:var(--text-muted);margin-top:16px;">هذا النظام نموذج أولي (Prototype) لأغراض العرض فقط، وليس جاهزًا للاستخدام الإنتاجي ببيانات حقيقية بدون استبدال طبقة المصادقة والتخزين ببنية آمنة على خادم حقيقي.</p>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-requireAdminAuth();
-renderSidebar('settings');
+EliteAcademy.auth.requireAuth();
+EliteAcademy.navigation.renderSidebar('settings');
 
-function loadSettingsForm(){
-  const s = DB.getSettings();
-  document.getElementById('s_name').value = s.institutionName;
-  document.getElementById('s_nameFr').value = s.institutionNameFr;
-  document.getElementById('s_slogan').value = s.slogan;
-  document.getElementById('s_address').value = s.address;
-  document.getElementById('s_phone').value = s.phone;
-  document.getElementById('s_email').value = s.email;
-  document.getElementById('s_workHours').value = s.workHours;
-  document.getElementById('s_schoolYear').value = s.schoolYear;
-  document.getElementById('s_regFee').value = s.registrationFee;
-  document.getElementById('s_monthlyFee').value = s.monthlyFee;
+const K = EliteAcademy.storage.keys;
+const getData = EliteAcademy.storage.getData;
+
+/* ============ TAB SWITCHING ============ */
+function switchTab(tab){
+  document.querySelectorAll('.settings-nav a').forEach(a => a.classList.toggle('active', a.dataset.tab===tab));
+  document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
 }
 
-document.getElementById('settingsForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const s = DB.getSettings();
-  s.institutionName = document.getElementById('s_name').value;
-  s.institutionNameFr = document.getElementById('s_nameFr').value;
-  s.slogan = document.getElementById('s_slogan').value;
-  s.address = document.getElementById('s_address').value;
-  s.phone = document.getElementById('s_phone').value;
-  s.email = document.getElementById('s_email').value;
-  s.workHours = document.getElementById('s_workHours').value;
-  s.schoolYear = document.getElementById('s_schoolYear').value;
-  s.registrationFee = Number(document.getElementById('s_regFee').value);
-  s.monthlyFee = Number(document.getElementById('s_monthlyFee').value);
-  DB.setSettings(s);
-  logAction('تم تحديث إعدادات المؤسسة');
+function showSaved(key){
+  const el = document.getElementById('savedMsg-'+key);
+  el.style.display = 'inline-flex';
+  setTimeout(()=> el.style.display='none', 3000);
+}
 
-  document.getElementById('savedMsg').style.display = 'inline';
-  setTimeout(()=> document.getElementById('savedMsg').style.display='none', 3000);
-  renderSidebar('settings'); // إعادة رسم Sidebar لتحديث اسم المؤسسة إن تغيّر
+/* ============ LOAD ALL SETTINGS INTO FORMS ============ */
+function loadForm(formId, settings, fields){
+  const form = document.getElementById(formId);
+  fields.forEach(f => { if(form[f] !== undefined && settings[f] !== undefined) form[f].value = settings[f]; });
+}
+
+function loadInstitutionForm(){
+  const s = EliteAcademy.utils.getSettings();
+  loadForm('institutionForm', s, ['institutionName','institutionNameEn','institutionNameFr','slogan','description','address','phone','secondaryPhone','email','website','workingHours']);
+}
+document.getElementById('institutionForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  EliteAcademy.utils.updateSettings(data);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث معلومات المؤسسة', 'info');
+  EliteAcademy.navigation.renderSidebar('settings');
+  showSaved('institution');
 });
+
+/* ============ VISUAL IDENTITY ============ */
+function loadIdentityForm(){
+  const s = EliteAcademy.utils.getSettings();
+  document.getElementById('primaryColorPicker').value = s.primaryColor || '#0f3a52';
+  document.getElementById('secondaryColorPicker').value = s.secondaryColorHex || '#2d6a7f';
+  document.getElementById('accentColorPicker').value = s.secondaryColor || '#c9973f';
+  document.getElementById('primaryColorText').value = document.getElementById('primaryColorPicker').value;
+  document.getElementById('secondaryColorText').value = document.getElementById('secondaryColorPicker').value;
+  document.getElementById('accentColorText').value = document.getElementById('accentColorPicker').value;
+  document.getElementById('identityForm').density.value = s.density || 'comfortable';
+  document.getElementById('previewInstName').textContent = (s.institutionName||'').split(' ').slice(0,2).join(' ');
+  updateLivePreview();
+}
+['primaryColorPicker','secondaryColorPicker','accentColorPicker'].forEach(id => {
+  document.getElementById(id).addEventListener('input', function(){
+    document.getElementById(id.replace('Picker','Text')).value = this.value;
+    updateLivePreview();
+  });
+});
+function updateLivePreview(){
+  document.getElementById('previewHeaderMock').style.background = document.getElementById('primaryColorPicker').value;
+  document.getElementById('previewBtnMock').style.background = document.getElementById('accentColorPicker').value;
+  document.getElementById('previewBtnMock').style.color = document.getElementById('primaryColorPicker').value;
+}
+document.getElementById('identityForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const density = this.density.value;
+  const primary = document.getElementById('primaryColorPicker').value;
+  const secondaryHex = document.getElementById('secondaryColorPicker').value;
+  const accent = document.getElementById('accentColorPicker').value;
+  const logoFile = document.getElementById('logoInput').files[0];
+
+  EliteAcademy.utils.updateSettings({ primaryColor:primary, secondaryColorHex:secondaryHex, secondaryColor:accent, density, logo: logoFile ? logoFile.name : (EliteAcademy.utils.getSettings().logo||'') });
+
+  document.documentElement.style.setProperty('--primary', primary);
+  document.documentElement.style.setProperty('--accent', accent);
+
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث الهوية البصرية للنظام', 'info');
+  showSaved('identity');
+});
+
+/* ============ ACADEMIC YEAR ============ */
+function renderYearsSettings(){
+  const years = getData(K.academicYears);
+  document.getElementById('yearsListSettings').innerHTML = years.map(y => `
+    <div class="year-row">
+      <span>${y.label} ${y.isCurrent?'<span class="badge badge-accepted">نشطة</span>':''} ${y.status==='مؤرشف'?'<span class="badge badge-archived">مؤرشفة</span>':''}</span>
+      <div style="display:flex;gap:6px;">
+        ${!y.isCurrent && y.status!=='مؤرشف' ? `<button class="btn btn-sm btn-outline" onclick="setCurrentYearSettings('${y.id}')">تفعيل</button>` : ''}
+        ${!y.isCurrent ? `<button class="btn btn-sm btn-danger" onclick="toggleArchiveYearSettings('${y.id}')">${y.status==='مؤرشف'?'استعادة':'أرشفة'}</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  const defaultYearSelect = document.getElementById('defaultYearSelect');
+  defaultYearSelect.innerHTML = years.map(y=>`<option value="${y.id}">${y.label}</option>`).join('');
+  const s = EliteAcademy.utils.getSettings();
+  if(s.defaultAcademicYear) defaultYearSelect.value = s.defaultAcademicYear;
+}
+function setCurrentYearSettings(id){
+  const years = getData(K.academicYears);
+  years.forEach(y=>y.isCurrent=(y.id===id));
+  EliteAcademy.storage.setData(K.academicYears, years);
+  EliteAcademy.utils.logAction('update','academicYears', id, 'تم تغيير السنة الدراسية النشطة من الإعدادات', 'info');
+  EliteAcademy.notifications.showSuccess('تم تحديث السنة الدراسية النشطة');
+  renderYearsSettings();
+}
+function toggleArchiveYearSettings(id){
+  const years = getData(K.academicYears);
+  const y = years.find(x=>x.id===id);
+  y.status = y.status==='مؤرشف' ? 'نشط' : 'مؤرشف';
+  EliteAcademy.storage.setData(K.academicYears, years);
+  EliteAcademy.notifications.showSuccess(y.status==='مؤرشف' ? 'تمت أرشفة السنة الدراسية' : 'تمت استعادة السنة الدراسية');
+  renderYearsSettings();
+}
+function addYearSettings(){
+  const input = document.getElementById('newYearInputSettings');
+  const label = input.value.trim();
+  if(!label){ EliteAcademy.notifications.showWarning('يرجى إدخال تسمية السنة الدراسية'); return; }
+  const years = getData(K.academicYears);
+  if(years.some(y=>y.label===label)){ EliteAcademy.notifications.showWarning('هذه السنة موجودة بالفعل'); return; }
+  const year = EliteAcademy.storage.saveRecord(K.academicYears, { label, isCurrent:false, status:'نشط', isDemo:false });
+  EliteAcademy.utils.logAction('create','academicYears', year.id, `تمت إضافة سنة دراسية جديدة: ${label}`, 'success');
+  input.value='';
+  renderYearsSettings();
+}
+
+/* ============ STUDENT SETTINGS ============ */
+function loadStudentsForm(){
+  const s = EliteAcademy.utils.getSettings();
+  const form = document.getElementById('studentsSettingsForm');
+  form.defaultStudentStatus.value = s.defaultStudentStatus || 'نشط';
+  form.lastCardNumber.value = s.lastCardNumber || 18426;
+  form.defaultRegDateBehavior.value = s.defaultRegDateBehavior || 'today';
+}
+document.getElementById('studentsSettingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  data.defaultAcademicYear = document.getElementById('defaultYearSelect').value;
+  // lastCardNumber only changes the STARTING POINT for the next generated number —
+  // EliteAcademy.students.generateCardNumber() reads this value but never touches
+  // existing students' cardNumber fields, which remain permanent and untouched.
+  EliteAcademy.utils.updateSettings(data);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث إعدادات الطلبة', 'info');
+  showSaved('students');
+});
+
+/* ============ FINANCE SETTINGS ============ */
+function loadFinanceForm(){
+  const s = EliteAcademy.utils.getSettings();
+  loadForm('financeSettingsForm', s, ['currency','registrationFee','monthlyFee','receiptPrefix','paymentMethods','expenseCategories']);
+  const form = document.getElementById('financeSettingsForm');
+  if(!form.receiptPrefix.value) form.receiptPrefix.value = 'REC';
+  if(!form.paymentMethods.value) form.paymentMethods.value = 'نقداً, تحويل, أخرى';
+  if(!form.expenseCategories.value) form.expenseCategories.value = 'إيجار, فواتير, صيانة, مستلزمات, رواتب, أخرى';
+}
+document.getElementById('financeSettingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  EliteAcademy.utils.updateSettings(data);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث إعدادات المالية', 'info');
+  showSaved('finance');
+});
+
+/* ============ ATTENDANCE SETTINGS ============ */
+const WEEK_DAYS = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+function loadAttendanceForm(){
+  const s = EliteAcademy.utils.getSettings();
+  const form = document.getElementById('attendanceSettingsForm');
+  form.attendanceStatuses.value = s.attendanceStatuses || 'حاضر, غائب, متأخر, غياب مبرر';
+  form.defaultAttendanceStatus.value = s.defaultAttendanceStatus || 'حاضر';
+  form.lateThresholdMinutes.value = s.lateThresholdMinutes || 15;
+  form.schoolStartTime.value = s.schoolStartTime || '08:00';
+  form.schoolEndTime.value = s.schoolEndTime || '17:00';
+
+  const selectedDays = s.workingDays || ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+  document.getElementById('workingDaysCheckboxes').innerHTML = WEEK_DAYS.map(d => `
+    <label style="display:flex;align-items:center;gap:5px;"><input type="checkbox" value="${d}" ${selectedDays.includes(d)?'checked':''}> ${d}</label>
+  `).join('');
+}
+document.getElementById('attendanceSettingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  data.workingDays = Array.from(document.querySelectorAll('#workingDaysCheckboxes input:checked')).map(c=>c.value);
+  EliteAcademy.utils.updateSettings(data);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث إعدادات الحضور', 'info');
+  showSaved('attendance');
+});
+
+/* ============ DOCUMENT SETTINGS ============ */
+function loadDocumentsForm(){
+  const s = EliteAcademy.utils.getSettings();
+  const form = document.getElementById('documentsSettingsForm');
+  form.documentPrefix.value = s.documentPrefix || 'DOC';
+  form.expiryWarningDays.value = s.expiryWarningDays || 30;
+  form.allowedFileTypes.value = s.allowedFileTypes || 'pdf, jpg, png';
+}
+document.getElementById('documentsSettingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  EliteAcademy.utils.updateSettings(data);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث إعدادات الوثائق', 'info');
+  showSaved('documents');
+});
+
+/* ============ REQUEST SETTINGS ============ */
+function loadRequestsForm(){
+  const s = EliteAcademy.utils.getSettings();
+  const form = document.getElementById('requestsSettingsForm');
+  form.requestPrefix.value = s.requestPrefix || 'REG';
+  form.defaultRequestStatus.value = s.defaultRequestStatus || 'جديد';
+  form.requestStatuses.value = s.requestStatuses || 'جديد, قيد الدراسة, تم التواصل, مقبول, مرفوض, مكتمل التسجيل';
+}
+document.getElementById('requestsSettingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  EliteAcademy.utils.updateSettings(data);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث إعدادات طلبات التسجيل', 'info');
+  showSaved('requests');
+});
+
+/* ============ NOTIFICATIONS ============ */
+const NOTIF_KEYS = [
+  { key:'notifNewRequest', label:'طلب تسجيل جديد', desc:'تنبيه عند وصول طلب تسجيل جديد من الموقع العام' },
+  { key:'notifAttendanceAlerts', label:'تنبيهات الحضور', desc:'تنبيه عند وجود نسبة غياب مرتفعة' },
+  { key:'notifOutstandingBalances', label:'المبالغ المتبقية', desc:'تنبيه بالطلبة الذين لديهم مبالغ غير مسددة' },
+  { key:'notifExpiringDocs', label:'الوثائق قريبة الانتهاء', desc:'تنبيه قبل انتهاء صلاحية أي وثيقة' },
+  { key:'notifSystemEvents', label:'أحداث النظام', desc:'تنبيهات عامة حول عمليات النظام الهامة' }
+];
+function loadNotifToggles(){
+  const s = EliteAcademy.utils.getSettings();
+  document.getElementById('notifToggles').innerHTML = NOTIF_KEYS.map(n => `
+    <div class="toggle-row">
+      <div><b>${n.label}</b><span>${n.desc}</span></div>
+      <label class="toggle-switch"><input type="checkbox" id="${n.key}" ${s[n.key]!==false?'checked':''}><span class="toggle-slider"></span></label>
+    </div>
+  `).join('');
+}
+function saveNotificationSettings(){
+  const updates = {};
+  NOTIF_KEYS.forEach(n => updates[n.key] = document.getElementById(n.key).checked);
+  EliteAcademy.utils.updateSettings(updates);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث إعدادات الإشعارات', 'info');
+  showSaved('notifications');
+}
+
+/* ============ SYSTEM SETTINGS ============ */
+const SYSTEM_TOGGLES = [
+  { key:'animationsEnabled', label:'تفعيل الحركات (Animations)', desc:'تشغيل أو إيقاف الحركات البصرية الخفيفة في الواجهة' },
+  { key:'compactMode', label:'الوضع المضغوط', desc:'تقليل التباعد بين العناصر لعرض بيانات أكثر' },
+  { key:'confirmDestructive', label:'تأكيد الإجراءات الحساسة', desc:'إظهار نافذة تأكيد قبل الأرشفة أو الحذف دائمًا' }
+];
+function loadSystemForm(){
+  const s = EliteAcademy.utils.getSettings();
+  const form = document.getElementById('systemSettingsForm');
+  form.dateFormat.value = s.dateFormat || 'arabic';
+  form.timeFormat.value = s.timeFormat || '24h';
+  form.pageSize.value = s.pageSize || '12';
+
+  document.getElementById('systemToggles').innerHTML = SYSTEM_TOGGLES.map(t => `
+    <div class="toggle-row">
+      <div><b>${t.label}</b><span>${t.desc}</span></div>
+      <label class="toggle-switch"><input type="checkbox" id="${t.key}" ${s[t.key]!==false?'checked':''}><span class="toggle-slider"></span></label>
+    </div>
+  `).join('');
+}
+document.getElementById('systemSettingsForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const data = EliteAcademy.utils.serializeForm(this);
+  SYSTEM_TOGGLES.forEach(t => data[t.key] = document.getElementById(t.key).checked);
+  EliteAcademy.utils.updateSettings(data);
+  EliteAcademy.utils.logAction('update','settings','', 'تم تحديث إعدادات النظام', 'info');
+  showSaved('system');
+});
+
+/* ============ SESSION INFO ============ */
+function renderSessionInfo(){
+  const session = EliteAcademy.auth.getSession();
+  document.getElementById('sessionInfoBox').innerHTML = `
+    <div class="session-info-row"><span>المدير الحالي</span><b>${session?.username || 'admin'}</b></div>
+    <div class="session-info-row"><span>حالة الجلسة</span><b style="color:var(--success);">نشطة</b></div>
+    <div class="session-info-row"><span>بداية الجلسة</span><b>${session?.loginTime ? EliteAcademy.utils.formatDate(session.loginTime) : '—'}</b></div>
+  `;
+}
+function logoutFromSettings(){
+  EliteAcademy.modal.confirmAction('سيتم تسجيل خروجك من لوحة التحكم.', () => { EliteAcademy.auth.logout(); }, { title:'تأكيد تسجيل الخروج', confirmLabel:'تسجيل الخروج' });
+}
+
+/* ============ BACKUP / RESTORE ============ */
+function downloadFullBackup(){
+  const backup = {};
+  Object.values(K).forEach(storeKey => { backup[storeKey] = getData(storeKey); });
+  backup._meta = { exportedAt: new Date().toISOString(), type:'elite-academy-prototype-backup' };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `elite-academy-backup-${new Date().toISOString().split('T')[0]}.json`; a.click();
+  URL.revokeObjectURL(url);
+  EliteAcademy.utils.logAction('create','settings','', 'تم إنشاء نسخة احتياطية كاملة', 'success');
+  EliteAcademy.notifications.showSuccess('تم تنزيل النسخة الاحتياطية بنجاح');
+}
+function restoreFromBackup(){
+  const fileInput = document.getElementById('restoreFileInput');
+  if(!fileInput.files.length){ EliteAcademy.notifications.showWarning('يرجى اختيار ملف النسخة الاحتياطية أولًا'); return; }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    let backup;
+    try{ backup = JSON.parse(e.target.result); }
+    catch(err){ EliteAcademy.notifications.showError('ملف غير صالح — تأكد أنه ملف JSON صحيح'); return; }
+
+    if(!backup._meta || backup._meta.type !== 'elite-academy-prototype-backup'){
+      EliteAcademy.notifications.showError('هذا الملف لا يبدو نسخة احتياطية صحيحة لهذا النظام');
+      return;
+    }
+
+    EliteAcademy.modal.confirmAction(
+      'سيتم استبدال جميع البيانات الحالية بالكامل ببيانات هذه النسخة الاحتياطية. هذا الإجراء لا يمكن التراجع عنه.',
+      () => {
+        Object.entries(backup).forEach(([key,value]) => { if(key !== '_meta') EliteAcademy.storage.setData(key, value); });
+        EliteAcademy.utils.logAction('update','settings','', 'تم استعادة نسخة احتياطية كاملة', 'danger');
+        EliteAcademy.notifications.showSuccess('تمت استعادة النسخة الاحتياطية بنجاح — يُنصح بإعادة تحميل الصفحة');
+        setTimeout(()=>location.reload(), 1500);
+      },
+      { title:'تأكيد استعادة النسخة الاحتياطية', confirmLabel:'استبدال البيانات الحالية' }
+    );
+  };
+  reader.readAsText(fileInput.files[0]);
+}
+
+/* ============ DEMO DATA MANAGEMENT ============ */
+function confirmReloadDemoData(){
+  EliteAcademy.modal.confirmAction(
+    'سيُعاد زرع كل بيانات Demo الأصلية. أي سجلات حقيقية أضفتها بنفسك (isDemo: false) ستبقى كما هي، لكن يُنصح بأخذ نسخة احتياطية أولًا.',
+    () => {
+      localStorage.removeItem('eliteAcademy_seeded');
+      EliteAcademy.utils.logAction('update','settings','', 'تمت إعادة تحميل البيانات التجريبية', 'warning');
+      EliteAcademy.notifications.showSuccess('تمت إعادة تحميل البيانات التجريبية — يُنصح بإعادة تحميل الصفحة');
+      setTimeout(()=>location.reload(), 1200);
+    },
+    { title:'تأكيد إعادة تحميل البيانات التجريبية', confirmLabel:'إعادة التحميل' }
+  );
+}
+function confirmDeleteDemoData(){
+  EliteAcademy.modal.confirmAction(
+    'سيتم حذف كل السجلات التي تحمل isDemo: true فقط من كل الأقسام، مع الإبقاء على أي بيانات حقيقية أضفتها بنفسك.',
+    () => {
+      Object.values(K).forEach(storeKey => {
+        const data = getData(storeKey);
+        if(Array.isArray(data)){
+          const filtered = data.filter(item => item.isDemo !== true);
+          EliteAcademy.storage.setData(storeKey, filtered);
+        }
+      });
+      EliteAcademy.utils.logAction('delete','settings','', 'تم حذف كل البيانات التجريبية (isDemo: true)', 'danger');
+      EliteAcademy.notifications.showSuccess('تم حذف البيانات التجريبية بنجاح');
+      setTimeout(()=>location.reload(), 1000);
+    },
+    { title:'تأكيد حذف البيانات التجريبية', confirmLabel:'حذف البيانات التجريبية' }
+  );
+}
+
+/* ============ DANGER ZONE ============ */
+function confirmClearAllData(){
+  EliteAcademy.modal.confirmAction(
+    'تحذير خطير: سيتم حذف كل بيانات هذا التطبيق نهائيًا من هذا المتصفح (الطلبة، الأولياء، المدفوعات، السجلات، كل شيء). هذا الإجراء لا يمكن التراجع عنه إطلاقًا.',
+    () => {
+      Object.values(K).forEach(storeKey => localStorage.removeItem(storeKey));
+      localStorage.removeItem('eliteAcademy_seeded');
+      window.location.href = 'login.html';
+    },
+    { title:'⚠️ تحذير نهائي: مسح كل البيانات', confirmLabel:'نعم، امسح كل شيء نهائيًا' }
+  );
+}
+function confirmResetPrototype(){
+  EliteAcademy.modal.confirmAction(
+    'سيتم مسح كل البيانات الحالية وإعادة زرع بيانات Demo الأصلية من جديد بالكامل، وكأن النظام يعمل للمرة الأولى.',
+    () => {
+      Object.values(K).forEach(storeKey => localStorage.removeItem(storeKey));
+      localStorage.removeItem('eliteAcademy_seeded');
+      window.location.href = 'login.html';
+    },
+    { title:'تأكيد إعادة الضبط الكامل', confirmLabel:'إعادة الضبط الآن' }
+  );
+}
 
 document.getElementById('topSearchInput').addEventListener('keypress', function(e){
-  if(e.key === 'Enter' && this.value.trim()){
-    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
-  }
+  if(e.key==='Enter' && this.value.trim()) window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
 });
 
-loadSettingsForm();
+/* ============ INIT ============ */
+loadInstitutionForm();
+loadIdentityForm();
+renderYearsSettings();
+loadStudentsForm();
+loadFinanceForm();
+loadAttendanceForm();
+loadDocumentsForm();
+loadRequestsForm();
+loadNotifToggles();
+loadSystemForm();
+renderSessionInfo();
 </script>
 </body>
 </html>
