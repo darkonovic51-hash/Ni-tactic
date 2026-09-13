@@ -3,27 +3,79 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الحضور والغياب | أكاديمية النخبة</title>
+<title>الحضور والغيابات | أكاديمية النخبة</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 <style>
-.att-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;align-items:end;}
-.att-toolbar .form-field{margin:0;}
-.att-toolbar input,.att-toolbar select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
-.att-status-btns{display:flex;gap:6px;}
-.att-status-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid var(--border);background:#fff;cursor:pointer;font-family:'Cairo',sans-serif;}
-.att-status-btn.selected-present{background:rgba(46,158,91,0.15);border-color:var(--success);color:var(--success);}
-.att-status-btn.selected-absent{background:rgba(214,69,69,0.15);border-color:var(--danger);color:var(--danger);}
-.att-status-btn.selected-late{background:rgba(212,162,76,0.2);border-color:var(--accent);color:#a3781f;}
-.att-status-btn.selected-justified{background:rgba(15,76,92,0.1);border-color:var(--primary);color:var(--primary);}
-.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.page-actions-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px;}
+.page-actions-btns{display:flex;gap:8px;flex-wrap:wrap;}
+
+.top-tabs{display:flex;gap:6px;background:var(--surface);border-radius:12px;padding:6px;box-shadow:var(--shadow-sm);margin-bottom:20px;width:fit-content;}
+.top-tab{padding:9px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;color:var(--text-muted);border:none;background:none;font-family:'Cairo',sans-serif;}
+.top-tab.active{background:var(--primary);color:#fff;}
+.view-content{display:none;}
+.view-content.active{display:block;}
+
+.selectors-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:18px;}
+.selectors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.selectors-grid select, .selectors-grid input{padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-family:'Cairo',sans-serif;font-size:12.8px;background:var(--surface-soft);width:100%;}
+@media(max-width:900px){ .selectors-grid{grid-template-columns:1fr 1fr;} }
+
+.stats-row-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:900px){ .stats-row-5{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:500px){ .stats-row-5{grid-template-columns:1fr 1fr;} }
+.att-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;text-align:center;}
+.att-stat b{display:block;font-size:20px;font-weight:800;}
+.att-stat span{font-size:10.5px;color:var(--text-muted);font-weight:600;}
+.att-stat.pct b{color:var(--success);}
+
+.bulk-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+
+.att-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:10px;flex-wrap:wrap;}
+.att-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--accent-light);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;flex-shrink:0;}
+.att-name{font-size:13px;font-weight:700;cursor:pointer;}
+.att-card{font-size:10.5px;color:var(--text-muted);direction:ltr;}
+.att-status-btns{display:flex;gap:5px;margin-right:auto;flex-wrap:wrap;}
+.att-status-btn{padding:7px 13px;border-radius:8px;font-size:11.5px;font-weight:700;border:1.5px solid var(--border);background:var(--surface-soft);cursor:pointer;font-family:'Cairo',sans-serif;white-space:nowrap;}
+.att-status-btn.sel-present{background:var(--success-soft);border-color:var(--success);color:var(--success);}
+.att-status-btn.sel-absent{background:var(--danger-soft);border-color:var(--danger);color:var(--danger);}
+.att-status-btn.sel-late{background:var(--warning-soft);border-color:var(--warning);color:#a3781f;}
+.att-status-btn.sel-excused{background:var(--info-soft);border-color:var(--info);color:var(--info);}
+.att-note-btn{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:13px;padding:4px;}
+.att-note-btn.has-note{color:var(--accent);}
+.att-time-input{width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:7px;font-size:11px;}
+
+.save-bar{position:sticky;bottom:0;background:var(--surface);border-top:1px solid var(--border);padding:14px 18px;margin-top:16px;border-radius:var(--radius-md);box-shadow:var(--shadow-lg);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+
+/* MONTHLY CALENDAR */
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.month-nav button{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:8px 14px;cursor:pointer;font-family:'Cairo',sans-serif;}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-day-head{text-align:center;font-size:10.5px;font-weight:800;color:var(--text-muted);padding:6px 0;}
+.cal-day{aspect-ratio:1;border-radius:9px;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--surface);}
+.cal-day.empty{border:none;background:transparent;}
+.cal-day.present{background:var(--success-soft);border-color:var(--success);color:var(--success);}
+.cal-day.absent{background:var(--danger-soft);border-color:var(--danger);color:var(--danger);}
+.cal-day.late{background:var(--warning-soft);border-color:var(--warning);color:#a3781f;}
+.cal-day.excused{background:var(--info-soft);border-color:var(--info);color:var(--info);}
+.cal-day small{font-size:8px;font-weight:600;opacity:.75;}
+
+.history-summary-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:700px){ .history-summary-grid{grid-template-columns:1fr 1fr;} }
+
+@media(max-width:700px){
+  .att-row{flex-direction:column;align-items:flex-start;}
+  .att-status-btns{margin-right:0;width:100%;}
+  .att-status-btn{flex:1;}
+}
 </style>
 </head>
 <body>
 
 <div class="admin-layout">
   <aside class="sidebar" id="sidebar"></aside>
+
   <div class="main-panel">
     <div class="topbar">
       <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
@@ -34,150 +86,447 @@
     </div>
 
     <div class="dash-content">
-      <div class="dash-header">
-        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
-        <h2>الحضور والغياب</h2>
-        <p>تسجيل حضور التلاميذ حسب التاريخ والمستوى والقسم</p>
-      </div>
+      <div class="breadcrumb"><a href="dashboard.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><span>الحضور والغيابات</span></div>
 
-      <div class="mini-stats">
-        <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-calendar-xmark"></i></div><div><div class="dstat-num" id="absentTodayCount">0</div><div class="dstat-label">غياب اليوم</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-calendar-week"></i></div><div><div class="dstat-num" id="absentMonthCount">0</div><div class="dstat-label">الغياب الشهري</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-user-clock"></i></div><div><div class="dstat-num" id="mostAbsentName">—</div><div class="dstat-label">الأكثر غيابًا</div></div></div>
-      </div>
-
-      <div class="att-toolbar">
-        <div class="form-field"><label style="font-size:12px;font-weight:700;">التاريخ</label><input type="date" id="attDate"></div>
-        <div class="form-field"><label style="font-size:12px;font-weight:700;">القسم</label>
-          <select id="attSection"><option value="">اختر القسم</option></select>
+      <div class="page-actions-row">
+        <div>
+          <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+          <h2 style="font-size:22px;font-weight:800;">الحضور والغيابات</h2>
+          <p style="font-size:13px;color:var(--text-muted);">متابعة حضور وغياب الطلبة بشكل يومي ومنظم</p>
+        </div>
+        <div class="page-actions-btns">
+          <button class="btn btn-outline btn-sm" onclick="goToReport('daily')"><i class="fa-solid fa-chart-simple"></i> تقرير الحضور</button>
+          <button class="btn btn-outline btn-sm" onclick="exportAttendance()"><i class="fa-solid fa-file-export"></i> تصدير</button>
+          <button class="btn btn-primary" onclick="switchTab('register')"><i class="fa-solid fa-calendar-check"></i> تسجيل حضور اليوم</button>
         </div>
       </div>
 
-      <div class="panel">
-        <div class="panel-head"><h3>قائمة التلاميذ</h3></div>
-        <div style="overflow-x:auto;">
-          <table class="dtable">
-            <thead><tr><th>التلميذ</th><th>القسم</th><th>الحالة</th></tr></thead>
-            <tbody id="attTableBody"></tbody>
-          </table>
+      <!-- TOP TABS -->
+      <div class="top-tabs">
+        <button class="top-tab active" data-tab="register" onclick="switchTab('register')">سجل اليوم</button>
+        <button class="top-tab" data-tab="history" onclick="switchTab('history')">سجل طالب</button>
+        <button class="top-tab" data-tab="monthly" onclick="switchTab('monthly')">العرض الشهري</button>
+      </div>
+
+      <!-- ============ TAB: DAILY REGISTER ============ -->
+      <div class="view-content active" id="view-register">
+        <div class="selectors-bar">
+          <div class="selectors-grid">
+            <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">التاريخ</label><input type="date" id="attDate"></div>
+            <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">السنة الدراسية</label><select id="attYear"></select></div>
+            <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">المستوى</label><select id="attLevel"><option value="">اختر المستوى</option></select></div>
+            <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">القسم</label><select id="attSection"><option value="">اختر القسم</option></select></div>
+          </div>
         </div>
-        <div style="padding:16px 22px;">
-          <button class="btn btn-primary" onclick="saveAttendance()"><i class="fa-solid fa-floppy-disk"></i> حفظ الحضور</button>
+
+        <div class="stats-row-5" id="registerStats"></div>
+
+        <div id="registerContent">
+          <div class="empty-state"><i class="fa-solid fa-door-open"></i><p>اختر المستوى والقسم لعرض قائمة الطلبة</p></div>
+        </div>
+      </div>
+
+      <!-- ============ TAB: STUDENT HISTORY ============ -->
+      <div class="view-content" id="view-history">
+        <div class="selectors-bar">
+          <div style="position:relative;">
+            <input type="text" id="historyStudentSearch" placeholder="ابحث عن طالب بالاسم أو رقم البطاقة..." style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:9px;font-family:'Cairo',sans-serif;font-size:13px;">
+            <div id="historySearchResults" style="position:absolute;top:calc(100% + 6px);right:0;left:0;background:var(--surface);border:1px solid var(--border);border-radius:9px;box-shadow:var(--shadow-md);z-index:50;max-height:220px;overflow-y:auto;"></div>
+          </div>
+        </div>
+        <div id="historyContent">
+          <div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>ابحث عن طالب لعرض سجل حضوره الكامل</p></div>
+        </div>
+      </div>
+
+      <!-- ============ TAB: MONTHLY VIEW ============ -->
+      <div class="view-content" id="view-monthly">
+        <div class="selectors-bar">
+          <div class="selectors-grid">
+            <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">المستوى</label><select id="monthlyLevel"><option value="">اختر المستوى</option></select></div>
+            <div><label style="font-size:11px;font-weight:700;color:var(--text-muted);">القسم</label><select id="monthlySection"><option value="">اختر القسم</option></select></div>
+          </div>
+        </div>
+        <div class="panel" style="padding:20px;">
+          <div class="month-nav">
+            <button onclick="shiftMonth(-1)"><i class="fa-solid fa-chevron-right"></i></button>
+            <h3 id="monthLabel" style="font-size:15px;"></h3>
+            <button onclick="shiftMonth(1)"><i class="fa-solid fa-chevron-left"></i></button>
+          </div>
+          <div id="monthlyCalendarWrap">
+            <div class="empty-state"><i class="fa-solid fa-calendar"></i><p>اختر المستوى والقسم لعرض التقويم الشهري</p></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ============ NOTE MODAL ============ -->
+<div class="modal-overlay" id="noteModal">
+  <div class="success-modal" style="max-width:420px;text-align:right;">
+    <h3 style="margin-bottom:14px;">ملاحظة الحضور</h3>
+    <div class="form-field" style="margin-bottom:14px;"><textarea id="noteInput" rows="3" placeholder="مثال: تأخر بسبب النقل، غياب مبرر..."></textarea></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="saveNoteForCurrentStudent()">حفظ</button>
+      <button class="btn btn-danger" onclick="closeNoteModal()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-requireAdminAuth();
-renderSidebar('attendance');
+EliteAcademy.auth.requireAuth();
+EliteAcademy.navigation.renderSidebar('attendance');
 
-let currentAttendanceState = {};
+const K = EliteAcademy.storage.keys;
+const getData = EliteAcademy.storage.getData;
 
-function initAttendancePage(){
+let currentSessionState = {}; // studentId -> {status, time, note}
+let currentNoteStudentId = null;
+let monthlyCursor = new Date();
+
+/* ============ TAB SWITCHING ============ */
+function switchTab(tab){
+  document.querySelectorAll('.top-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===tab));
+  document.querySelectorAll('.view-content').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+}
+
+/* ============ INIT SELECTORS ============ */
+function initSelectors(){
   document.getElementById('attDate').value = new Date().toISOString().split('T')[0];
-  const sections = DB.get('eliteSections');
-  const sectionSelect = document.getElementById('attSection');
-  sections.forEach(s => sectionSelect.insertAdjacentHTML('beforeend', `<option value="${s.name}">${s.name}</option>`));
-  renderStats();
+
+  const years = getData(K.academicYears);
+  const yearSelect = document.getElementById('attYear');
+  yearSelect.innerHTML = years.map(y => `<option value="${y.id}" ${y.isCurrent?'selected':''}>${y.label}</option>`).join('');
+
+  const levels = getData(K.levels).filter(l => l.status !== 'مؤرشف');
+  ['attLevel','monthlyLevel'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = `<option value="">اختر المستوى</option>` + levels.map(l=>`<option value="${l.name}">${l.name}</option>`).join('');
+  });
 }
 
-function renderStats(){
-  const attendance = DB.get('eliteAttendance');
-  const today = new Date().toISOString().split('T')[0];
-  const thisMonth = today.slice(0,7);
+function updateSectionOptions(levelSelectId, sectionSelectId){
+  const levelName = document.getElementById(levelSelectId).value;
+  const sectionSelect = document.getElementById(sectionSelectId);
+  const classes = getData(K.classes);
+  const levels = getData(K.levels);
+  const level = levels.find(l => l.name === levelName);
 
-  document.getElementById('absentTodayCount').textContent = attendance.filter(a => a.status==='غائب' && a.date===today).length;
-  document.getElementById('absentMonthCount').textContent = attendance.filter(a => a.status==='غائب' && a.date.startsWith(thisMonth)).length;
+  let matchingSections;
+  if(level){
+    matchingSections = classes.filter(c => c.levelId === level.id);
+  } else {
+    matchingSections = [];
+  }
+  // Fallback: legacy classes without levelId — show all if nothing matched and a level name was chosen
+  if(matchingSections.length === 0 && levelName){
+    matchingSections = classes; // best-effort fallback for legacy demo sections
+  }
 
-  const counts = {};
-  attendance.filter(a=>a.status==='غائب').forEach(a => counts[a.studentName] = (counts[a.studentName]||0)+1);
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  document.getElementById('mostAbsentName').textContent = sorted.length ? sorted[0][0] : '—';
+  sectionSelect.innerHTML = `<option value="">اختر القسم</option>` + matchingSections.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
 }
 
-function loadStudentsForAttendance(){
-  const section = document.getElementById('attSection').value;
+document.getElementById('attLevel').addEventListener('change', () => { updateSectionOptions('attLevel','attSection'); renderRegister(); });
+document.getElementById('attSection').addEventListener('change', renderRegister);
+document.getElementById('attDate').addEventListener('change', renderRegister);
+document.getElementById('attYear').addEventListener('change', renderRegister);
+document.getElementById('monthlyLevel').addEventListener('change', () => { updateSectionOptions('monthlyLevel','monthlySection'); renderMonthlyCalendar(); });
+document.getElementById('monthlySection').addEventListener('change', renderMonthlyCalendar);
+
+/* ============ HELPERS ============ */
+function initials(f,l){ return (f[0]||'') + (l[0]||''); }
+function statusClass(status){
+  return { 'حاضر':'sel-present', 'غائب':'sel-absent', 'متأخر':'sel-late', 'غياب مبرر':'sel-excused' }[status] || '';
+}
+
+/* ============ DAILY REGISTER ============ */
+function renderRegister(){
   const date = document.getElementById('attDate').value;
-  const tbody = document.getElementById('attTableBody');
+  const yearId = document.getElementById('attYear').value;
+  const level = document.getElementById('attLevel').value;
+  const section = document.getElementById('attSection').value;
 
   if(!section){
-    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-door-open"></i><p>اختر قسمًا لعرض التلاميذ</p></div></td></tr>`;
+    document.getElementById('registerContent').innerHTML = `<div class="empty-state"><i class="fa-solid fa-door-open"></i><p>اختر المستوى والقسم لعرض قائمة الطلبة</p></div>`;
+    document.getElementById('registerStats').innerHTML = '';
     return;
   }
 
-  const students = DB.get('eliteStudents').filter(s => s.section === section);
+  const students = getData(K.students).filter(s => s.status !== 'مؤرشف' && s.section === section);
   if(students.length === 0){
-    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>لا يوجد تلاميذ في هذا القسم</p></div></td></tr>`;
+    document.getElementById('registerContent').innerHTML = `<div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>لا يوجد طلبة في هذا القسم</p></div>`;
+    document.getElementById('registerStats').innerHTML = '';
     return;
   }
 
-  const attendance = DB.get('eliteAttendance');
-  currentAttendanceState = {};
-
-  tbody.innerHTML = students.map(s => {
-    const existing = attendance.find(a => a.studentId === s.id && a.date === date);
-    const status = existing ? existing.status : 'حاضر';
-    currentAttendanceState[s.id] = status;
-    return `
-      <tr>
-        <td><b>${s.firstname} ${s.lastname}</b></td>
-        <td>${s.section}</td>
-        <td>
-          <div class="att-status-btns" data-student="${s.id}">
-            <button class="att-status-btn ${status==='حاضر'?'selected-present':''}" onclick="setStatus('${s.id}','حاضر',this)">حاضر</button>
-            <button class="att-status-btn ${status==='غائب'?'selected-absent':''}" onclick="setStatus('${s.id}','غائب',this)">غائب</button>
-            <button class="att-status-btn ${status==='غياب مبرر'?'selected-justified':''}" onclick="setStatus('${s.id}','غياب مبرر',this)">غياب مبرر</button>
-            <button class="att-status-btn ${status==='متأخر'?'selected-late':''}" onclick="setStatus('${s.id}','متأخر',this)">متأخر</button>
-          </div>
-        </td>
-      </tr>
-    `;
-  }).join('');
-}
-
-function setStatus(studentId, status, btn){
-  currentAttendanceState[studentId] = status;
-  const group = btn.parentElement;
-  group.querySelectorAll('.att-status-btn').forEach(b => b.className = 'att-status-btn');
-  const map = {'حاضر':'selected-present','غائب':'selected-absent','غياب مبرر':'selected-justified','متأخر':'selected-late'};
-  btn.classList.add(map[status]);
-}
-
-function saveAttendance(){
-  const date = document.getElementById('attDate').value;
-  const section = document.getElementById('attSection').value;
-  if(!section){ alert('اختر القسم أولًا'); return; }
-
-  const students = DB.get('eliteStudents');
-  let attendance = DB.get('eliteAttendance');
-
-  Object.entries(currentAttendanceState).forEach(([studentId, status]) => {
-    const student = students.find(s => s.id === studentId);
-    attendance = attendance.filter(a => !(a.studentId === studentId && a.date === date));
-    attendance.push({
-      id: uid('att'), studentId, studentName: `${student.firstname} ${student.lastname}`,
-      section: student.section, date, status
-    });
+  const existingRecords = getData(K.attendance).filter(a => a.date === date && a.classId === section);
+  currentSessionState = {};
+  students.forEach(s => {
+    const existing = existingRecords.find(a => a.studentId === s.id);
+    currentSessionState[s.id] = existing ? { status:existing.status, time:existing.arrivalTime||'', note:existing.note||'' } : { status:'حاضر', time:'', note:'' };
   });
 
-  DB.set('eliteAttendance', attendance);
-  logAction(`تم تسجيل الحضور لقسم ${section} بتاريخ ${date}`);
-  renderStats();
-  alert('تم حفظ الحضور بنجاح');
+  document.getElementById('registerContent').innerHTML = `
+    <div class="bulk-bar">
+      <button class="btn btn-sm btn-success" onclick="markAll('حاضر')"><i class="fa-solid fa-check"></i> تحديد الجميع كحاضر</button>
+      <button class="btn btn-sm btn-danger" onclick="confirmMarkAllAbsent()"><i class="fa-solid fa-xmark"></i> تحديد الجميع كغائب</button>
+    </div>
+    <div id="attRowsWrap">
+      ${students.map(s => renderAttRow(s)).join('')}
+    </div>
+    <div class="save-bar">
+      <span style="font-size:12.5px;color:var(--text-muted);">${students.length} طالب — ${date}</span>
+      <button class="btn btn-primary" onclick="saveRegister()"><i class="fa-solid fa-floppy-disk"></i> حفظ الحضور</button>
+    </div>
+  `;
+  renderRegisterStats(students);
 }
 
-document.getElementById('attSection').addEventListener('change', loadStudentsForAttendance);
-document.getElementById('attDate').addEventListener('change', loadStudentsForAttendance);
+function renderAttRow(s){
+  const state = currentSessionState[s.id];
+  return `
+    <div class="att-row" id="row-${s.id}">
+      <div class="att-avatar">${initials(s.firstname,s.lastname)}</div>
+      <div>
+        <div class="att-name" onclick="window.location.href='student-profile.html?id=${s.id}'">${s.firstname} ${s.lastname}</div>
+        <div class="att-card">${s.cardNumber}</div>
+      </div>
+      <input type="time" class="att-time-input" value="${state.time}" onchange="setTime('${s.id}', this.value)">
+      <button class="att-note-btn ${state.note?'has-note':''}" onclick="openNoteModal('${s.id}')" title="ملاحظة"><i class="fa-solid fa-note-sticky"></i></button>
+      <div class="att-status-btns">
+        <button class="att-status-btn ${statusClass(state.status)==='sel-present'?'sel-present':''}" onclick="setStatus('${s.id}','حاضر')">حاضر</button>
+        <button class="att-status-btn ${statusClass(state.status)==='sel-absent'?'sel-absent':''}" onclick="setStatus('${s.id}','غائب')">غائب</button>
+        <button class="att-status-btn ${statusClass(state.status)==='sel-late'?'sel-late':''}" onclick="setStatus('${s.id}','متأخر')">متأخر</button>
+        <button class="att-status-btn ${statusClass(state.status)==='sel-excused'?'sel-excused':''}" onclick="setStatus('${s.id}','غياب مبرر')">معذور</button>
+      </div>
+    </div>
+  `;
+}
+
+function setStatus(studentId, status){
+  currentSessionState[studentId].status = status;
+  const row = document.getElementById('row-'+studentId);
+  row.querySelectorAll('.att-status-btn').forEach(b => b.className = 'att-status-btn');
+  const map = {'حاضر':'sel-present','غائب':'sel-absent','متأخر':'sel-late','غياب مبرر':'sel-excused'};
+  const btns = row.querySelectorAll('.att-status-btn');
+  const labels = ['حاضر','غائب','متأخر','غياب مبرر'];
+  btns.forEach((b,i) => { if(labels[i]===status) b.classList.add(map[status]); });
+  renderRegisterStats(getData(K.students).filter(s => s.section === document.getElementById('attSection').value && s.status!=='مؤرشف'));
+}
+function setTime(studentId, time){ currentSessionState[studentId].time = time; }
+
+function markAll(status){
+  Object.keys(currentSessionState).forEach(id => setStatus(id, status));
+}
+function confirmMarkAllAbsent(){
+  EliteAcademy.modal.confirmAction('سيتم تحديد جميع طلبة هذا القسم كغائبين لهذا اليوم. تأكد قبل المتابعة.', () => markAll('غائب'), { title:'تأكيد التحديد الجماعي', confirmLabel:'تحديد كغائب' });
+}
+
+function renderRegisterStats(students){
+  const values = Object.values(currentSessionState);
+  const present = values.filter(v=>v.status==='حاضر').length;
+  const absent = values.filter(v=>v.status==='غائب').length;
+  const late = values.filter(v=>v.status==='متأخر').length;
+  const excused = values.filter(v=>v.status==='غياب مبرر').length;
+  const total = values.length || 1;
+  const pct = Math.round((present/total)*100);
+
+  document.getElementById('registerStats').innerHTML = `
+    <div class="att-stat"><b>${values.length}</b><span>إجمالي الطلبة</span></div>
+    <div class="att-stat"><b style="color:var(--success);">${present}</b><span>حاضر</span></div>
+    <div class="att-stat"><b style="color:var(--danger);">${absent}</b><span>غائب</span></div>
+    <div class="att-stat"><b style="color:#a3781f;">${late}</b><span>متأخر</span></div>
+    <div class="att-stat pct"><b>${pct}%</b><span>نسبة الحضور</span></div>
+  `;
+}
+
+/* ============ NOTE MODAL ============ */
+function openNoteModal(studentId){
+  currentNoteStudentId = studentId;
+  document.getElementById('noteInput').value = currentSessionState[studentId].note || '';
+  document.getElementById('noteModal').classList.add('active');
+}
+function closeNoteModal(){ document.getElementById('noteModal').classList.remove('active'); }
+function saveNoteForCurrentStudent(){
+  const text = document.getElementById('noteInput').value.trim();
+  currentSessionState[currentNoteStudentId].note = text;
+  const btn = document.querySelector(`#row-${currentNoteStudentId} .att-note-btn`);
+  btn.classList.toggle('has-note', !!text);
+  closeNoteModal();
+}
+
+/* ============ SAVE REGISTER (with duplicate prevention) ============ */
+function saveRegister(){
+  const date = document.getElementById('attDate').value;
+  const yearId = document.getElementById('attYear').value;
+  const section = document.getElementById('attSection').value;
+  const levels = getData(K.levels);
+  const level = levels.find(l => l.name === document.getElementById('attLevel').value);
+
+  let attendance = getData(K.attendance);
+  let savedCount = 0;
+
+  Object.entries(currentSessionState).forEach(([studentId, state]) => {
+    const student = EliteAcademy.storage.findById(K.students, studentId);
+    if(!student) return;
+
+    // Prevent duplicate: same student + same date + same class session -> update instead of duplicating
+    const existingIdx = attendance.findIndex(a => a.studentId===studentId && a.date===date && a.classId===section);
+    const record = {
+      id: existingIdx>-1 ? attendance[existingIdx].id : EliteAcademy.storage.generateId('att'),
+      studentId, studentName:`${student.firstname} ${student.lastname}`,
+      classId: section, section, levelId: level?level.id:'', academicYearId: yearId,
+      date, status: state.status, arrivalTime: state.time||'', note: state.note||'',
+      createdAt: existingIdx>-1 ? attendance[existingIdx].createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(), isDemo:false
+    };
+
+    if(existingIdx>-1) attendance[existingIdx] = record; else attendance.push(record);
+    savedCount++;
+  });
+
+  EliteAcademy.storage.setData(K.attendance, attendance);
+  EliteAcademy.utils.logAction('create','attendance','', `تم حفظ الحضور لقسم ${section} بتاريخ ${date} (${savedCount} طالب)`, 'success');
+  EliteAcademy.notifications.showSuccess('تم حفظ سجل الحضور بنجاح');
+  renderRegister();
+}
+
+/* ============ STUDENT HISTORY ============ */
+document.getElementById('historyStudentSearch').addEventListener('input', function(){
+  const q = this.value.trim();
+  const box = document.getElementById('historySearchResults');
+  if(!q){ box.innerHTML=''; return; }
+  const students = getData(K.students).filter(s => s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q)).slice(0,6);
+  box.innerHTML = students.length ? students.map(s => `
+    <div style="padding:9px 14px;cursor:pointer;font-size:12.5px;" onmouseover="this.style.background='var(--surface-soft)'" onmouseout="this.style.background=''" onclick="showStudentHistory('${s.id}')">
+      <i class="fa-solid fa-user-graduate" style="color:var(--accent);"></i> ${s.firstname} ${s.lastname} <span class="ltr" style="color:var(--text-muted);">— ${s.cardNumber}</span>
+    </div>`).join('') : `<div style="padding:10px;color:var(--text-muted);font-size:12px;">لا توجد نتائج</div>`;
+});
+
+function showStudentHistory(studentId){
+  const student = EliteAcademy.storage.findById(K.students, studentId);
+  document.getElementById('historySearchResults').innerHTML = '';
+  document.getElementById('historyStudentSearch').value = `${student.firstname} ${student.lastname}`;
+
+  const records = getData(K.attendance).filter(a => a.studentId === studentId).sort((a,b)=> new Date(b.date)-new Date(a.date));
+  const present = records.filter(r=>r.status==='حاضر').length;
+  const absent = records.filter(r=>r.status==='غائب').length;
+  const late = records.filter(r=>r.status==='متأخر').length;
+  const excused = records.filter(r=>r.status==='غياب مبرر').length;
+  const pct = records.length ? Math.round((present/records.length)*100) : 100;
+
+  document.getElementById('historyContent').innerHTML = `
+    <div class="history-summary-grid">
+      <div class="att-stat pct"><b>${pct}%</b><span>نسبة الحضور</span></div>
+      <div class="att-stat"><b style="color:var(--success);">${present}</b><span>حاضر</span></div>
+      <div class="att-stat"><b style="color:var(--danger);">${absent}</b><span>غائب</span></div>
+      <div class="att-stat"><b style="color:#a3781f;">${late}</b><span>متأخر</span></div>
+      <div class="att-stat"><b>${excused}</b><span>معذور</span></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="btn btn-sm btn-outline" onclick="goToReport('student','${studentId}')"><i class="fa-solid fa-chart-simple"></i> تقرير الطالب</button>
+      <a href="student-profile.html?id=${studentId}" class="btn btn-sm btn-outline"><i class="fa-solid fa-id-badge"></i> عرض الملف الكامل</a>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>السجل الكامل</h3></div>
+      <div style="overflow-x:auto;">
+        <table class="dtable">
+          <thead><tr><th>التاريخ</th><th>الحالة</th><th>وقت الوصول</th><th>ملاحظة</th></tr></thead>
+          <tbody>
+            ${records.length ? records.map(r => `
+              <tr>
+                <td data-label="التاريخ">${r.date}</td>
+                <td data-label="الحالة"><span class="badge ${r.status==='حاضر'?'badge-accepted':(r.status==='غائب'?'badge-rejected':'badge-progress')}">${r.status}</span></td>
+                <td data-label="وقت الوصول">${r.arrivalTime||'—'}</td>
+                <td data-label="ملاحظة">${r.note||'—'}</td>
+              </tr>`).join('') : `<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-calendar"></i><p>لا توجد سجلات حضور بعد</p></div></td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+/* ============ MONTHLY CALENDAR ============ */
+function shiftMonth(delta){
+  monthlyCursor.setMonth(monthlyCursor.getMonth()+delta);
+  renderMonthlyCalendar();
+}
+
+function renderMonthlyCalendar(){
+  const level = document.getElementById('monthlyLevel').value;
+  const section = document.getElementById('monthlySection').value;
+  document.getElementById('monthLabel').textContent = monthlyCursor.toLocaleDateString('ar-DZ', { month:'long', year:'numeric' });
+
+  if(!section){
+    document.getElementById('monthlyCalendarWrap').innerHTML = `<div class="empty-state"><i class="fa-solid fa-calendar"></i><p>اختر المستوى والقسم لعرض التقويم الشهري</p></div>`;
+    return;
+  }
+
+  const year = monthlyCursor.getFullYear();
+  const month = monthlyCursor.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const startOffset = firstDay.getDay(); // 0=Sunday, matches Arabic week start
+
+  const attendance = getData(K.attendance).filter(a => a.classId === section);
+  // Aggregate status per day across the whole class (majority-based simple summary)
+  const dayHeads = ['أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+
+  let cells = dayHeads.map(d => `<div class="cal-day-head">${d}</div>`).join('');
+  for(let i=0;i<startOffset;i++) cells += `<div class="cal-day empty"></div>`;
+
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayRecords = attendance.filter(a => a.date === dateStr);
+    let cls = '';
+    let label = '';
+    if(dayRecords.length){
+      const absentCount = dayRecords.filter(r=>r.status==='غائب').length;
+      const lateCount = dayRecords.filter(r=>r.status==='متأخر').length;
+      if(absentCount > dayRecords.length/2) { cls='absent'; label=`${absentCount} غ`; }
+      else if(lateCount > 0){ cls='late'; label=`${lateCount} تأ`; }
+      else { cls='present'; label='حاضر'; }
+    }
+    cells += `<div class="cal-day ${cls}">${d}${label?`<small>${label}</small>`:''}</div>`;
+  }
+
+  document.getElementById('monthlyCalendarWrap').innerHTML = `<div class="calendar-grid">${cells}</div>`;
+}
+
+/* ============ REPORTS CONNECTION ============ */
+function goToReport(type, id){
+  const params = new URLSearchParams({ module:'attendance', type });
+  if(id) params.set('id', id);
+  const section = document.getElementById('attSection') ? document.getElementById('attSection').value : '';
+  if(section) params.set('section', section);
+  window.location.href = `reports.html?${params.toString()}`;
+}
+
+/* ============ EXPORT ============ */
+function exportAttendance(){
+  const blob = new Blob([JSON.stringify(getData(K.attendance), null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'attendance.json'; a.click();
+  URL.revokeObjectURL(url);
+  EliteAcademy.notifications.showSuccess('تم تصدير سجلات الحضور بنجاح');
+}
+
 document.getElementById('topSearchInput').addEventListener('keypress', function(e){
   if(e.key === 'Enter' && this.value.trim()){
     window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
   }
 });
 
-initAttendancePage();
+/* ============ INIT ============ */
+initSelectors();
 </script>
 </body>
 </html>
