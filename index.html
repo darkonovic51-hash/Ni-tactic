@@ -8,6 +8,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<style>
+/* Page-specific additions not worth bloating the global stylesheet with */
+.track-section{padding:80px 0;background:var(--surface);}
+.track-box{max-width:560px;margin:0 auto;background:var(--surface-soft);border:1px solid var(--border);border-radius:var(--radius-lg);padding:36px;text-align:center;}
+.track-form{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.track-form input{flex:1;min-width:220px;padding:13px 16px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:14px;background:#fff;direction:ltr;text-align:center;}
+.track-result{margin-top:20px;display:none;}
+.track-result.active{display:block;}
+.track-status-badge{font-size:16px;padding:8px 22px;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+.contact-info-list{display:flex;flex-direction:column;gap:18px;margin-top:20px;}
+.contact-info-item{display:flex;gap:14px;align-items:flex-start;}
+.contact-info-item i{width:44px;height:44px;background:var(--surface-soft);color:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.contact-info-item b{display:block;font-size:14px;margin-bottom:2px;}
+.contact-info-item span{font-size:13px;color:var(--text-muted);}
+.cta-section{padding:90px 0;background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:#fff;text-align:center;}
+.cta-section h2{font-size:30px;margin-bottom:14px;color:#fff;}
+.cta-section p{color:rgba(255,255,255,0.8);max-width:560px;margin:0 auto 30px;font-size:15px;}
+@media(max-width:900px){ .contact-grid{grid-template-columns:1fr;} }
+</style>
 </head>
 <body>
 
@@ -16,7 +36,7 @@
     <div class="logo">
       <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
       <div class="logo-text">
-        <h1>أكاديمية النخبة</h1>
+        <h1 id="headerInstitutionName">أكاديمية النخبة</h1>
         <span>للتعليم والتكوين</span>
       </div>
     </div>
@@ -24,10 +44,12 @@
       <a href="#home">الرئيسية</a>
       <a href="#about">عن المؤسسة</a>
       <a href="#levels">المستويات</a>
+      <a href="#why">لماذا نحن</a>
       <a href="#register">التسجيل</a>
       <a href="#contact">اتصل بنا</a>
     </nav>
     <div class="nav-actions">
+      <a href="login.html" class="btn btn-outline" style="border-color:var(--border-strong);color:var(--primary);"><i class="fa-solid fa-lock"></i> دخول الإدارة</a>
       <a href="#register" class="btn btn-dark">طلب التسجيل</a>
       <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.add('active')">
         <span></span><span></span><span></span>
@@ -42,34 +64,39 @@
     <li><a href="#home" onclick="closeMobile()">الرئيسية</a></li>
     <li><a href="#about" onclick="closeMobile()">عن المؤسسة</a></li>
     <li><a href="#levels" onclick="closeMobile()">المستويات</a></li>
+    <li><a href="#why" onclick="closeMobile()">لماذا نحن</a></li>
     <li><a href="#register" onclick="closeMobile()">التسجيل</a></li>
     <li><a href="#contact" onclick="closeMobile()">اتصل بنا</a></li>
+    <li><a href="login.html"><i class="fa-solid fa-lock"></i> دخول الإدارة</a></li>
   </ul>
 </div>
 
+<!-- ============ HERO ============ -->
 <section class="hero" id="home">
   <div class="container hero-content">
-    <div class="hero-badge"><i class="fa-solid fa-star"></i> نحو تعليم أفضل... نحو مستقبل أقوى</div>
+    <div class="hero-badge"><i class="fa-solid fa-star"></i> <span id="heroSlogan">نحو تعليم أفضل... نحو مستقبل أقوى</span></div>
     <h1>نبني المعرفة... <span>ونصنع المستقبل</span></h1>
-    <p>أكاديمية النخبة للتعليم والتكوين — بيئة تعليمية حديثة تهتم بالتلميذ، وتنظم مساره الدراسي والإداري باحترافية.</p>
+    <p id="heroDesc">أكاديمية النخبة للتعليم والتكوين — بيئة تعليمية حديثة تهتم بالتلميذ، وتنظم مساره الدراسي والإداري باحترافية.</p>
     <div class="hero-btns">
       <a href="#register" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i> طلب التسجيل</a>
-      <a href="#about" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> اكتشف مؤسستنا</a>
+      <a href="#about" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> اكتشف الأكاديمية</a>
     </div>
   </div>
   <div class="hero-scroll"><i class="fa-solid fa-chevron-down"></i></div>
 </section>
 
+<!-- ============ STATS ============ -->
 <section class="stats">
   <div class="container stats-grid">
-    <div class="stat-item"><div class="stat-num" data-count="320">0</div><div class="stat-label">تلميذ</div></div>
-    <div class="stat-item"><div class="stat-num" data-count="24">0</div><div class="stat-label">أستاذًا</div></div>
-    <div class="stat-item"><div class="stat-num" data-count="12">0</div><div class="stat-label">موظفًا</div></div>
-    <div class="stat-item"><div class="stat-num" data-count="18">0</div><div class="stat-label">قسمًا</div></div>
-    <div class="stat-item"><div class="stat-num" data-count="8">0</div><div class="stat-label">سنوات خبرة</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="320">0</div><div class="stat-label">طالب</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="24">0</div><div class="stat-label">أستاذ</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="12">0</div><div class="stat-label">موظف</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="18">0</div><div class="stat-label">قسم</div></div>
+    <div class="stat-item"><div class="stat-num" data-count="8">0</div><div class="stat-label">سنوات من الخبرة</div></div>
   </div>
 </section>
 
+<!-- ============ ABOUT ============ -->
 <section class="about" id="about">
   <div class="container about-grid">
     <div class="about-img">
@@ -82,21 +109,22 @@
     <div>
       <span class="section-tag">من نحن</span>
       <h2 class="section-title">مؤسسة تعليمية خاصة رائدة</h2>
-      <p class="section-desc">مؤسسة تعليمية خاصة تهدف إلى توفير بيئة تعليمية منظمة وحديثة، تجمع بين جودة التعليم والمتابعة الإدارية والتربوية المستمرة.</p>
+      <p class="section-desc">مؤسسة تعليمية خاصة تهدف إلى توفير بيئة تعليمية منظمة وحديثة، تجمع بين جودة التعليم والمتابعة الإدارية والتربوية المستمرة، مع فلسفة تعليمية تُركّز على متابعة كل تلميذ بشكل فردي.</p>
       <div class="about-boxes">
-        <div class="about-box"><i class="fa-solid fa-eye"></i><h4>رؤيتنا</h4><p>بناء مؤسسة تعليمية حديثة تجمع بين التنظيم وجودة التعليم.</p></div>
-        <div class="about-box"><i class="fa-solid fa-bullseye"></i><h4>رسالتنا</h4><p>مرافقة التلاميذ وتوفير بيئة تعليمية تساعدهم على التطور.</p></div>
+        <div class="about-box"><i class="fa-solid fa-eye"></i><h4>رؤيتنا</h4><p>بناء مؤسسة تعليمية حديثة تجمع بين التنظيم الإداري وجودة التعليم.</p></div>
+        <div class="about-box"><i class="fa-solid fa-bullseye"></i><h4>رسالتنا</h4><p>مرافقة التلاميذ إداريًا وتربويًا وتوفير بيئة تساعدهم على التطور.</p></div>
       </div>
       <ul class="goals-list">
-        <li><i class="fa-solid fa-check"></i> تنظيم العملية التعليمية</li>
-        <li><i class="fa-solid fa-check"></i> تحسين المتابعة الإدارية</li>
-        <li><i class="fa-solid fa-check"></i> توفير بيئة مناسبة والاهتمام بكل تلميذ</li>
-        <li><i class="fa-solid fa-check"></i> اعتماد التكنولوجيا في التسيير</li>
+        <li><i class="fa-solid fa-check"></i> تنظيم إداري دقيق للعملية التعليمية</li>
+        <li><i class="fa-solid fa-check"></i> متابعة فردية مستمرة لكل تلميذ</li>
+        <li><i class="fa-solid fa-check"></i> بيئة تعليمية حديثة ومنظمة</li>
+        <li><i class="fa-solid fa-check"></i> اعتماد التكنولوجيا في التسيير الإداري</li>
       </ul>
     </div>
   </div>
 </section>
 
+<!-- ============ LEVELS ============ -->
 <section class="levels" id="levels">
   <div class="container">
     <div class="section-head">
@@ -105,58 +133,69 @@
       <p class="section-desc">نغطي جميع مراحل التعليم من التحضيري إلى الثانوي، مع دروس دعم وتحضير للامتحانات الرسمية.</p>
     </div>
     <div class="levels-grid">
-      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-child-reaching"></i></div><h3>التعليم التحضيري</h3><ul><li>تحضيري 1</li><li>تحضيري 2</li></ul></div>
-      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-book-open"></i></div><h3>التعليم الابتدائي</h3><ul><li>السنة الأولى إلى الخامسة ابتدائي</li></ul></div>
-      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-book"></i></div><h3>التعليم المتوسط</h3><ul><li>الأولى إلى الرابعة متوسط</li></ul></div>
-      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-graduation-cap"></i></div><h3>التعليم الثانوي</h3><ul><li>الأولى إلى الثالثة ثانوي</li></ul></div>
-      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-language"></i></div><h3>الدعم والتكوين</h3><ul><li>دروس الدعم</li><li>دروس اللغات</li></ul></div>
-      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-certificate"></i></div><h3>التحضير للامتحانات</h3><ul><li>شهادة التعليم المتوسط</li><li>البكالوريا</li></ul></div>
+      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-child-reaching"></i></div><h3>التعليم التحضيري</h3><p style="font-size:13.5px;color:var(--text-muted);">تهيئة الطفل للدخول إلى المسار التعليمي بأسلوب تربوي حديث.</p></div>
+      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-book-open"></i></div><h3>التعليم الابتدائي</h3><p style="font-size:13.5px;color:var(--text-muted);">من السنة الأولى إلى الخامسة ابتدائي، بمتابعة دراسية منتظمة.</p></div>
+      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-book"></i></div><h3>التعليم المتوسط</h3><p style="font-size:13.5px;color:var(--text-muted);">من الأولى إلى الرابعة متوسط مع تحضير لشهادة التعليم المتوسط.</p></div>
+      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-graduation-cap"></i></div><h3>التعليم الثانوي</h3><p style="font-size:13.5px;color:var(--text-muted);">من الأولى إلى الثالثة ثانوي مع تحضير مكثف للبكالوريا.</p></div>
+      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-certificate"></i></div><h3>تحضير الامتحانات الرسمية</h3><p style="font-size:13.5px;color:var(--text-muted);">برامج مكثفة لشهادة التعليم المتوسط والبكالوريا.</p></div>
+      <div class="level-card"><div class="level-icon"><i class="fa-solid fa-language"></i></div><h3>الدعم واللغات</h3><p style="font-size:13.5px;color:var(--text-muted);">دروس دعم مدرسي ودروس لغات أجنبية لكل المستويات.</p></div>
     </div>
   </div>
 </section>
 
-<section class="why">
+<!-- ============ WHY US ============ -->
+<section class="why" id="why">
   <div class="container">
     <div class="section-head">
       <span class="section-tag">لماذا نحن</span>
       <h2 class="section-title">لماذا أكاديمية النخبة؟</h2>
     </div>
     <div class="why-grid">
-      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-list-check"></i></div><h4>متابعة إدارية منظمة</h4><p>نظام دقيق لمتابعة كل تلميذ</p></div>
-      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-chalkboard-user"></i></div><h4>طاقم تربوي مؤهل</h4><p>أساتذة ذوو خبرة وكفاءة</p></div>
-      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-calendar-check"></i></div><h4>متابعة الحضور</h4><p>تسجيل دقيق للحضور والغياب</p></div>
-      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-shield-halved"></i></div><h4>أرشفة آمنة</h4><p>حفظ منظم لجميع الملفات</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-user-check"></i></div><h4>متابعة فردية للطالب</h4><p>ملف إداري وتربوي متكامل لكل تلميذ</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-list-check"></i></div><h4>إدارة منظمة</h4><p>نظام إداري رقمي دقيق وشفاف</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-building-columns"></i></div><h4>بيئة تعليمية حديثة</h4><p>فضاءات وتجهيزات تربوية عصرية</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-chalkboard-user"></i></div><h4>طاقم تربوي مؤهل</h4><p>أساتذة ذوو خبرة وكفاءة عالية</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-calendar-check"></i></div><h4>متابعة الحضور</h4><p>تسجيل دقيق ومستمر للحضور والغياب</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-sack-dollar"></i></div><h4>تنظيم إداري ومالي</h4><p>وضوح تام في المعاملات المالية</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-folder-open"></i></div><h4>ملفات طلابية متكاملة</h4><p>أرشفة إلكترونية آمنة ومنظمة</p></div>
+      <div class="why-card"><div class="why-icon"><i class="fa-solid fa-phone-volume"></i></div><h4>تواصل إداري مباشر</h4><p>قنوات تواصل واضحة مع إدارة المؤسسة</p></div>
     </div>
   </div>
 </section>
 
+<!-- ============ REGISTRATION CTA ============ -->
+<section class="cta-section">
+  <div class="container">
+    <h2>ابدأ رحلة النجاح مع أكاديمية النخبة</h2>
+    <p>سجّل طلب انضمام ابنك اليوم، وسيقوم فريقنا الإداري بمراجعة الطلب والتواصل معكم في أقرب وقت.</p>
+    <a href="#register" class="btn btn-primary btn-lg"><i class="fa-solid fa-pen-to-square"></i> طلب التسجيل الآن</a>
+  </div>
+</section>
+
+<!-- ============ REGISTRATION FORM ============ -->
 <section class="register" id="register">
   <div class="container">
     <div class="section-head">
       <span class="section-tag">انضم إلينا</span>
       <h2 class="section-title">استمارة طلب التسجيل</h2>
-      <p class="section-desc">يرجى تعبئة جميع البيانات بدقة، سيتم التواصل معكم بعد المراجعة.</p>
+      <p class="section-desc">يرجى تعبئة جميع البيانات بدقة، سيتم التواصل معكم بعد المراجعة من طرف الإدارة.</p>
     </div>
     <div class="form-wrap">
-      <form id="registrationForm">
+      <form id="registrationForm" novalidate>
 
         <div class="form-group-title"><i class="fa-solid fa-user"></i><h3>بيانات التلميذ</h3></div>
         <div class="form-grid">
-          <div class="form-field"><label>الاسم <span class="req">*</span></label><input type="text" name="st_firstname" required></div>
-          <div class="form-field"><label>اللقب <span class="req">*</span></label><input type="text" name="st_lastname" required></div>
-          <div class="form-field"><label>الاسم الكامل بالعربية</label><input type="text" name="st_full_ar"></div>
-          <div class="form-field"><label>الاسم الكامل بالفرنسية</label><input type="text" name="st_full_fr"></div>
-          <div class="form-field"><label>تاريخ الميلاد <span class="req">*</span></label><input type="date" name="st_dob" required></div>
+          <div class="form-field" data-field="st_firstname"><label>الاسم <span class="req">*</span></label><input type="text" name="st_firstname"><span class="error-text">هذا الحقل مطلوب</span></div>
+          <div class="form-field" data-field="st_lastname"><label>اللقب <span class="req">*</span></label><input type="text" name="st_lastname"><span class="error-text">هذا الحقل مطلوب</span></div>
+          <div class="form-field"><label>الاسم الكامل بالفرنسية</label><input type="text" name="st_full_fr" class="ltr"></div>
+          <div class="form-field" data-field="st_dob"><label>تاريخ الميلاد <span class="req">*</span></label><input type="date" name="st_dob"><span class="error-text">هذا الحقل مطلوب</span></div>
           <div class="form-field"><label>مكان الميلاد</label><input type="text" name="st_pob"></div>
-          <div class="form-field"><label>الجنس <span class="req">*</span></label>
-            <select name="st_gender" required><option value="">اختر</option><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+          <div class="form-field" data-field="st_gender"><label>الجنس <span class="req">*</span></label>
+            <select name="st_gender"><option value="">اختر</option><option value="ذكر">ذكر</option><option value="أنثى">أنثى</option></select>
+            <span class="error-text">هذا الحقل مطلوب</span>
           </div>
-          <div class="form-field"><label>الجنسية</label><input type="text" name="st_nationality" value="جزائرية"></div>
-          <div class="form-field"><label>الولاية</label><input type="text" name="st_state"></div>
-          <div class="form-field"><label>البلدية</label><input type="text" name="st_city"></div>
-          <div class="form-field full"><label>العنوان</label><input type="text" name="st_address"></div>
-          <div class="form-field"><label>المستوى الدراسي المطلوب <span class="req">*</span></label>
-            <select name="st_level" required>
+          <div class="form-field" data-field="st_level"><label>المستوى الدراسي المطلوب <span class="req">*</span></label>
+            <select name="st_level">
               <option value="">اختر المستوى</option>
               <optgroup label="التعليم التحضيري"><option>تحضيري 1</option><option>تحضيري 2</option></optgroup>
               <optgroup label="التعليم الابتدائي"><option>السنة الأولى ابتدائي</option><option>السنة الثانية ابتدائي</option><option>السنة الثالثة ابتدائي</option><option>السنة الرابعة ابتدائي</option><option>السنة الخامسة ابتدائي</option></optgroup>
@@ -164,37 +203,26 @@
               <optgroup label="التعليم الثانوي"><option>الأولى ثانوي</option><option>الثانية ثانوي</option><option>الثالثة ثانوي</option></optgroup>
               <optgroup label="الدعم والتكوين"><option>دروس الدعم</option><option>دروس اللغات</option></optgroup>
             </select>
+            <span class="error-text">هذا الحقل مطلوب</span>
           </div>
+          <div class="form-field"><label>القسم المطلوب (اختياري)</label><input type="text" name="st_class" placeholder="مثال: 4M-A"></div>
           <div class="form-field"><label>المؤسسة السابقة</label><input type="text" name="st_prev_school"></div>
+          <div class="form-field"><label>تاريخ التسجيل المفضل</label><input type="date" name="st_preferred_date"></div>
           <div class="form-field full"><label>ملاحظات</label><textarea name="st_notes"></textarea></div>
         </div>
 
         <div class="form-group-title"><i class="fa-solid fa-people-roof"></i><h3>بيانات الولي</h3></div>
         <div class="form-grid">
-          <div class="form-field"><label>الاسم <span class="req">*</span></label><input type="text" name="pa_firstname" required></div>
-          <div class="form-field"><label>اللقب <span class="req">*</span></label><input type="text" name="pa_lastname" required></div>
+          <div class="form-field" data-field="pa_firstname"><label>الاسم <span class="req">*</span></label><input type="text" name="pa_firstname"><span class="error-text">هذا الحقل مطلوب</span></div>
+          <div class="form-field" data-field="pa_lastname"><label>اللقب <span class="req">*</span></label><input type="text" name="pa_lastname"><span class="error-text">هذا الحقل مطلوب</span></div>
           <div class="form-field"><label>صلة القرابة</label>
             <select name="pa_relation"><option value="الأب">الأب</option><option value="الأم">الأم</option><option value="آخر">آخر</option></select>
           </div>
           <div class="form-field"><label>المهنة</label><input type="text" name="pa_job"></div>
-          <div class="form-field"><label>رقم الهاتف <span class="req">*</span></label><input type="tel" name="pa_phone" required></div>
-          <div class="form-field"><label>رقم هاتف إضافي</label><input type="tel" name="pa_phone2"></div>
-          <div class="form-field"><label>البريد الإلكتروني</label><input type="email" name="pa_email"></div>
+          <div class="form-field" data-field="pa_phone"><label>رقم الهاتف <span class="req">*</span></label><input type="tel" name="pa_phone" class="ltr" placeholder="0550000000"><span class="error-text">رقم هاتف جزائري غير صحيح</span></div>
+          <div class="form-field"><label>رقم هاتف إضافي</label><input type="tel" name="pa_phone2" class="ltr"></div>
+          <div class="form-field" data-field="pa_email"><label>البريد الإلكتروني</label><input type="email" name="pa_email" class="ltr"><span class="error-text">صيغة البريد الإلكتروني غير صحيحة</span></div>
           <div class="form-field"><label>العنوان</label><input type="text" name="pa_address"></div>
-        </div>
-
-        <div class="form-group-title"><i class="fa-solid fa-clipboard-list"></i><h3>بيانات التسجيل</h3></div>
-        <div class="form-grid">
-          <div class="form-field"><label>نوع التسجيل</label>
-            <select name="reg_type"><option value="تسجيل جديد">تسجيل جديد</option><option value="إعادة تسجيل">إعادة تسجيل</option></select>
-          </div>
-          <div class="form-field"><label>هل التلميذ يدرس حاليًا في مؤسسة أخرى؟</label>
-            <select name="reg_currently_enrolled"><option value="لا">لا</option><option value="نعم">نعم</option></select>
-          </div>
-          <div class="form-field"><label>هل لديه إخوة داخل المؤسسة؟</label>
-            <select name="reg_has_siblings"><option value="لا">لا</option><option value="نعم">نعم</option></select>
-          </div>
-          <div class="form-field full"><label>ملاحظات إضافية</label><textarea name="reg_notes"></textarea></div>
         </div>
 
         <div class="checkbox-field">
@@ -208,15 +236,56 @@
   </div>
 </section>
 
-<footer id="contact">
+<!-- ============ TRACK REGISTRATION REQUEST ============ -->
+<section class="track-section">
+  <div class="container">
+    <div class="track-box">
+      <span class="section-tag">متابعة الطلب</span>
+      <h2 class="section-title" style="font-size:24px;">متابعة طلب التسجيل</h2>
+      <p class="section-desc" style="margin:0 auto;">أدخل رقم طلبك لمعرفة حالته الحالية</p>
+      <div class="track-form">
+        <input type="text" id="trackRegNumber" placeholder="REG-2026-000124">
+        <button class="btn btn-dark" onclick="trackRequest()"><i class="fa-solid fa-magnifying-glass"></i> بحث</button>
+      </div>
+      <div class="track-result" id="trackResult"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="about" id="contact" style="padding-top:20px;">
+  <div class="container contact-grid">
+    <div>
+      <span class="section-tag">تواصل معنا</span>
+      <h2 class="section-title">هل لديك استفسار؟</h2>
+      <p class="section-desc">فريقنا الإداري جاهز للإجابة على جميع استفساراتكم بخصوص التسجيل والبرامج الدراسية.</p>
+      <div class="contact-info-list">
+        <div class="contact-info-item"><i class="fa-solid fa-location-dot"></i><div><b id="contactAddress">شارع الأمير عبد القادر، وسط المدينة، الجزائر</b><span>العنوان</span></div></div>
+        <div class="contact-info-item"><i class="fa-solid fa-phone"></i><div><b id="contactPhone" class="ltr">0550 00 00 00</b><span>الهاتف</span></div></div>
+        <div class="contact-info-item"><i class="fa-solid fa-envelope"></i><div><b id="contactEmail" class="ltr">contact@elite-academy.dz</b><span>البريد الإلكتروني</span></div></div>
+        <div class="contact-info-item"><i class="fa-solid fa-clock"></i><div><b id="contactHours">الأحد – الخميس، 08:00 – 17:00</b><span>ساعات العمل</span></div></div>
+      </div>
+    </div>
+    <div class="form-wrap" style="padding:32px;">
+      <form id="contactForm">
+        <div class="form-field" style="margin-bottom:14px;"><label>الاسم الكامل</label><input type="text" name="c_name" required></div>
+        <div class="form-field" style="margin-bottom:14px;"><label>البريد الإلكتروني أو الهاتف</label><input type="text" name="c_contact" class="ltr" required></div>
+        <div class="form-field" style="margin-bottom:14px;"><label>الرسالة</label><textarea name="c_message" required></textarea></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-paper-plane"></i> إرسال الرسالة</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
   <div class="container">
     <div class="footer-grid">
       <div>
         <div class="footer-logo">
           <div class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-          <h3>أكاديمية النخبة للتعليم والتكوين</h3>
+          <h3 id="footerInstitutionName">أكاديمية النخبة للتعليم والتكوين</h3>
         </div>
-        <p style="font-size:14px;line-height:1.8;">مؤسسة تعليمية خاصة تهدف إلى توفير بيئة تعليمية منظمة وحديثة، تجمع بين جودة التعليم والمتابعة الإدارية والتربوية المستمرة.</p>
+        <p style="font-size:14px;line-height:1.8;" id="footerDesc">مؤسسة تعليمية خاصة تهدف إلى توفير بيئة تعليمية منظمة وحديثة، تجمع بين جودة التعليم والمتابعة الإدارية والتربوية المستمرة.</p>
       </div>
       <div class="footer-col">
         <h4>روابط سريعة</h4>
@@ -224,19 +293,19 @@
       </div>
       <div class="footer-col">
         <h4>ساعات العمل</h4>
-        <ul><li>الأحد – الخميس</li><li>08:00 – 17:00</li></ul>
+        <ul><li id="footerHours1">الأحد – الخميس</li><li id="footerHours2">08:00 – 17:00</li></ul>
       </div>
       <div class="footer-col">
         <h4>تواصل معنا</h4>
         <ul class="footer-contact">
-          <li><i class="fa-solid fa-location-dot"></i> شارع الأمير عبد القادر، وسط المدينة، الجزائر</li>
-          <li><i class="fa-solid fa-phone"></i> 0550 00 00 00</li>
-          <li><i class="fa-solid fa-envelope"></i> contact@elite-academy.dz</li>
+          <li><i class="fa-solid fa-location-dot"></i> <span id="footerAddress">شارع الأمير عبد القادر، وسط المدينة، الجزائر</span></li>
+          <li><i class="fa-solid fa-phone"></i> <span id="footerPhone" class="ltr">0550 00 00 00</span></li>
+          <li><i class="fa-solid fa-envelope"></i> <span id="footerEmail" class="ltr">contact@elite-academy.dz</span></li>
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 أكاديمية النخبة للتعليم والتكوين. جميع الحقوق محفوظة.</span>
+      <span>© <span id="footerYear">2026</span> <span id="footerCopyrightName">أكاديمية النخبة للتعليم والتكوين</span>. جميع الحقوق محفوظة.</span>
       <a href="login.html" class="admin-link"><i class="fa-solid fa-lock"></i> مساحة الإدارة</a>
     </div>
   </div>
@@ -247,16 +316,51 @@
   <div class="success-modal">
     <div class="success-icon"><i class="fa-solid fa-check"></i></div>
     <h3>تم إرسال طلب التسجيل بنجاح</h3>
-    <p>سيتم التواصل معكم من طرف الإدارة قريبًا</p>
+    <p>احتفظ برقم طلبك لمتابعة حالته لاحقًا. سيتم التواصل معكم من طرف الإدارة قريبًا</p>
     <div class="reg-number-box"><span>رقم طلبك هو</span><b id="regNumberDisplay">REG-2026-000000</b></div>
     <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="closeSuccessModal()">حسنًا</button>
   </div>
 </div>
 
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
+/* ============ LOAD DYNAMIC INSTITUTION SETTINGS ============ */
+function applySettingsToPage(){
+  const s = EliteAcademy.utils.getSettings();
+
+  document.title = `${s.institutionName} | Elite Academy`;
+  document.getElementById('headerInstitutionName').textContent = s.institutionName.split(' ').slice(0,2).join(' ');
+  document.getElementById('heroSlogan').textContent = s.slogan;
+  document.getElementById('heroDesc').textContent = `${s.institutionName} — بيئة تعليمية حديثة تهتم بالتلميذ، وتنظم مساره الدراسي والإداري باحترافية.`;
+
+  document.getElementById('contactAddress').textContent = s.address;
+  document.getElementById('contactPhone').textContent = s.phone;
+  document.getElementById('contactEmail').textContent = s.email;
+  document.getElementById('contactHours').textContent = s.workingHours;
+
+  document.getElementById('footerInstitutionName').textContent = s.institutionName;
+  document.getElementById('footerDesc').textContent = `مؤسسة تعليمية خاصة تهدف إلى توفير بيئة تعليمية منظمة وحديثة، تجمع بين جودة التعليم والمتابعة الإدارية والتربوية المستمرة.`;
+  document.getElementById('footerAddress').textContent = s.address;
+  document.getElementById('footerPhone').textContent = s.phone;
+  document.getElementById('footerEmail').textContent = s.email;
+  document.getElementById('footerCopyrightName').textContent = s.institutionName;
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+  const hoursParts = (s.workingHours || '').split('،').map(p => p.trim());
+  if(hoursParts.length === 2){
+    document.getElementById('footerHours1').textContent = hoursParts[0];
+    document.getElementById('footerHours2').textContent = hoursParts[1];
+  }
+}
+applySettingsToPage();
+
+/* ============ MOBILE MENU ============ */
 function closeMobile(){ document.getElementById('mobileMenu').classList.remove('active'); }
 
+/* ============ STATS COUNTER ANIMATION ============ */
 const statEls = document.querySelectorAll('.stat-num');
 let statsAnimated = false;
 function animateStats(){
@@ -273,48 +377,86 @@ function animateStats(){
     }, 25);
   });
 }
-const statsSection = document.querySelector('.stats');
 new IntersectionObserver((entries)=>{
   entries.forEach(entry=>{ if(entry.isIntersecting) animateStats(); });
-},{threshold:0.4}).observe(statsSection);
+},{threshold:0.4}).observe(document.querySelector('.stats'));
 
+/* ============ FORM VALIDATION HELPERS ============ */
+function clearFieldError(fieldEl){ fieldEl.classList.remove('has-error'); }
+function setFieldError(fieldEl){ fieldEl.classList.add('has-error'); }
+
+function validateRegistrationForm(form){
+  let isValid = true;
+  form.querySelectorAll('.form-field[data-field]').forEach(fieldEl => clearFieldError(fieldEl));
+
+  const requiredTextFields = ['st_firstname','st_lastname','st_dob','st_gender','st_level','pa_firstname','pa_lastname'];
+  requiredTextFields.forEach(name => {
+    const input = form.querySelector(`[name="${name}"]`);
+    const fieldEl = input.closest('.form-field');
+    if(EliteAcademy.utils.isEmpty(input.value)){
+      setFieldError(fieldEl);
+      isValid = false;
+    }
+  });
+
+  const phoneInput = form.querySelector('[name="pa_phone"]');
+  if(!EliteAcademy.utils.validatePhone(phoneInput.value)){
+    setFieldError(phoneInput.closest('.form-field'));
+    isValid = false;
+  }
+
+  const emailInput = form.querySelector('[name="pa_email"]');
+  if(!EliteAcademy.utils.validateEmail(emailInput.value)){
+    setFieldError(emailInput.closest('.form-field'));
+    isValid = false;
+  }
+
+  if(!document.getElementById('agreeCheck').checked){
+    EliteAcademy.notifications.showWarning('يرجى الموافقة على تصريح صحة المعلومات');
+    isValid = false;
+  }
+
+  return isValid;
+}
+
+/* ============ REGISTRATION FORM SUBMIT ============ */
 document.getElementById('registrationForm').addEventListener('submit', function(e){
   e.preventDefault();
-  const fd = new FormData(this);
-  const data = {};
-  fd.forEach((v,k)=> data[k]=v );
 
-  const regNumber = generateRegNumber();
-  const request = {
-    id: uid('req'),
-    regNumber: regNumber,
-    status: 'جديد',
-    createdAt: new Date().toISOString().split('T')[0],
+  if(!validateRegistrationForm(this)){
+    EliteAcademy.notifications.showError('يرجى تصحيح الحقول المظللة قبل الإرسال');
+    return;
+  }
+
+  const data = EliteAcademy.utils.serializeForm(this);
+
+  const requestRecord = EliteAcademy.requests.createRegistrationRequest({
     student: {
-      firstname: data.st_firstname, lastname: data.st_lastname,
-      fullAr: data.st_full_ar, fullFr: data.st_full_fr,
-      dob: data.st_dob, pob: data.st_pob, gender: data.st_gender,
-      nationality: data.st_nationality, state: data.st_state, city: data.st_city,
-      address: data.st_address, level: data.st_level, prevSchool: data.st_prev_school,
-      notes: data.st_notes
+      firstname: data.st_firstname,
+      lastname: data.st_lastname,
+      fullFr: data.st_full_fr || '',
+      dob: data.st_dob,
+      pob: data.st_pob || '',
+      gender: data.st_gender,
+      level: data.st_level,
+      requestedClass: data.st_class || '',
+      prevSchool: data.st_prev_school || '',
+      preferredDate: data.st_preferred_date || '',
+      notes: data.st_notes || ''
     },
     parent: {
-      firstname: data.pa_firstname, lastname: data.pa_lastname, relation: data.pa_relation,
-      job: data.pa_job, phone: data.pa_phone, phone2: data.pa_phone2,
-      email: data.pa_email, address: data.pa_address
-    },
-    registration: {
-      type: data.reg_type, currentlyEnrolled: data.reg_currently_enrolled,
-      hasSiblings: data.reg_has_siblings, notes: data.reg_notes
+      firstname: data.pa_firstname,
+      lastname: data.pa_lastname,
+      relation: data.pa_relation,
+      job: data.pa_job || '',
+      phone: data.pa_phone,
+      phone2: data.pa_phone2 || '',
+      email: data.pa_email || '',
+      address: data.pa_address || ''
     }
-  };
+  });
 
-  const requests = DB.get('eliteRegistrationRequests');
-  requests.unshift(request);
-  DB.set('eliteRegistrationRequests', requests);
-  logAction(`طلب تسجيل جديد: ${request.student.firstname} ${request.student.lastname} (${regNumber})`);
-
-  document.getElementById('regNumberDisplay').textContent = regNumber;
+  document.getElementById('regNumberDisplay').textContent = requestRecord.regNumber;
   document.getElementById('successModal').classList.add('active');
   this.reset();
 });
@@ -322,6 +464,53 @@ document.getElementById('registrationForm').addEventListener('submit', function(
 function closeSuccessModal(){
   document.getElementById('successModal').classList.remove('active');
 }
+
+/* ============ TRACK REGISTRATION REQUEST ============ */
+function trackRequest(){
+  const input = document.getElementById('trackRegNumber');
+  const regNumber = input.value.trim();
+  const resultBox = document.getElementById('trackResult');
+
+  if(!regNumber){
+    EliteAcademy.notifications.showWarning('يرجى إدخال رقم الطلب');
+    return;
+  }
+
+  const requests = EliteAcademy.storage.getData(EliteAcademy.storage.keys.requests);
+  const request = requests.find(r => r.regNumber.toLowerCase() === regNumber.toLowerCase());
+
+  if(!request){
+    resultBox.className = 'track-result active';
+    resultBox.innerHTML = `
+      <div class="empty-state" style="padding:20px 0;">
+        <i class="fa-solid fa-circle-question"></i>
+        <p>لم يتم العثور على طلب بهذا الرقم، يرجى التحقق من الرقم والمحاولة مجددًا</p>
+      </div>`;
+    return;
+  }
+
+  resultBox.className = 'track-result active';
+  resultBox.innerHTML = `
+    <div style="margin-top:6px;">
+      <span class="badge ${EliteAcademy.utils.statusBadgeClass(request.status)} track-status-badge">${request.status}</span>
+      <p style="font-size:12.5px;color:var(--text-muted);margin-top:12px;">
+        تاريخ الطلب: ${EliteAcademy.utils.formatDate(request.createdAt)}
+      </p>
+    </div>`;
+}
+
+document.getElementById('trackRegNumber').addEventListener('keypress', function(e){
+  if(e.key === 'Enter') trackRequest();
+});
+
+/* ============ CONTACT FORM (public inquiry — no account creation) ============ */
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  // Public inquiries are informational only; per spec this must not create
+  // any messaging/chat system or user account. We simply acknowledge receipt.
+  EliteAcademy.notifications.showSuccess('تم إرسال رسالتكم بنجاح، سنتواصل معكم قريبًا');
+  this.reset();
+});
 </script>
 
 </body>
