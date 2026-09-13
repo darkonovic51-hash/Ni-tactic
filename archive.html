@@ -8,15 +8,65 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 <style>
-.archive-toolbar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;}
-.archive-toolbar input,.archive-toolbar select{padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Cairo',sans-serif;font-size:13px;background:#fff;}
-.section-block{margin-bottom:26px;}
+.page-actions-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px;}
+.page-actions-btns{display:flex;gap:8px;flex-wrap:wrap;}
+
+.mini-stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:1100px){ .mini-stats-row{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:600px){ .mini-stats-row{grid-template-columns:1fr 1fr;} }
+.mini-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;text-align:center;cursor:pointer;transition:.15s;}
+.mini-stat:hover{border-color:var(--accent);}
+.mini-stat.active-filter{border-color:var(--primary);background:var(--surface-soft);}
+.mini-stat b{display:block;font-size:19px;font-weight:800;}
+.mini-stat span{font-size:10.2px;color:var(--text-muted);font-weight:600;}
+
+.search-bar-wrap{position:relative;margin-bottom:14px;}
+.search-bar-wrap i{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--text-muted);}
+.search-bar-wrap input{width:100%;padding:14px 46px 14px 18px;border:1.5px solid var(--border);border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;background:var(--surface);box-shadow:var(--shadow-sm);}
+.search-bar-wrap input:focus{outline:none;border-color:var(--accent);}
+
+.filters-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;}
+.filters-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px;}
+.filters-grid select, .filters-grid input{padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'Cairo',sans-serif;font-size:12.5px;background:var(--surface-soft);width:100%;}
+.filters-actions{display:flex;gap:8px;justify-content:flex-end;}
+@media(max-width:900px){ .filters-grid{grid-template-columns:1fr 1fr;} }
+
+.bulk-bar{display:none;background:var(--info-soft);border:1px solid rgba(45,106,127,0.25);border-radius:var(--radius-md);padding:12px 16px;align-items:center;justify-content:space-between;margin-bottom:14px;font-size:12.8px;font-weight:700;flex-wrap:wrap;gap:10px;}
+.bulk-bar.active{display:flex;}
+
+.archive-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;}
+.archive-card{background:var(--surface);border-radius:var(--radius-md);padding:16px 18px;box-shadow:var(--shadow-sm);border:1px solid var(--border);position:relative;}
+.arc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.arc-check{width:16px;height:16px;accent-color:var(--accent);margin-top:4px;flex-shrink:0;}
+.arc-avatar{width:42px;height:42px;border-radius:50%;background:var(--surface-soft);color:var(--text-muted);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;}
+.arc-title{font-size:13.5px;font-weight:800;cursor:pointer;}
+.arc-sub{font-size:11px;color:var(--text-muted);}
+.arc-type-tag{display:inline-block;background:var(--surface-soft);color:var(--text-muted);font-size:9.5px;font-weight:800;padding:2px 9px;border-radius:10px;margin-bottom:6px;}
+.arc-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);padding:5px 0;border-top:1px dashed var(--border);}
+.arc-row b{color:var(--text);font-weight:700;}
+.arc-actions{display:flex;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.arc-actions button{flex:1;padding:7px;border-radius:8px;border:1px solid var(--border);background:var(--surface-soft);cursor:pointer;font-size:11px;color:var(--text-muted);}
+.arc-actions button:hover{border-color:var(--accent);color:var(--primary);}
+.arc-actions .btn-restore{background:var(--success-soft);border-color:var(--success);color:var(--success);font-weight:700;}
+
+.drawer-overlay{position:fixed;inset:0;background:rgba(10,39,56,0.5);z-index:1900;display:none;}
+.drawer-overlay.active{display:block;}
+.drawer-panel{position:fixed;top:0;left:0;height:100%;width:480px;max-width:94vw;background:var(--surface);z-index:1950;box-shadow:var(--shadow-lg);transform:translateX(-100%);transition:.28s ease;overflow-y:auto;}
+.drawer-panel.active{transform:translateX(0);}
+.drawer-head{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:2;}
+.drawer-close{background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer;}
+.drawer-body{padding:20px 22px;}
+
+.advanced-zone{margin-top:26px;border:1.5px dashed var(--danger);border-radius:var(--radius-md);padding:16px 18px;background:var(--danger-soft);}
+.advanced-zone summary{cursor:pointer;font-weight:700;font-size:12.5px;color:var(--danger);}
+.advanced-zone p{font-size:11.5px;color:var(--text-muted);margin:10px 0;}
 </style>
 </head>
 <body>
 
 <div class="admin-layout">
   <aside class="sidebar" id="sidebar"></aside>
+
   <div class="main-panel">
     <div class="topbar">
       <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
@@ -27,106 +77,500 @@
     </div>
 
     <div class="dash-content">
-      <div class="dash-header">
-        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
-        <h2>الأرشيف</h2>
-        <p>التلاميذ المغادرون — لا يتم حذف بياناتهم أبدًا، فقط تغيير حالتهم إلى "مؤرشف"</p>
-      </div>
+      <div class="breadcrumb"><a href="dashboard.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><span>الأرشيف</span></div>
 
-      <!-- ARCHIVE A STUDENT -->
-      <div class="panel section-block" style="padding:18px 22px;">
-        <div class="panel-head" style="border:none;padding:0 0 14px;"><h3>أرشفة تلميذ</h3></div>
-        <div class="archive-toolbar" style="margin:0;">
-          <input type="text" id="archiveSearchStudent" placeholder="ابحث برقم البطاقة أو الاسم لأرشفة تلميذ...">
+      <div class="page-actions-row">
+        <div>
+          <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+          <h2 style="font-size:22px;font-weight:800;">الأرشيف</h2>
+          <p style="font-size:13px;color:var(--text-muted);">إدارة واسترجاع السجلات المؤرشفة</p>
         </div>
-        <div id="archiveSearchResults" style="margin-top:10px;font-size:13px;"></div>
-      </div>
-
-      <!-- ARCHIVED LIST -->
-      <div class="archive-toolbar">
-        <input type="text" id="archivedSearch" placeholder="بحث في الأرشيف...">
-      </div>
-      <div class="panel">
-        <div style="overflow-x:auto;">
-          <table class="dtable">
-            <thead><tr><th>الاسم</th><th>رقم البطاقة</th><th>آخر مستوى</th><th>القسم</th><th>الولي</th><th></th></tr></thead>
-            <tbody id="archivedBody"></tbody>
-          </table>
+        <div class="page-actions-btns">
+          <button class="btn btn-outline btn-sm" onclick="exportArchive()"><i class="fa-solid fa-file-export"></i> تصدير الأرشيف</button>
         </div>
       </div>
+
+      <!-- STATISTICS (also act as quick filters) -->
+      <div class="mini-stats-row" id="miniStatsRow"></div>
+
+      <!-- SEARCH -->
+      <div class="search-bar-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchBox" placeholder="ابحث بالاسم، رقم البطاقة، المعرف الداخلي، رقم الطلب، رقم الوثيقة، الهاتف...">
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filters-bar">
+        <div class="filters-grid">
+          <select id="filterEntityType">
+            <option value="">النوع (الكل)</option>
+            <option value="students">الطلبة</option>
+            <option value="parents">الأولياء</option>
+            <option value="teachers">الأساتذة</option>
+            <option value="staff">الموظفون</option>
+            <option value="documents">الوثائق</option>
+            <option value="requests">طلبات التسجيل</option>
+            <option value="classes">الأقسام</option>
+            <option value="academicYears">السنوات الدراسية</option>
+            <option value="expenses">مصاريف ملغاة</option>
+          </select>
+          <select id="filterAcademicYear"><option value="">السنة الدراسية (الكل)</option></select>
+          <select id="filterReason"><option value="">السبب (الكل)</option></select>
+          <input type="date" id="filterArchiveDateFrom" title="تاريخ الأرشفة من">
+          <input type="date" id="filterArchiveDateTo" title="تاريخ الأرشفة إلى">
+        </div>
+        <div class="filters-actions">
+          <button class="btn btn-ghost btn-sm" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> إعادة تعيين</button>
+          <button class="btn btn-dark btn-sm" onclick="applyFilters()"><i class="fa-solid fa-filter"></i> تطبيق الفلاتر</button>
+        </div>
+      </div>
+
+      <!-- BULK BAR -->
+      <div class="bulk-bar" id="bulkBar">
+        <span><span id="bulkCount">0</span> سجل محدد</span>
+        <button class="btn btn-sm btn-success" onclick="bulkRestore()"><i class="fa-solid fa-clock-rotate-left"></i> استرجاع المحدد</button>
+      </div>
+
+      <!-- SELECT ALL -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12.5px;color:var(--text-muted);">
+        <input type="checkbox" id="selectAllCheckbox"> <label for="selectAllCheckbox">تحديد الكل في هذه الصفحة</label>
+      </div>
+
+      <!-- ARCHIVE GRID -->
+      <div class="archive-grid" id="archiveGrid"></div>
+      <div class="pagination" id="pagination"></div>
     </div>
   </div>
 </div>
 
+<!-- ============ DETAIL DRAWER ============ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer-panel" id="drawerPanel">
+  <div class="drawer-head"><h3>تفاصيل السجل المؤرشف</h3><button class="drawer-close" onclick="closeDrawer()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-requireAdminAuth();
-renderSidebar('archive');
+EliteAcademy.auth.requireAuth();
+EliteAcademy.navigation.renderSidebar('archive');
 
-function searchForArchiving(){
-  const q = document.getElementById('archiveSearchStudent').value.trim();
-  const box = document.getElementById('archiveSearchResults');
-  if(!q){ box.innerHTML=''; return; }
+const K = EliteAcademy.storage.keys;
+const getData = EliteAcademy.storage.getData;
 
-  const students = DB.get('eliteStudents').filter(s =>
-    s.status === 'نشط' && (s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q))
-  ).slice(0,5);
+let allArchived = [];
+let filteredArchived = [];
+let currentPage = 1;
+const PAGE_SIZE = 12;
+let selectedIds = new Set(); // composite key: `${type}:${id}`
+let activeQuickFilter = '';
 
-  if(students.length === 0){ box.innerHTML = 'لا توجد نتائج'; return; }
+const TYPE_LABELS = {
+  students:'طالب', parents:'ولي أمر', teachers:'أستاذ', staff:'موظف',
+  documents:'وثيقة', requests:'طلب تسجيل', classes:'قسم', academicYears:'سنة دراسية', expenses:'مصروف ملغى'
+};
+const TYPE_ICONS = {
+  students:'fa-user-graduate', parents:'fa-people-roof', teachers:'fa-chalkboard-user', staff:'fa-id-badge',
+  documents:'fa-file', requests:'fa-file-lines', classes:'fa-door-open', academicYears:'fa-calendar-days', expenses:'fa-file-invoice-dollar'
+};
 
-  box.innerHTML = students.map(s => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border);">
-      <span>${s.firstname} ${s.lastname} — ${s.cardNumber} (${s.level})</span>
-      <button class="btn btn-sm btn-danger" onclick="archiveStudent('${s.id}')"><i class="fa-solid fa-box-archive"></i> أرشفة</button>
-    </div>
+function initials(f,l){ return ((f||'')[0]||'') + ((l||'')[0]||''); }
+
+/* ============ ARCHIVE REASON LOOKUP (from generic archive log) ============ */
+function findArchiveLogEntry(storeKey, sourceId){
+  const archiveLog = getData(K.archive);
+  return archiveLog.slice().reverse().find(a => a.sourceStore === storeKey && a.sourceId === sourceId) || null;
+}
+
+/* ============ BUILD UNIFIED ARCHIVED LIST ============ */
+function buildArchivedList(){
+  const list = [];
+
+  // Students
+  getData(K.students).filter(s => s.status === 'مؤرشف').forEach(s => {
+    const logEntry = findArchiveLogEntry(K.students, s.id);
+    list.push({
+      type:'students', id:s.id, title:`${s.firstname} ${s.lastname}`, sub:`${s.level} — ${s.section}`,
+      code:s.cardNumber, originalStatus:'نشط', archivedAt:s.archivedAt||logEntry?.archivedAt||'',
+      reason:logEntry?.reason||'—', raw:s
+    });
+  });
+  // Parents
+  getData(K.parents).filter(p => p.status === 'مؤرشف').forEach(p => {
+    const logEntry = findArchiveLogEntry(K.parents, p.id);
+    list.push({ type:'parents', id:p.id, title:`${p.firstname} ${p.lastname}`, sub:p.relation||'', code:p.phone,
+      originalStatus:'نشط', archivedAt:p.archivedAt||logEntry?.archivedAt||'', reason:logEntry?.reason||'—', raw:p });
+  });
+  // Teachers
+  getData(K.teachers).filter(t => t.status === 'مؤرشف').forEach(t => {
+    const logEntry = findArchiveLogEntry(K.teachers, t.id);
+    list.push({ type:'teachers', id:t.id, title:`${t.firstname} ${t.lastname}`, sub:t.subject||'', code:t.phone||'',
+      originalStatus:'نشط', archivedAt:t.archivedAt||logEntry?.archivedAt||'', reason:logEntry?.reason||'—', raw:t });
+  });
+  // Staff
+  getData(K.staff).filter(s => s.status === 'مؤرشف').forEach(s => {
+    const logEntry = findArchiveLogEntry(K.staff, s.id);
+    list.push({ type:'staff', id:s.id, title:`${s.firstname} ${s.lastname}`, sub:s.position||s.role||'', code:s.employeeId||'',
+      originalStatus:'نشط', archivedAt:s.archivedAt||logEntry?.archivedAt||'', reason:logEntry?.reason||'—', raw:s });
+  });
+  // Documents
+  getData(K.documents).filter(d => d.status === 'مؤرشف').forEach(d => {
+    const logEntry = findArchiveLogEntry(K.documents, d.id);
+    list.push({ type:'documents', id:d.id, title:d.title, sub:d.type, code:d.documentNumber,
+      originalStatus:'ساري', archivedAt:d.archivedAt||logEntry?.archivedAt||'', reason:logEntry?.reason||'—', raw:d });
+  });
+  // Requests (rejected or explicitly archived)
+  getData(K.requests).filter(r => r.status === 'مؤرشف' || r.status === 'مرفوض').forEach(r => {
+    const logEntry = findArchiveLogEntry(K.requests, r.id);
+    list.push({ type:'requests', id:r.id, title:`${r.student.firstname} ${r.student.lastname}`, sub:r.student.level,
+      code:r.regNumber, originalStatus:r.status==='مرفوض'?'مرفوض':'جديد', archivedAt:r.archivedAt||logEntry?.archivedAt||'',
+      reason: r.status==='مرفوض' ? (r.rejectionReason||'مرفوض') : (logEntry?.reason||'—'), raw:r });
+  });
+  // Classes
+  getData(K.classes).filter(c => c.status === 'مؤرشف').forEach(c => {
+    const logEntry = findArchiveLogEntry(K.classes, c.id);
+    list.push({ type:'classes', id:c.id, title:c.name, sub:'قسم دراسي', code:c.name,
+      originalStatus:'نشط', archivedAt:c.archivedAt||logEntry?.archivedAt||'', reason:logEntry?.reason||'—', raw:c });
+  });
+  // Academic Years
+  getData(K.academicYears).filter(y => y.status === 'مؤرشف').forEach(y => {
+    list.push({ type:'academicYears', id:y.id, title:y.label, sub:'سنة دراسية', code:y.label,
+      originalStatus:'نشط', archivedAt:'', reason:'أرشفة سنة دراسية', raw:y });
+  });
+  // Cancelled Expenses
+  getData(K.expenses).filter(e => e.status === 'ملغى').forEach(e => {
+    list.push({ type:'expenses', id:e.id, title:e.description||e.category, sub:e.category, code:'',
+      originalStatus:'نشط', archivedAt:e.updatedAt||'', reason:'إلغاء مصروف', raw:e });
+  });
+
+  return list.sort((a,b) => new Date(b.archivedAt||0) - new Date(a.archivedAt||0));
+}
+
+/* ============ STATISTICS (also act as quick filters) ============ */
+function renderStats(){
+  allArchived = buildArchivedList();
+  const counts = {
+    students: allArchived.filter(a=>a.type==='students').length,
+    teachers: allArchived.filter(a=>a.type==='teachers').length,
+    staff: allArchived.filter(a=>a.type==='staff').length,
+    documents: allArchived.filter(a=>a.type==='documents').length,
+    requests: allArchived.filter(a=>a.type==='requests').length
+  };
+  const chips = [
+    { key:'', label:'إجمالي المؤرشف', value:allArchived.length },
+    { key:'students', label:'الطلبة المؤرشفون', value:counts.students },
+    { key:'teachers', label:'الأساتذة المؤرشفون', value:counts.teachers },
+    { key:'staff', label:'الموظفون المؤرشفون', value:counts.staff },
+    { key:'documents', label:'الوثائق المؤرشفة', value:counts.documents },
+    { key:'requests', label:'الطلبات المؤرشفة', value:counts.requests }
+  ];
+  document.getElementById('miniStatsRow').innerHTML = chips.map(c => `
+    <div class="mini-stat ${activeQuickFilter===c.key?'active-filter':''}" onclick="quickFilter('${c.key}')"><b>${c.value}</b><span>${c.label}</span></div>
   `).join('');
 }
-
-function archiveStudent(id){
-  if(!confirm('هل تريد أرشفة هذا التلميذ؟ سيتم الاحتفاظ بجميع بياناته.')) return;
-  const students = DB.get('eliteStudents');
-  const student = students.find(s => s.id === id);
-  if(!student) return;
-  student.status = 'مؤرشف';
-  DB.set('eliteStudents', students);
-  logAction(`تمت أرشفة التلميذ ${student.firstname} ${student.lastname}`);
-  document.getElementById('archiveSearchStudent').value = '';
-  document.getElementById('archiveSearchResults').innerHTML = '';
-  loadArchivedList();
+function quickFilter(key){
+  activeQuickFilter = key;
+  document.getElementById('filterEntityType').value = key;
+  applyFilters();
 }
 
-function loadArchivedList(){
-  const q = document.getElementById('archivedSearch').value.trim();
-  const archived = DB.get('eliteStudents').filter(s =>
-    s.status === 'مؤرشف' && (!q || s.cardNumber.includes(q) || `${s.firstname} ${s.lastname}`.includes(q))
-  );
+/* ============ INIT FILTER DROPDOWNS ============ */
+function initFilterDropdowns(){
+  const years = getData(K.academicYears);
+  document.getElementById('filterAcademicYear').innerHTML = `<option value="">السنة الدراسية (الكل)</option>` + years.map(y=>`<option value="${y.id}">${y.label}</option>`).join('');
 
-  const tbody = document.getElementById('archivedBody');
-  if(archived.length === 0){
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-box-archive"></i><p>لا يوجد تلاميذ في الأرشيف</p></div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML = archived.map(s => `
-    <tr>
-      <td><b>${s.firstname} ${s.lastname}</b></td>
-      <td>${s.cardNumber}</td>
-      <td>${s.level}</td>
-      <td>${s.section}</td>
-      <td>${s.parentName}</td>
-      <td><a href="student-profile.html?id=${s.id}" class="btn btn-sm btn-dark">عرض الملف</a></td>
-    </tr>
-  `).join('');
+  const reasons = [...new Set(allArchived.map(a=>a.reason).filter(r=>r && r!=='—'))];
+  document.getElementById('filterReason').innerHTML = `<option value="">السبب (الكل)</option>` + reasons.map(r=>`<option value="${r}">${r}</option>`).join('');
 }
 
-document.getElementById('archiveSearchStudent').addEventListener('input', searchForArchiving);
-document.getElementById('archivedSearch').addEventListener('input', loadArchivedList);
-document.getElementById('topSearchInput').addEventListener('keypress', function(e){
-  if(e.key === 'Enter' && this.value.trim()){
-    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+/* ============ FILTERING ============ */
+function getFilteredList(){
+  const q = document.getElementById('searchBox').value.trim();
+  const type = document.getElementById('filterEntityType').value;
+  const yearId = document.getElementById('filterAcademicYear').value;
+  const reason = document.getElementById('filterReason').value;
+  const dateFrom = document.getElementById('filterArchiveDateFrom').value;
+  const dateTo = document.getElementById('filterArchiveDateTo').value;
+
+  let list = allArchived;
+  if(q){
+    list = list.filter(a => a.title.includes(q) || (a.code&&a.code.includes(q)) || (a.sub&&a.sub.includes(q)) || a.id.includes(q));
   }
+  if(type) list = list.filter(a => a.type === type);
+  if(yearId) list = list.filter(a => a.raw.academicYearId === yearId);
+  if(reason) list = list.filter(a => a.reason === reason);
+  if(dateFrom) list = list.filter(a => a.archivedAt && a.archivedAt.split('T')[0] >= dateFrom);
+  if(dateTo) list = list.filter(a => a.archivedAt && a.archivedAt.split('T')[0] <= dateTo);
+
+  return list;
+}
+function applyFilters(){ filteredArchived = getFilteredList(); currentPage=1; selectedIds.clear(); renderGrid(); updateBulkBar(); }
+function resetFilters(){
+  document.getElementById('searchBox').value='';
+  document.getElementById('filterEntityType').value='';
+  document.getElementById('filterAcademicYear').value='';
+  document.getElementById('filterReason').value='';
+  document.getElementById('filterArchiveDateFrom').value='';
+  document.getElementById('filterArchiveDateTo').value='';
+  activeQuickFilter='';
+  applyFilters();
+}
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+/* ============ GRID RENDER ============ */
+function renderGrid(){
+  const grid = document.getElementById('archiveGrid');
+  if(filteredArchived.length === 0){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-box-archive"></i><p>لا توجد سجلات مؤرشفة مطابقة</p>
+      <button class="btn btn-dark btn-sm" onclick="resetFilters()">إعادة ضبط الفلاتر</button></div>`;
+    document.getElementById('pagination').innerHTML=''; return;
+  }
+  const start=(currentPage-1)*PAGE_SIZE;
+  const pageItems = filteredArchived.slice(start,start+PAGE_SIZE);
+
+  grid.innerHTML = pageItems.map(a => {
+    const key = `${a.type}:${a.id}`;
+    return `
+    <div class="archive-card">
+      <div class="arc-top">
+        <input type="checkbox" class="arc-check" ${selectedIds.has(key)?'checked':''} onchange="toggleSelect('${key}', this.checked)">
+        <div class="arc-avatar"><i class="fa-solid ${TYPE_ICONS[a.type]}"></i></div>
+        <div style="flex:1;">
+          <span class="arc-type-tag">${TYPE_LABELS[a.type]}</span>
+          <div class="arc-title" onclick="openDrawer('${a.type}','${a.id}')">${a.title}</div>
+          <div class="arc-sub">${a.sub||''}</div>
+        </div>
+      </div>
+      <div class="arc-row"><span>المعرّف</span><b class="ltr">${a.code||'—'}</b></div>
+      <div class="arc-row"><span>تاريخ الأرشفة</span><b>${a.archivedAt ? EliteAcademy.utils.formatDate(a.archivedAt) : '—'}</b></div>
+      <div class="arc-row"><span>السبب</span><b>${a.reason}</b></div>
+      <div class="arc-actions">
+        <button onclick="openDrawer('${a.type}','${a.id}')"><i class="fa-solid fa-eye"></i> التفاصيل</button>
+        <button class="btn-restore" onclick="confirmRestore('${a.type}','${a.id}')"><i class="fa-solid fa-clock-rotate-left"></i> استرجاع</button>
+      </div>
+    </div>`;
+  }).join('');
+  renderPagination();
+}
+function renderPagination(){
+  const totalPages = Math.ceil(filteredArchived.length/PAGE_SIZE);
+  const pagEl = document.getElementById('pagination');
+  if(totalPages<=1){ pagEl.innerHTML=''; return; }
+  let html=''; for(let i=1;i<=totalPages;i++) html+=`<button class="${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  pagEl.innerHTML = html;
+}
+function goToPage(p){ currentPage=p; renderGrid(); }
+
+/* ============ SELECTION ============ */
+function toggleSelect(key, checked){
+  if(checked) selectedIds.add(key); else selectedIds.delete(key);
+  updateBulkBar();
+}
+function updateBulkBar(){
+  document.getElementById('bulkBar').classList.toggle('active', selectedIds.size>0);
+  document.getElementById('bulkCount').textContent = selectedIds.size;
+}
+document.getElementById('selectAllCheckbox').addEventListener('change', function(){
+  const start=(currentPage-1)*PAGE_SIZE;
+  const pageItems = filteredArchived.slice(start,start+PAGE_SIZE);
+  pageItems.forEach(a => { const key=`${a.type}:${a.id}`; if(this.checked) selectedIds.add(key); else selectedIds.delete(key); });
+  renderGrid(); updateBulkBar();
 });
 
-loadArchivedList();
+/* ============ RESTORE LOGIC (per entity type) ============ */
+const STORE_BY_TYPE = { students:K.students, parents:K.parents, teachers:K.teachers, staff:K.staff, documents:K.documents, classes:K.classes };
+
+function restoreEntity(type, id){
+  if(STORE_BY_TYPE[type]){
+    // Card numbers / internal IDs are never touched by restoreRecord — only status changes.
+    EliteAcademy.storage.restoreRecord(STORE_BY_TYPE[type], id);
+    return;
+  }
+  if(type === 'requests'){
+    EliteAcademy.storage.updateRecord(K.requests, id, { status:'قيد الدراسة' });
+    EliteAcademy.utils.logAction('restore','requests', id, 'تمت استعادة طلب تسجيل من الأرشيف (أعيد إلى: قيد الدراسة)', 'info');
+    return;
+  }
+  if(type === 'academicYears'){
+    const years = getData(K.academicYears);
+    const y = years.find(x=>x.id===id);
+    y.status = 'نشط';
+    EliteAcademy.storage.setData(K.academicYears, years);
+    EliteAcademy.utils.logAction('restore','academicYears', id, `تمت استعادة السنة الدراسية ${y.label}`, 'info');
+    return;
+  }
+  if(type === 'expenses'){
+    EliteAcademy.storage.updateRecord(K.expenses, id, { status:'نشط' });
+    EliteAcademy.utils.logAction('restore','expenses', id, 'تمت استعادة مصروف ملغى', 'info');
+    return;
+  }
+}
+
+function confirmRestore(type, id){
+  const record = allArchived.find(a=>a.type===type && a.id===id);
+  EliteAcademy.modal.confirmAction(
+    `سيتم استرجاع "${record.title}" (${TYPE_LABELS[type]}) إلى الحالة النشطة. لن يتغير أي معرّف أو رقم بطاقة.`,
+    () => {
+      restoreEntity(type, id);
+      EliteAcademy.notifications.showSuccess('تمت الاستعادة بنجاح');
+      closeDrawer();
+      refreshAll();
+    },
+    { title:'تأكيد الاستعادة', confirmLabel:'استرجاع' }
+  );
+}
+
+function bulkRestore(){
+  const count = selectedIds.size;
+  EliteAcademy.modal.confirmAction(
+    `سيتم استرجاع ${count} سجل مؤرشف دفعة واحدة. هل تريد المتابعة؟`,
+    () => {
+      selectedIds.forEach(key => { const [type,id] = key.split(':'); restoreEntity(type,id); });
+      EliteAcademy.notifications.showSuccess(`تم استرجاع ${count} سجل بنجاح`);
+      selectedIds.clear();
+      refreshAll();
+    },
+    { title:'تأكيد الاستعادة الجماعية', confirmLabel:'استرجاع الكل' }
+  );
+}
+
+/* ============ DETAIL DRAWER ============ */
+function openDrawer(type, id){
+  const a = allArchived.find(x=>x.type===type && x.id===id);
+  if(!a) return;
+  const r = a.raw;
+  let bodyHtml = '';
+
+  if(type === 'students'){
+    const years = getData(K.academicYears);
+    const year = years.find(y=>y.id===r.academicYearId);
+    bodyHtml = `
+      <div style="text-align:center;margin-bottom:18px;">
+        <div class="arc-avatar" style="width:64px;height:64px;font-size:20px;margin:0 auto 10px;">${initials(r.firstname,r.lastname)}</div>
+        <h3 style="font-size:16px;">${r.firstname} ${r.lastname}</h3>
+        <div style="direction:ltr;color:var(--text-muted);font-size:12px;">${r.fullFr||''}</div>
+      </div>
+      <div class="info-grid-2" style="margin-bottom:18px;">
+        <div class="info-item"><span>رقم البطاقة (ثابت)</span><b class="ltr">${r.cardNumber}</b></div>
+        <div class="info-item"><span>المستوى</span><b>${r.level}</b></div>
+        <div class="info-item"><span>القسم</span><b>${r.section}</b></div>
+        <div class="info-item"><span>السنة الدراسية</span><b>${year?year.label:'—'}</b></div>
+        <div class="info-item"><span>تاريخ التسجيل الأصلي</span><b>${EliteAcademy.utils.formatDate(r.registeredAt)}</b></div>
+        <div class="info-item"><span>تاريخ الأرشفة</span><b>${a.archivedAt?EliteAcademy.utils.formatDate(a.archivedAt):'—'}</b></div>
+        <div class="info-item" style="grid-column:1/-1;"><span>سبب الأرشفة</span><b>${a.reason}</b></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a href="student-profile.html?id=${r.id}" class="btn btn-sm btn-outline"><i class="fa-solid fa-id-badge"></i> عرض الملف الكامل</a>
+        <button class="btn btn-sm btn-success" onclick="confirmRestore('students','${r.id}')"><i class="fa-solid fa-clock-rotate-left"></i> استرجاع</button>
+      </div>
+      ${renderAdvancedZone('students', r.id, true)}
+    `;
+  } else if(type === 'requests'){
+    bodyHtml = `
+      <h3 style="font-size:16px;margin-bottom:4px;">${r.student.firstname} ${r.student.lastname}</h3>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">رقم الطلب: <span class="ltr">${r.regNumber}</span></p>
+      <div class="info-grid-2" style="margin-bottom:18px;">
+        <div class="info-item"><span>المستوى المطلوب</span><b>${r.student.level}</b></div>
+        <div class="info-item"><span>الولي</span><b>${r.parent.firstname} ${r.parent.lastname}</b></div>
+        <div class="info-item"><span>الهاتف</span><b class="ltr">${r.parent.phone}</b></div>
+        <div class="info-item"><span>تاريخ التقديم</span><b>${EliteAcademy.utils.formatDate(r.createdAt)}</b></div>
+        <div class="info-item" style="grid-column:1/-1;"><span>الحالة/السبب</span><b>${a.reason}</b></div>
+      </div>
+      <button class="btn btn-sm btn-success" onclick="confirmRestore('requests','${r.id}')"><i class="fa-solid fa-clock-rotate-left"></i> استرجاع إلى قيد الدراسة</button>
+    `;
+  } else if(type === 'documents'){
+    bodyHtml = `
+      <h3 style="font-size:16px;margin-bottom:4px;">${r.title}</h3>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">رقم الوثيقة: <span class="ltr">${r.documentNumber}</span></p>
+      <div class="info-grid-2" style="margin-bottom:18px;">
+        <div class="info-item"><span>النوع</span><b>${r.type}</b></div>
+        <div class="info-item"><span>تاريخ الرفع</span><b>${r.uploadDate?EliteAcademy.utils.formatDate(r.uploadDate):'—'}</b></div>
+        <div class="info-item" style="grid-column:1/-1;"><span>سبب الأرشفة</span><b>${a.reason}</b></div>
+      </div>
+      <button class="btn btn-sm btn-success" onclick="confirmRestore('documents','${r.id}')"><i class="fa-solid fa-clock-rotate-left"></i> استرجاع</button>
+    `;
+  } else {
+    // Generic fallback for parents/teachers/staff/classes/academicYears/expenses
+    bodyHtml = `
+      <h3 style="font-size:16px;margin-bottom:16px;">${a.title}</h3>
+      <div class="info-grid-2" style="margin-bottom:18px;">
+        <div class="info-item"><span>النوع</span><b>${TYPE_LABELS[type]}</b></div>
+        <div class="info-item"><span>معرّف</span><b class="ltr">${a.code||'—'}</b></div>
+        <div class="info-item"><span>تاريخ الأرشفة</span><b>${a.archivedAt?EliteAcademy.utils.formatDate(a.archivedAt):'—'}</b></div>
+        <div class="info-item" style="grid-column:1/-1;"><span>السبب</span><b>${a.reason}</b></div>
+      </div>
+      <button class="btn btn-sm btn-success" onclick="confirmRestore('${type}','${id}')"><i class="fa-solid fa-clock-rotate-left"></i> استرجاع</button>
+      ${type==='students' ? '' : ''}
+    `;
+  }
+
+  document.getElementById('drawerBody').innerHTML = bodyHtml;
+  document.getElementById('drawerOverlay').classList.add('active');
+  document.getElementById('drawerPanel').classList.add('active');
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('active');
+  document.getElementById('drawerPanel').classList.remove('active');
+}
+
+/* ============ ADVANCED (PERMANENT DELETE) — hidden, discouraged ============ */
+function renderAdvancedZone(type, id, hasFinancialHistory){
+  const payments = getData(K.payments).filter(p => p.studentId === id);
+  const disabled = hasFinancialHistory && payments.length > 0;
+  return `
+    <details class="advanced-zone">
+      <summary><i class="fa-solid fa-triangle-exclamation"></i> إجراءات متقدمة (خطيرة)</summary>
+      <p>الحذف النهائي يزيل السجل بشكل كامل ولا يمكن التراجع عنه. لا يُنصح باستخدام هذا إطلاقًا لسجل له تاريخ مالي أو إداري.</p>
+      ${disabled
+        ? `<p style="color:var(--danger);font-weight:700;">الحذف النهائي معطّل — هذا الطالب لديه ${payments.length} سجل مالي مرتبط به.</p>`
+        : `<button class="btn btn-sm btn-danger" onclick="confirmPermanentDelete('${type}','${id}')"><i class="fa-solid fa-trash"></i> حذف نهائي (لا يمكن التراجع)</button>`
+      }
+    </details>
+  `;
+}
+function confirmPermanentDelete(type, id){
+  const storeKey = STORE_BY_TYPE[type];
+  if(!storeKey) return;
+  EliteAcademy.modal.confirmAction(
+    'هذا الإجراء نهائي ولا يمكن التراجع عنه أبدًا. سيتم حذف السجل بالكامل من النظام. هل أنت متأكد تمامًا؟',
+    () => {
+      EliteAcademy.storage.deleteRecord(storeKey, id);
+      EliteAcademy.utils.logAction('delete', type, id, `تم الحذف النهائي لسجل من نوع ${TYPE_LABELS[type]}`, 'danger');
+      EliteAcademy.notifications.showWarning('تم الحذف النهائي للسجل');
+      closeDrawer();
+      refreshAll();
+    },
+    { title:'تحذير: حذف نهائي', confirmLabel:'نعم، احذف نهائيًا' }
+  );
+}
+
+/* ============ EXPORT ============ */
+function exportArchive(){
+  const blob = new Blob([JSON.stringify(allArchived.map(a=>({type:a.type,id:a.id,title:a.title,code:a.code,archivedAt:a.archivedAt,reason:a.reason})), null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'archive-export.json'; a.click();
+  URL.revokeObjectURL(url);
+  EliteAcademy.notifications.showSuccess('تم تصدير الأرشيف بنجاح');
+}
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key==='Enter' && this.value.trim()) window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+});
+
+/* ============ REFRESH ============ */
+function refreshAll(){
+  renderStats();
+  initFilterDropdowns();
+  filteredArchived = getFilteredList();
+  renderGrid();
+}
+
+/* ============ INIT ============ */
+refreshAll();
 </script>
 </body>
 </html>
