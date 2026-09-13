@@ -3,15 +3,69 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>سجل العمليات | أكاديمية النخبة</title>
+<title>سجل النشاط | أكاديمية النخبة</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<style>
+.page-actions-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px;}
+.page-actions-btns{display:flex;gap:8px;flex-wrap:wrap;}
+
+.mini-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+@media(max-width:700px){ .mini-stats-row{grid-template-columns:1fr 1fr;} }
+.mini-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;text-align:center;}
+.mini-stat b{display:block;font-size:19px;font-weight:800;}
+.mini-stat span{font-size:10.5px;color:var(--text-muted);font-weight:600;}
+
+.search-bar-wrap{position:relative;margin-bottom:14px;}
+.search-bar-wrap i{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--text-muted);}
+.search-bar-wrap input{width:100%;padding:14px 46px 14px 18px;border:1.5px solid var(--border);border-radius:12px;font-family:'Cairo',sans-serif;font-size:14px;background:var(--surface);box-shadow:var(--shadow-sm);}
+.search-bar-wrap input:focus{outline:none;border-color:var(--accent);}
+
+.filters-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;margin-bottom:16px;}
+.filters-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:10px;}
+.filters-grid select, .filters-grid input{padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-family:'Cairo',sans-serif;font-size:12.5px;background:var(--surface-soft);width:100%;}
+.filters-actions{display:flex;gap:8px;justify-content:flex-end;}
+@media(max-width:900px){ .filters-grid{grid-template-columns:1fr 1fr;} }
+
+.view-toggle{display:flex;gap:4px;background:var(--surface-soft);border-radius:9px;padding:4px;}
+.view-toggle button{padding:8px 14px;border-radius:7px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--text-muted);}
+.view-toggle button.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow-sm);font-weight:700;}
+.toolbar-row{display:flex;justify-content:flex-end;margin-bottom:14px;}
+
+/* TIMELINE VIEW */
+.day-group{margin-bottom:22px;}
+.day-group-head{font-size:12.5px;font-weight:800;color:var(--text-muted);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.timeline-full{position:relative;padding-right:26px;}
+.timeline-full::before{content:'';position:absolute;right:8px;top:4px;bottom:4px;width:2px;background:var(--border);}
+.tl-item{position:relative;padding-bottom:18px;cursor:pointer;}
+.tl-item::before{content:'';position:absolute;right:-26px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2.5px solid var(--accent);}
+.tl-time{font-size:10.5px;color:var(--text-muted);font-weight:700;margin-bottom:3px;}
+.tl-desc{font-size:13px;font-weight:700;}
+.tl-meta{display:flex;gap:8px;align-items:center;margin-top:4px;}
+
+/* TABLE VIEW */
+.type-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:700;}
+.type-info{background:var(--info-soft);color:var(--info);}
+.type-success{background:var(--success-soft);color:var(--success);}
+.type-warning{background:var(--warning-soft);color:#a3781f;}
+.type-danger{background:var(--danger-soft);color:var(--danger);}
+
+.drawer-overlay{position:fixed;inset:0;background:rgba(10,39,56,0.5);z-index:1900;display:none;}
+.drawer-overlay.active{display:block;}
+.drawer-panel{position:fixed;top:0;left:0;height:100%;width:440px;max-width:94vw;background:var(--surface);z-index:1950;box-shadow:var(--shadow-lg);transform:translateX(-100%);transition:.28s ease;overflow-y:auto;}
+.drawer-panel.active{transform:translateX(0);}
+.drawer-head{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:2;}
+.drawer-close{background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer;}
+.drawer-body{padding:20px 22px;}
+.action-icon-lg{width:52px;height:52px;border-radius:50%;background:var(--surface-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto 16px;}
+</style>
 </head>
 <body>
 
 <div class="admin-layout">
   <aside class="sidebar" id="sidebar"></aside>
+
   <div class="main-panel">
     <div class="topbar">
       <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
@@ -22,48 +76,339 @@
     </div>
 
     <div class="dash-content">
-      <div class="dash-header">
-        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
-        <h2>سجل العمليات</h2>
-        <p>سجل كامل لكل العمليات التي تمت داخل النظام</p>
+      <div class="breadcrumb"><a href="dashboard.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><span>سجل النشاط</span></div>
+
+      <div class="page-actions-row">
+        <div>
+          <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+          <h2 style="font-size:22px;font-weight:800;">سجل النشاط</h2>
+          <p style="font-size:13px;color:var(--text-muted);">تتبع العمليات والتغييرات التي تمت داخل النظام</p>
+        </div>
+        <div class="page-actions-btns">
+          <button class="btn btn-outline btn-sm" onclick="exportLogs('csv')"><i class="fa-solid fa-file-csv"></i> تصدير CSV</button>
+          <button class="btn btn-outline btn-sm" onclick="exportLogs('json')"><i class="fa-solid fa-file-code"></i> تصدير JSON</button>
+          <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة</button>
+        </div>
       </div>
 
-      <div class="panel">
+      <!-- STATISTICS -->
+      <div class="mini-stats-row" id="miniStatsRow"></div>
+
+      <!-- SEARCH -->
+      <div class="search-bar-wrap">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchBox" placeholder="ابحث في الوصف، المعرّف، اسم الطالب، رقم البطاقة، رقم الطلب...">
+      </div>
+
+      <!-- FILTERS -->
+      <div class="filters-bar">
+        <div class="filters-grid">
+          <select id="filterAction">
+            <option value="">العملية (الكل)</option>
+            <option value="create">إنشاء</option><option value="update">تعديل</option>
+            <option value="archive">أرشفة</option><option value="restore">استرجاع</option>
+            <option value="delete">حذف/إلغاء</option><option value="login">دخول</option>
+            <option value="logout">خروج</option><option value="convert">تحويل</option>
+          </select>
+          <select id="filterEntity"><option value="">الكيان (الكل)</option></select>
+          <select id="filterUser"><option value="">المستخدم (الكل)</option></select>
+          <input type="date" id="filterDateFrom" title="من تاريخ">
+          <input type="date" id="filterDateTo" title="إلى تاريخ">
+        </div>
+        <div class="filters-actions">
+          <button class="btn btn-ghost btn-sm" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> إعادة تعيين</button>
+          <button class="btn btn-dark btn-sm" onclick="applyFilters()"><i class="fa-solid fa-filter"></i> تطبيق الفلاتر</button>
+        </div>
+      </div>
+
+      <!-- VIEW TOGGLE -->
+      <div class="toolbar-row">
+        <div class="view-toggle">
+          <button id="timelineViewBtn" class="active" onclick="setView('timeline')"><i class="fa-solid fa-timeline"></i> الخط الزمني</button>
+          <button id="tableViewBtn" onclick="setView('table')"><i class="fa-solid fa-list"></i> جدول</button>
+        </div>
+      </div>
+
+      <!-- TIMELINE VIEW -->
+      <div id="timelineWrap"></div>
+
+      <!-- TABLE VIEW -->
+      <div class="panel" id="tablePanel" style="display:none;">
         <div style="overflow-x:auto;">
           <table class="dtable">
-            <thead><tr><th>العملية</th><th>التاريخ</th><th>الساعة</th></tr></thead>
-            <tbody id="logsBody"></tbody>
+            <thead><tr><th>الوصف</th><th>الكيان</th><th>النوع</th><th>المستخدم</th><th>التاريخ</th><th>الساعة</th></tr></thead>
+            <tbody id="logsTableBody"></tbody>
           </table>
         </div>
       </div>
+
+      <div class="pagination" id="pagination"></div>
     </div>
   </div>
 </div>
 
+<!-- ============ LOG DETAILS DRAWER ============ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer-panel" id="drawerPanel">
+  <div class="drawer-head"><h3>تفاصيل العملية</h3><button class="drawer-close" onclick="closeDrawer()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-requireAdminAuth();
-renderSidebar('logs');
+EliteAcademy.auth.requireAuth();
+EliteAcademy.navigation.renderSidebar('logs');
 
-function loadLogs(){
-  const logs = DB.get('eliteLogs');
-  const tbody = document.getElementById('logsBody');
-  if(logs.length === 0){
-    tbody.innerHTML = `<tr><td colspan="3"><div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>لا توجد عمليات مسجلة بعد</p></div></td></tr>`;
+const K = EliteAcademy.storage.keys;
+const getData = EliteAcademy.storage.getData;
+
+let currentView = 'timeline';
+let filteredLogs = [];
+let currentPage = 1;
+const PAGE_SIZE = 20;
+
+const ACTION_LABELS = { create:'إنشاء', update:'تعديل', archive:'أرشفة', restore:'استرجاع', delete:'حذف/إلغاء', login:'دخول', logout:'خروج', convert:'تحويل' };
+const ACTION_ICONS = { create:'fa-circle-plus', update:'fa-pen', archive:'fa-box-archive', restore:'fa-clock-rotate-left', delete:'fa-trash', login:'fa-right-to-bracket', logout:'fa-right-from-bracket', convert:'fa-user-check' };
+const ENTITY_LABELS = { students:'طالب', parents:'ولي أمر', teachers:'أستاذ', staff:'موظف', requests:'طلب تسجيل', payments:'دفعة', attendance:'حضور', documents:'وثيقة', levels:'مستوى', classes:'قسم', academicYears:'سنة دراسية', settings:'الإعدادات', expenses:'مصروف', session:'جلسة الدخول', reports:'تقرير' };
+
+function typeClass(type){
+  return { success:'type-success', danger:'type-danger', warning:'type-warning', info:'type-info' }[type] || 'type-info';
+}
+
+/* ============ STATISTICS ============ */
+function renderStats(){
+  const logs = getData(K.logs);
+  const today = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const weekAgo = new Date(now); weekAgo.setDate(now.getDate()-7);
+  const monthStr = now.toISOString().slice(0,7);
+
+  const todayCount = logs.filter(l => l.timestamp && l.timestamp.split('T')[0]===today).length;
+  const weekCount = logs.filter(l => l.timestamp && new Date(l.timestamp) >= weekAgo).length;
+  const monthCount = logs.filter(l => l.timestamp && l.timestamp.startsWith(monthStr)).length;
+
+  const stats = [
+    { label:'إجمالي العمليات', value:logs.length },
+    { label:'عمليات اليوم', value:todayCount },
+    { label:'عمليات هذا الأسبوع', value:weekCount },
+    { label:'عمليات هذا الشهر', value:monthCount }
+  ];
+  document.getElementById('miniStatsRow').innerHTML = stats.map(s=>`<div class="mini-stat"><b>${s.value}</b><span>${s.label}</span></div>`).join('');
+}
+
+/* ============ INIT FILTER DROPDOWNS ============ */
+function initFilterDropdowns(){
+  const logs = getData(K.logs);
+  const entities = [...new Set(logs.map(l=>l.entity).filter(Boolean))];
+  document.getElementById('filterEntity').innerHTML = `<option value="">الكيان (الكل)</option>` + entities.map(e=>`<option value="${e}">${ENTITY_LABELS[e]||e}</option>`).join('');
+
+  const users = [...new Set(logs.map(l=>l.user).filter(Boolean))];
+  document.getElementById('filterUser').innerHTML = `<option value="">المستخدم (الكل)</option>` + users.map(u=>`<option value="${u}">${u}</option>`).join('');
+}
+
+/* ============ FILTERING ============ */
+function getFilteredList(){
+  const q = document.getElementById('searchBox').value.trim();
+  const action = document.getElementById('filterAction').value;
+  const entity = document.getElementById('filterEntity').value;
+  const user = document.getElementById('filterUser').value;
+  const dateFrom = document.getElementById('filterDateFrom').value;
+  const dateTo = document.getElementById('filterDateTo').value;
+
+  let list = getData(K.logs);
+
+  if(q){
+    list = list.filter(l => (l.description||'').includes(q) || (l.entityId||'').includes(q) || (l.entity||'').includes(q));
+  }
+  if(action) list = list.filter(l => l.action === action);
+  if(entity) list = list.filter(l => l.entity === entity);
+  if(user) list = list.filter(l => l.user === user);
+  if(dateFrom) list = list.filter(l => l.timestamp && l.timestamp.split('T')[0] >= dateFrom);
+  if(dateTo) list = list.filter(l => l.timestamp && l.timestamp.split('T')[0] <= dateTo);
+
+  return list.sort((a,b) => new Date(b.timestamp||0) - new Date(a.timestamp||0));
+}
+function applyFilters(){ filteredLogs = getFilteredList(); currentPage=1; renderCurrentView(); }
+function resetFilters(){
+  document.getElementById('searchBox').value='';
+  document.getElementById('filterAction').value='';
+  document.getElementById('filterEntity').value='';
+  document.getElementById('filterUser').value='';
+  document.getElementById('filterDateFrom').value='';
+  document.getElementById('filterDateTo').value='';
+  applyFilters();
+}
+document.getElementById('searchBox').addEventListener('input', applyFilters);
+
+/* ============ VIEW TOGGLE ============ */
+function setView(view){
+  currentView = view;
+  document.getElementById('timelineViewBtn').classList.toggle('active', view==='timeline');
+  document.getElementById('tableViewBtn').classList.toggle('active', view==='table');
+  document.getElementById('timelineWrap').style.display = view==='timeline' ? 'block' : 'none';
+  document.getElementById('tablePanel').style.display = view==='table' ? 'block' : 'none';
+  renderCurrentView();
+}
+function renderCurrentView(){
+  if(currentView === 'timeline') renderTimeline(); else renderTable();
+  renderPagination();
+}
+
+/* ============ TIMELINE VIEW (grouped by day) ============ */
+function renderTimeline(){
+  const wrap = document.getElementById('timelineWrap');
+  if(filteredLogs.length === 0){
+    wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>لا توجد عمليات مطابقة للبحث أو الفلاتر</p>
+      <button class="btn btn-dark btn-sm" onclick="resetFilters()">إعادة ضبط الفلاتر</button></div>`;
     return;
   }
-  tbody.innerHTML = logs.map(l => `
-    <tr><td>${l.text}</td><td>${l.date}</td><td>${l.time}</td></tr>
+  const start=(currentPage-1)*PAGE_SIZE;
+  const pageItems = filteredLogs.slice(start,start+PAGE_SIZE);
+
+  const groups = {};
+  pageItems.forEach(l => { const key = l.date || '—'; if(!groups[key]) groups[key]=[]; groups[key].push(l); });
+
+  wrap.innerHTML = Object.entries(groups).map(([date, items]) => `
+    <div class="day-group">
+      <div class="day-group-head"><i class="fa-solid fa-calendar-day"></i> ${date}</div>
+      <div class="timeline-full">
+        ${items.map(l => `
+          <div class="tl-item" onclick="openDrawer('${l.id}')">
+            <div class="tl-time">${l.time}</div>
+            <div class="tl-desc">${l.description}</div>
+            <div class="tl-meta">
+              <span class="type-badge ${typeClass(l.type)}"><i class="fa-solid ${ACTION_ICONS[l.action]||'fa-circle-info'}"></i> ${ACTION_LABELS[l.action]||l.action}</span>
+              <span style="font-size:10.5px;color:var(--text-muted);">${ENTITY_LABELS[l.entity]||l.entity||''}</span>
+              <span style="font-size:10.5px;color:var(--text-muted);">بواسطة ${l.user||'admin'}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
   `).join('');
 }
 
-document.getElementById('topSearchInput').addEventListener('keypress', function(e){
-  if(e.key === 'Enter' && this.value.trim()){
-    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+/* ============ TABLE VIEW ============ */
+function renderTable(){
+  const tbody = document.getElementById('logsTableBody');
+  if(filteredLogs.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>لا توجد عمليات مطابقة</p></div></td></tr>`;
+    return;
   }
+  const start=(currentPage-1)*PAGE_SIZE;
+  const pageItems = filteredLogs.slice(start,start+PAGE_SIZE);
+
+  tbody.innerHTML = pageItems.map(l => `
+    <tr style="cursor:pointer;" onclick="openDrawer('${l.id}')">
+      <td data-label="الوصف">${l.description}</td>
+      <td data-label="الكيان">${ENTITY_LABELS[l.entity]||l.entity||'—'}</td>
+      <td data-label="النوع"><span class="type-badge ${typeClass(l.type)}">${ACTION_LABELS[l.action]||l.action}</span></td>
+      <td data-label="المستخدم">${l.user||'admin'}</td>
+      <td data-label="التاريخ">${l.date}</td>
+      <td data-label="الساعة">${l.time}</td>
+    </tr>
+  `).join('');
+}
+
+/* ============ PAGINATION ============ */
+function renderPagination(){
+  const totalPages = Math.ceil(filteredLogs.length/PAGE_SIZE);
+  const pagEl = document.getElementById('pagination');
+  if(totalPages<=1){ pagEl.innerHTML=''; return; }
+  let html=''; for(let i=1;i<=totalPages;i++) html+=`<button class="${i===currentPage?'active':''}" onclick="goToPage(${i})">${i}</button>`;
+  pagEl.innerHTML = html;
+}
+function goToPage(p){ currentPage=p; renderCurrentView(); }
+
+/* ============ RELATED RECORD RESOLUTION ============ */
+function resolveRelatedLink(log){
+  if(log.entity === 'students' && log.entityId){
+    const s = EliteAcademy.storage.findById(K.students, log.entityId);
+    if(s) return { label:'عرض ملف الطالب', href:`student-profile.html?id=${s.id}` };
+  }
+  if(log.entity === 'requests' && log.entityId){
+    const r = EliteAcademy.storage.findById(K.requests, log.entityId);
+    if(r) return { label:'عرض الطلب', href:`requests.html` };
+  }
+  if(log.entity === 'payments' && log.entityId){
+    return { label:'عرض العملية', href:`payment.html` };
+  }
+  if(log.entity === 'documents' && log.entityId){
+    return { label:'عرض الوثيقة', href:`documents.html` };
+  }
+  if(log.entity === 'teachers' && log.entityId){
+    return { label:'عرض ملف الأستاذ', href:`teachers.html` };
+  }
+  if(log.entity === 'staff' && log.entityId){
+    return { label:'عرض ملف الموظف', href:`staff.html` };
+  }
+  return null;
+}
+
+/* ============ DETAILS DRAWER ============ */
+function openDrawer(id){
+  const log = EliteAcademy.storage.findById(K.logs, id);
+  if(!log) return;
+
+  const related = resolveRelatedLink(log);
+
+  document.getElementById('drawerBody').innerHTML = `
+    <div class="action-icon-lg"><i class="fa-solid ${ACTION_ICONS[log.action]||'fa-circle-info'}"></i></div>
+    <h3 style="text-align:center;font-size:15px;margin-bottom:6px;">${log.description}</h3>
+    <div style="text-align:center;margin-bottom:20px;"><span class="type-badge ${typeClass(log.type)}">${ACTION_LABELS[log.action]||log.action}</span></div>
+
+    <div class="info-grid-2" style="margin-bottom:20px;">
+      <div class="info-item"><span>التاريخ</span><b>${log.date}</b></div>
+      <div class="info-item"><span>الساعة</span><b>${log.time}</b></div>
+      <div class="info-item"><span>المستخدم</span><b>${log.user||'admin'}</b></div>
+      <div class="info-item"><span>الكيان</span><b>${ENTITY_LABELS[log.entity]||log.entity||'—'}</b></div>
+      <div class="info-item" style="grid-column:1/-1;"><span>معرّف السجل</span><b class="ltr">${log.entityId||'—'}</b></div>
+    </div>
+
+    ${related ? `<a href="${related.href}" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="fa-solid fa-arrow-left"></i> ${related.label}</a>` : ''}
+  `;
+  document.getElementById('drawerOverlay').classList.add('active');
+  document.getElementById('drawerPanel').classList.add('active');
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('active');
+  document.getElementById('drawerPanel').classList.remove('active');
+}
+
+/* ============ EXPORT ============ */
+function exportLogs(format){
+  const logs = getData(K.logs);
+  if(format === 'json'){
+    const blob = new Blob([JSON.stringify(logs, null, 2)], { type:'application/json' });
+    downloadBlob(blob, 'activity-logs.json');
+  } else {
+    const headers = ['الوصف','الكيان','النوع','المستخدم','التاريخ','الساعة'];
+    const rows = logs.map(l => [l.description, ENTITY_LABELS[l.entity]||l.entity||'', ACTION_LABELS[l.action]||l.action, l.user||'admin', l.date, l.time]);
+    const csv = [headers.join(','), ...rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(','))].join('\n');
+    const blob = new Blob(['\uFEFF'+csv], { type:'text/csv;charset=utf-8;' });
+    downloadBlob(blob, 'activity-logs.csv');
+  }
+  EliteAcademy.notifications.showSuccess('تم تصدير السجل بنجاح');
+}
+function downloadBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  if(e.key==='Enter' && this.value.trim()) window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
 });
 
-loadLogs();
+/* ============ INIT ============ */
+renderStats();
+initFilterDropdowns();
+filteredLogs = getFilteredList();
+renderCurrentView();
 </script>
 </body>
 </html>
