@@ -7,6 +7,67 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
+<style>
+/* Dashboard-specific additions */
+.welcome-banner{background:linear-gradient(120deg,var(--primary-dark),var(--primary));border-radius:var(--radius-lg);padding:26px 28px;color:#fff;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;position:relative;overflow:hidden;}
+.welcome-banner::before{content:'';position:absolute;width:200px;height:200px;background:radial-gradient(circle,rgba(201,151,63,0.2),transparent 70%);top:-70px;left:-50px;}
+.welcome-banner h2{color:#fff;font-size:21px;margin-bottom:4px;position:relative;z-index:1;}
+.welcome-banner p{color:rgba(255,255,255,0.75);font-size:13px;position:relative;z-index:1;}
+.welcome-date{font-size:12px;color:rgba(255,255,255,0.65);position:relative;z-index:1;text-align:left;}
+
+.quick-actions-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.quick-action-btn{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 14px;text-align:center;cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.quick-action-btn:hover{border-color:var(--accent);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.quick-action-btn i{width:38px;height:38px;background:var(--surface-soft);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--primary);}
+.quick-action-btn span{font-size:11.5px;font-weight:700;}
+
+.section-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;}
+.section-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;}
+
+.bar-chart-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.bar-chart-label{width:110px;font-size:12px;font-weight:700;flex-shrink:0;}
+.bar-chart-track{flex:1;height:10px;background:var(--surface-soft);border-radius:8px;overflow:hidden;}
+.bar-chart-fill{height:100%;border-radius:8px;transition:width .5s ease;}
+.bar-chart-value{width:44px;text-align:left;font-size:11.5px;font-weight:800;color:var(--text-muted);flex-shrink:0;}
+
+.attendance-donut-wrap{display:flex;align-items:center;gap:20px;justify-content:center;padding:10px 0;}
+.attendance-legend{display:flex;flex-direction:column;gap:10px;}
+.attendance-legend-item{display:flex;align-items:center;gap:8px;font-size:12.5px;}
+.attendance-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+.alert-item{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--border);cursor:pointer;transition:.15s;}
+.alert-item:first-child{border-top:none;}
+.alert-item:hover{background:var(--surface-soft);}
+.alert-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.alert-item p{font-size:12.8px;font-weight:700;}
+.alert-item span{font-size:11px;color:var(--text-muted);}
+.alert-item .fa-chevron-left{margin-right:auto;color:var(--text-muted);font-size:11px;}
+
+.recent-student-row{display:flex;align-items:center;gap:12px;padding:13px 18px;border-top:1px solid var(--border);cursor:pointer;transition:.15s;}
+.recent-student-row:first-child{border-top:none;}
+.recent-student-row:hover{background:var(--surface-soft);}
+.rs-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:var(--accent-light);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12.5px;flex-shrink:0;}
+.rs-name{font-size:13px;font-weight:700;}
+.rs-meta{font-size:11px;color:var(--text-muted);}
+.rs-card{margin-right:auto;font-size:11px;color:var(--text-muted);direction:ltr;}
+
+.notif-dropdown{position:absolute;top:44px;left:0;width:320px;background:var(--surface);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);border:1px solid var(--border);z-index:200;display:none;max-height:400px;overflow-y:auto;}
+.notif-dropdown.active{display:block;}
+.notif-dropdown-head{padding:14px 18px;border-bottom:1px solid var(--border);font-size:13px;font-weight:800;}
+
+.search-results-dropdown{position:absolute;top:calc(100% + 6px);right:0;left:0;background:var(--surface);border-radius:var(--radius-md);box-shadow:var(--shadow-lg);border:1px solid var(--border);z-index:200;display:none;max-height:420px;overflow-y:auto;}
+.search-results-dropdown.active{display:block;}
+.sr-group{padding:8px 0;}
+.sr-group-title{font-size:10.5px;font-weight:800;color:var(--text-muted);padding:6px 16px;text-transform:uppercase;}
+.sr-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;font-size:12.5px;}
+.sr-item:hover{background:var(--surface-soft);}
+.sr-item i{color:var(--accent);width:16px;text-align:center;}
+.sr-empty{padding:20px;text-align:center;color:var(--text-muted);font-size:12.5px;}
+
+@media(max-width:1100px){ .section-grid, .section-grid-3{grid-template-columns:1fr;} }
+@media(max-width:900px){ .quick-actions-grid{grid-template-columns:1fr 1fr;} }
+@media(max-width:500px){ .quick-actions-grid{grid-template-columns:1fr 1fr;} .welcome-date{text-align:right;} }
+</style>
 </head>
 <body>
 
@@ -15,123 +76,456 @@
 
   <div class="main-panel">
     <div class="topbar">
-      <div class="topbar-search">
+      <div class="topbar-search" style="position:relative;">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="topSearchInput" placeholder="بحث شامل: رقم بطاقة، اسم تلميذ، رقم طلب...">
+        <input type="text" id="topSearchInput" placeholder="بحث شامل: اسم، بطاقة، هاتف، رقم طلب...">
+        <div class="search-results-dropdown" id="searchResultsDropdown"></div>
       </div>
       <div class="topbar-right">
-        <div class="topbar-notif"><i class="fa-solid fa-bell"></i><span class="dot"></span></div>
+        <div class="topbar-notif" id="notifBell" style="position:relative;">
+          <i class="fa-solid fa-bell"></i><span class="dot" id="notifDot" style="display:none;"></span>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-dropdown-head">الإشعارات</div>
+            <div class="notif-list" id="notifDropdownList"></div>
+          </div>
+        </div>
         <div class="topbar-admin">
           <div class="topbar-admin-avatar">AD</div>
-          <div><span>المدير</span><small>admin</small></div>
+          <div><span>المدير</span><small id="topbarDate"></small></div>
         </div>
       </div>
     </div>
 
     <div class="dash-content">
-      <div class="dash-header">
-        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
-        <h2>مرحبًا بك، المدير 👋</h2>
-        <p>نظرة عامة على نشاط المؤسسة اليوم</p>
+
+      <!-- ============ WELCOME BANNER ============ -->
+      <div class="welcome-banner">
+        <div>
+          <span class="demo-tag" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.3);color:#fff;"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+          <h2 id="greetingText">صباح الخير، المدير 👋</h2>
+          <p>إليك نظرة سريعة على وضع الأكاديمية اليوم</p>
+        </div>
+        <div class="welcome-date" id="welcomeDate"></div>
       </div>
 
-      <div class="stats-cards">
-        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-user-graduate"></i></div><div><div class="dstat-num" id="statTotalStudents">0</div><div class="dstat-label">إجمالي التلاميذ</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-user-check"></i></div><div><div class="dstat-num" id="statActiveStudents">0</div><div class="dstat-label">التلاميذ النشطون</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon gold"><i class="fa-solid fa-file-circle-plus"></i></div><div><div class="dstat-num" id="statNewRequests">0</div><div class="dstat-label">طلبات تسجيل جديدة</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-chalkboard-user"></i></div><div><div class="dstat-num" id="statTeachers">0</div><div class="dstat-label">الأساتذة</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-id-badge"></i></div><div><div class="dstat-num" id="statStaff">0</div><div class="dstat-label">الموظفون</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon blue"><i class="fa-solid fa-door-open"></i></div><div><div class="dstat-num" id="statSections">0</div><div class="dstat-label">الأقسام</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon green"><i class="fa-solid fa-sack-dollar"></i></div><div><div class="dstat-num" id="statCollected">0</div><div class="dstat-label">المبالغ المحصلة (دج)</div></div></div>
-        <div class="dstat-card"><div class="dstat-icon red"><i class="fa-solid fa-calendar-xmark"></i></div><div><div class="dstat-num" id="statAbsentToday">0</div><div class="dstat-label">غيابات اليوم</div></div></div>
+      <!-- ============ QUICK ACTIONS ============ -->
+      <div class="dash-header" style="margin-bottom:12px;">
+        <h2 style="font-size:16px;">إجراءات سريعة</h2>
+      </div>
+      <div class="quick-actions-grid">
+        <a href="students.html" class="quick-action-btn"><i class="fa-solid fa-user-plus"></i><span>إضافة طالب</span></a>
+        <a href="requests.html" class="quick-action-btn"><i class="fa-solid fa-file-circle-plus"></i><span>طلب تسجيل</span></a>
+        <a href="payment.html" class="quick-action-btn"><i class="fa-solid fa-money-bill-transfer"></i><span>تسجيل دفعة</span></a>
+        <a href="teachers.html" class="quick-action-btn"><i class="fa-solid fa-chalkboard-user"></i><span>إضافة أستاذ</span></a>
+        <a href="staff.html" class="quick-action-btn"><i class="fa-solid fa-id-badge"></i><span>إضافة موظف</span></a>
+        <a href="attendance.html" class="quick-action-btn"><i class="fa-solid fa-calendar-check"></i><span>تسجيل حضور</span></a>
+        <a href="documents.html" class="quick-action-btn"><i class="fa-solid fa-folder-plus"></i><span>إضافة وثيقة</span></a>
+        <a href="reports.html" class="quick-action-btn"><i class="fa-solid fa-chart-simple"></i><span>إنشاء تقرير</span></a>
       </div>
 
-      <div class="dash-grid">
+      <!-- ============ KPI CARDS ============ -->
+      <div class="stats-cards" id="kpiCardsContainer"></div>
+
+      <!-- ============ REQUESTS + ATTENDANCE ============ -->
+      <div class="section-grid">
         <div class="panel">
-          <div class="panel-head"><h3>آخر طلبات التسجيل</h3><a href="requests.html">عرض الكل</a></div>
+          <div class="panel-head"><h3>آخر طلبات التسجيل</h3><a href="requests.html">عرض جميع الطلبات</a></div>
           <div style="overflow-x:auto;">
             <table class="dtable">
-              <thead><tr><th>رقم الطلب</th><th>التلميذ</th><th>المستوى</th><th>الولي</th><th>الهاتف</th><th>الحالة</th></tr></thead>
+              <thead><tr><th>رقم الطلب</th><th>التلميذ</th><th>المستوى</th><th>الحالة</th></tr></thead>
               <tbody id="requestsTableBody"></tbody>
             </table>
           </div>
         </div>
 
         <div class="panel">
-          <div class="panel-head"><h3>الإشعارات</h3></div>
-          <div class="notif-list" id="notifList"></div>
+          <div class="panel-head"><h3>الحضور اليوم</h3><a href="attendance.html">فتح سجل الحضور</a></div>
+          <div style="padding:20px;">
+            <div class="attendance-donut-wrap" id="attendanceOverview"></div>
+          </div>
         </div>
       </div>
+
+      <!-- ============ FINANCIAL + STUDENT DISTRIBUTION ============ -->
+      <div class="section-grid">
+        <div class="panel">
+          <div class="panel-head"><h3>النظرة المالية</h3><a href="payment.html">فتح المالية</a></div>
+          <div style="padding:20px 22px;" id="financialOverview"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>توزيع التلاميذ حسب المرحلة</h3></div>
+          <div style="padding:20px 22px;" id="studentDistribution"></div>
+        </div>
+      </div>
+
+      <!-- ============ ALERTS + ACTIVITY + RECENT STUDENTS ============ -->
+      <div class="section-grid-3">
+        <div class="panel">
+          <div class="panel-head"><h3>تنبيهات تحتاج انتباه</h3></div>
+          <div id="alertsList"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>آخر النشاطات</h3><a href="logs.html">عرض سجل النشاط</a></div>
+          <div class="notif-list" id="activityList"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head"><h3>أحدث التسجيلات</h3><a href="students.html">عرض الكل</a></div>
+          <div id="recentStudentsList"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-requireAdminAuth();
-renderSidebar('dashboard');
+EliteAcademy.auth.requireAuth();
+EliteAcademy.navigation.renderSidebar('dashboard');
 
-function loadDashboard(){
-  const students = DB.get('eliteStudents');
-  const requests = DB.get('eliteRegistrationRequests');
-  const teachers = DB.get('eliteTeachers');
-  const staff = DB.get('eliteStaff');
-  const sections = DB.get('eliteSections');
-  const payments = DB.get('elitePayments');
-  const attendance = DB.get('eliteAttendance');
+const K = EliteAcademy.storage.keys;
+const getData = EliteAcademy.storage.getData;
 
-  document.getElementById('statTotalStudents').textContent = students.length;
-  document.getElementById('statActiveStudents').textContent = students.filter(s=>s.status==='نشط').length;
-  document.getElementById('statNewRequests').textContent = requests.filter(r=>r.status==='جديد').length;
-  document.getElementById('statTeachers').textContent = teachers.length;
-  document.getElementById('statStaff').textContent = staff.length;
-  document.getElementById('statSections').textContent = sections.length;
+/* ============ WELCOME HEADER + DATE ============ */
+function renderWelcome(){
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'صباح الخير' : (hour < 18 ? 'مساء الخير' : 'مساء الخير');
+  document.getElementById('greetingText').textContent = `${greeting}، المدير 👋`;
 
-  const totalCollected = payments.reduce((sum,p)=> sum + Number(p.amount||0), 0);
-  document.getElementById('statCollected').textContent = totalCollected.toLocaleString('en-US');
-
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('statAbsentToday').textContent = attendance.filter(a=> a.status==='غائب').length;
-
-  // Requests table
-  const tbody = document.getElementById('requestsTableBody');
-  if(requests.length === 0){
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات تسجيل حاليًا</p></div></td></tr>`;
-  } else {
-    tbody.innerHTML = requests.slice(0,6).map(r => `
-      <tr>
-        <td><b>${r.regNumber}</b></td>
-        <td>${r.student.firstname} ${r.student.lastname}</td>
-        <td>${r.student.level}</td>
-        <td>${r.parent.firstname} ${r.parent.lastname}</td>
-        <td>${r.parent.phone}</td>
-        <td><span class="badge ${statusBadgeClass(r.status)}">${r.status}</span></td>
-      </tr>
-    `).join('');
-  }
-
-  // Notifications
-  const newReqCount = requests.filter(r=>r.status==='جديد').length;
-  const dueDocs = 3; // placeholder demo value
-  const duePayments = 7; // placeholder demo value
-  const absentToday = attendance.filter(a=>a.status==='غائب').length;
-  document.getElementById('notifList').innerHTML = `
-    <div class="notif-item"><i class="fa-solid fa-file-lines"></i><div><p>${newReqCount} طلبات تسجيل جديدة</p><span>اليوم</span></div></div>
-    <div class="notif-item"><i class="fa-solid fa-folder-open"></i><div><p>${dueDocs} ملفات ناقصة</p><span>اليوم</span></div></div>
-    <div class="notif-item"><i class="fa-solid fa-sack-dollar"></i><div><p>${duePayments} دفعات مستحقة</p><span>أمس</span></div></div>
-    <div class="notif-item"><i class="fa-solid fa-calendar-xmark"></i><div><p>${absentToday} غيابات اليوم</p><span>اليوم</span></div></div>
-  `;
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('ar-DZ', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('welcomeDate').textContent = dateStr;
+  document.getElementById('topbarDate').textContent = now.toLocaleDateString('ar-DZ', { month:'short', day:'numeric' });
 }
 
-loadDashboard();
+/* ============ KPI CARDS ============ */
+function renderKpis(){
+  const students = getData(K.students);
+  const requests = getData(K.requests);
+  const teachers = getData(K.teachers);
+  const staff = getData(K.staff);
+  const classes = getData(K.classes);
+  const payments = getData(K.payments);
+  const attendance = getData(K.attendance);
+  const settings = EliteAcademy.utils.getSettings();
 
-// Global search redirect
-document.getElementById('topSearchInput').addEventListener('keypress', function(e){
+  const activeStudents = students.filter(s => s.status === 'نشط').length;
+  const newRequests = requests.filter(r => r.status === 'جديد').length;
+  const today = new Date().toISOString().split('T')[0];
+  const absentToday = attendance.filter(a => a.status === 'غائب' && a.date === today).length;
+
+  const totalCollected = payments.reduce((sum,p) => sum + Number(p.amount||0), 0);
+  const expectedTotal = activeStudents * Number(settings.monthlyFee||0);
+  const totalRemaining = Math.max(expectedTotal - totalCollected, 0);
+
+  const cards = [
+    { icon:'fa-user-graduate', color:'blue', num:students.length, label:'إجمالي الطلبة' },
+    { icon:'fa-user-check', color:'green', num:activeStudents, label:'الطلبة النشطون' },
+    { icon:'fa-file-circle-plus', color:'gold', num:newRequests, label:'طلبات تسجيل جديدة' },
+    { icon:'fa-calendar-xmark', color:'red', num:absentToday, label:'غيابات اليوم' },
+    { icon:'fa-chalkboard-user', color:'blue', num:teachers.length, label:'الأساتذة' },
+    { icon:'fa-id-badge', color:'blue', num:staff.length, label:'الموظفون' },
+    { icon:'fa-door-open', color:'blue', num:classes.length, label:'الأقسام' },
+    { icon:'fa-sack-dollar', color:'green', num:EliteAcademy.utils.formatCurrency(totalCollected), label:'المبالغ المحصلة' },
+    { icon:'fa-circle-exclamation', color:'red', num:EliteAcademy.utils.formatCurrency(totalRemaining), label:'المبالغ المتبقية' }
+  ];
+
+  document.getElementById('kpiCardsContainer').innerHTML = cards.map(c => `
+    <div class="dstat-card">
+      <div class="dstat-icon ${c.color}"><i class="fa-solid ${c.icon}"></i></div>
+      <div><div class="dstat-num">${c.num}</div><div class="dstat-label">${c.label}</div></div>
+    </div>
+  `).join('');
+}
+
+/* ============ REGISTRATION REQUESTS WIDGET ============ */
+function renderRequestsWidget(){
+  const requests = getData(K.requests).slice(0,6);
+  const tbody = document.getElementById('requestsTableBody');
+  if(requests.length === 0){
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>لا توجد طلبات تسجيل حاليًا</p></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = requests.map(r => `
+    <tr onclick="window.location.href='requests.html'" style="cursor:pointer;">
+      <td data-label="رقم الطلب" class="ltr"><b>${r.regNumber}</b></td>
+      <td data-label="التلميذ">${r.student.firstname} ${r.student.lastname}</td>
+      <td data-label="المستوى">${r.student.level}</td>
+      <td data-label="الحالة"><span class="badge ${EliteAcademy.utils.statusBadgeClass(r.status)}">${r.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+/* ============ ATTENDANCE OVERVIEW (CSS-based) ============ */
+function renderAttendanceOverview(){
+  const today = new Date().toISOString().split('T')[0];
+  const attendance = getData(K.attendance).filter(a => a.date === today);
+
+  const present = attendance.filter(a => a.status === 'حاضر').length;
+  const absent = attendance.filter(a => a.status === 'غائب').length;
+  const late = attendance.filter(a => a.status === 'متأخر' || a.status === 'غياب مبرر').length;
+  const total = present + absent + late;
+
+  const container = document.getElementById('attendanceOverview');
+  if(total === 0){
+    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-calendar"></i><p>لم يُسجَّل حضور اليوم بعد</p></div>`;
+    return;
+  }
+
+  const presentPct = Math.round((present/total)*100);
+  const absentPct = Math.round((absent/total)*100);
+  const latePct = 100 - presentPct - absentPct;
+
+  container.innerHTML = `
+    <div style="width:100%;">
+      <div style="display:flex;height:14px;border-radius:8px;overflow:hidden;margin-bottom:16px;">
+        <div style="width:${presentPct}%;background:var(--success);"></div>
+        <div style="width:${absentPct}%;background:var(--danger);"></div>
+        <div style="width:${latePct}%;background:var(--warning);"></div>
+      </div>
+      <div class="attendance-legend">
+        <div class="attendance-legend-item"><span class="attendance-legend-dot" style="background:var(--success);"></span> الحاضرون <b style="margin-right:auto;">${present}</b></div>
+        <div class="attendance-legend-item"><span class="attendance-legend-dot" style="background:var(--danger);"></span> الغائبون <b style="margin-right:auto;">${absent}</b></div>
+        <div class="attendance-legend-item"><span class="attendance-legend-dot" style="background:var(--warning);"></span> المتأخرون/المبررون <b style="margin-right:auto;">${late}</b></div>
+      </div>
+    </div>
+  `;
+  container.querySelectorAll('.attendance-legend-item').forEach(el => el.style.cssText += 'display:flex;justify-content:space-between;');
+}
+
+/* ============ FINANCIAL OVERVIEW (CSS bar chart) ============ */
+function renderFinancialOverview(){
+  const payments = getData(K.payments);
+  const expenses = getData(K.expenses);
+  const settings = EliteAcademy.utils.getSettings();
+  const students = getData(K.students).filter(s => s.status === 'نشط');
+
+  const totalIncome = payments.reduce((sum,p) => sum + Number(p.amount||0), 0);
+  const totalExpenses = expenses.reduce((sum,e) => sum + Number(e.amount||0), 0);
+  const expectedTotal = students.length * Number(settings.monthlyFee||0);
+  const totalDebt = Math.max(expectedTotal - totalIncome, 0);
+  const totalSalaries = expenses.filter(e => e.reason && e.reason.includes('رواتب')).reduce((sum,e)=>sum+Number(e.amount||0),0);
+
+  const maxVal = Math.max(totalIncome, totalExpenses, totalDebt, totalSalaries, 1);
+  const rows = [
+    { label:'المداخيل', value:totalIncome, color:'var(--success)' },
+    { label:'المدفوعات', value:totalIncome, color:'var(--primary)' },
+    { label:'الديون', value:totalDebt, color:'var(--danger)' },
+    { label:'المصاريف', value:totalExpenses, color:'var(--warning)' },
+    { label:'الرواتب', value:totalSalaries, color:'var(--secondary)' }
+  ];
+
+  document.getElementById('financialOverview').innerHTML = rows.map(r => `
+    <div class="bar-chart-row">
+      <div class="bar-chart-label">${r.label}</div>
+      <div class="bar-chart-track"><div class="bar-chart-fill" style="width:${Math.round((r.value/maxVal)*100)}%;background:${r.color};"></div></div>
+      <div class="bar-chart-value">${r.value.toLocaleString('en-US')}</div>
+    </div>
+  `).join('') + `<p style="font-size:11px;color:var(--text-muted);margin-top:6px;">القيم بالدينار الجزائري (دج)</p>`;
+}
+
+/* ============ STUDENT DISTRIBUTION BY STAGE ============ */
+function renderStudentDistribution(){
+  const students = getData(K.students).filter(s => s.status === 'نشط');
+  const levels = getData(K.levels);
+
+  const stageOf = (levelName) => {
+    const lvl = levels.find(l => l.name === levelName);
+    return lvl ? lvl.stage : 'غير محدد';
+  };
+
+  const stages = ['تحضيري','ابتدائي','متوسط','ثانوي','دعم وتكوين'];
+  const counts = {};
+  stages.forEach(s => counts[s] = 0);
+  students.forEach(s => {
+    const stage = stageOf(s.level);
+    if(counts[stage] !== undefined) counts[stage] += 1;
+  });
+
+  const total = students.length || 1;
+  const colors = { 'تحضيري':'var(--info)', 'ابتدائي':'var(--success)', 'متوسط':'var(--warning)', 'ثانوي':'var(--primary)', 'دعم وتكوين':'var(--accent)' };
+
+  document.getElementById('studentDistribution').innerHTML = stages.map(s => `
+    <div class="bar-chart-row">
+      <div class="bar-chart-label">${s}</div>
+      <div class="bar-chart-track"><div class="bar-chart-fill" style="width:${Math.round((counts[s]/total)*100)}%;background:${colors[s]};"></div></div>
+      <div class="bar-chart-value">${counts[s]}</div>
+    </div>
+  `).join('');
+}
+
+/* ============ ALERTS (calculated from data) ============ */
+function renderAlerts(){
+  const attendance = getData(K.attendance);
+  const payments = getData(K.payments);
+  const requests = getData(K.requests);
+  const documents = getData(K.documents);
+  const students = getData(K.students).filter(s => s.status === 'نشط');
+  const settings = EliteAcademy.utils.getSettings();
+
+  const today = new Date().toISOString().split('T')[0];
+  const absentToday = attendance.filter(a => a.status === 'غائب' && a.date === today).length;
+
+  const paidStudentIds = new Set(payments.filter(p => p.reason === 'القسط الشهري').map(p => p.studentId));
+  const studentsWithRemaining = students.filter(s => !paidStudentIds.has(s.id) || (payments.filter(p=>p.studentId===s.id).reduce((sum,p)=>sum+Number(p.amount||0),0) < Number(settings.monthlyFee||0))).length;
+
+  const pendingRequests = requests.filter(r => r.status === 'جديد' || r.status === 'قيد الدراسة').length;
+  const missingDocs = documents.filter(d => d.status === 'ناقصة').length;
+
+  const alerts = [
+    { icon:'fa-calendar-xmark', color:'red', text:`${absentToday} غياب اليوم`, href:'attendance.html', show: absentToday > 0 },
+    { icon:'fa-sack-dollar', color:'red', text:`${studentsWithRemaining} ملفات مالية بها مبالغ متبقية`, href:'payment.html', show: studentsWithRemaining > 0 },
+    { icon:'fa-file-lines', color:'gold', text:`${pendingRequests} طلبات تسجيل تحتاج مراجعة`, href:'requests.html', show: pendingRequests > 0 },
+    { icon:'fa-folder-open', color:'gold', text:`${missingDocs} وثائق ناقصة`, href:'documents.html', show: missingDocs > 0 }
+  ].filter(a => a.show);
+
+  const container = document.getElementById('alertsList');
+  if(alerts.length === 0){
+    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-check"></i><p>لا توجد تنبيهات حاليًا، كل شيء تحت السيطرة</p></div>`;
+    return;
+  }
+
+  const colorMap = { red:{bg:'var(--danger-soft)',fg:'var(--danger)'}, gold:{bg:'var(--warning-soft)',fg:'var(--warning)'} };
+  container.innerHTML = alerts.map(a => `
+    <div class="alert-item" onclick="window.location.href='${a.href}'">
+      <div class="alert-icon" style="background:${colorMap[a.color].bg};color:${colorMap[a.color].fg};"><i class="fa-solid ${a.icon}"></i></div>
+      <div><p>${a.text}</p><span>يتطلب انتباهك</span></div>
+      <i class="fa-solid fa-chevron-left"></i>
+    </div>
+  `).join('');
+}
+
+/* ============ RECENT ACTIVITY (audit logs) ============ */
+const ACTIVITY_ICONS = {
+  create:'fa-circle-plus', update:'fa-pen', archive:'fa-box-archive', restore:'fa-clock-rotate-left',
+  login:'fa-right-to-bracket', logout:'fa-right-from-bracket', convert:'fa-user-check'
+};
+
+function renderActivity(){
+  const logs = getData(K.logs).slice(0,6);
+  const container = document.getElementById('activityList');
+  if(logs.length === 0){
+    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><p>لا يوجد نشاط مسجل بعد</p></div>`;
+    return;
+  }
+  container.innerHTML = logs.map(l => `
+    <div class="notif-item">
+      <i class="fa-solid ${ACTIVITY_ICONS[l.action] || 'fa-circle-info'}"></i>
+      <div><p>${l.description}</p><span>${l.date} — ${l.time}</span></div>
+    </div>
+  `).join('');
+}
+
+/* ============ RECENT STUDENTS ============ */
+function initials(f,l){ return (f[0]||'') + (l[0]||''); }
+
+function renderRecentStudents(){
+  const students = getData(K.students).slice(0,5);
+  const container = document.getElementById('recentStudentsList');
+  if(students.length === 0){
+    container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-user-graduate"></i><p>لا يوجد تلاميذ مسجلون بعد</p></div>`;
+    return;
+  }
+  container.innerHTML = students.map(s => `
+    <div class="recent-student-row" onclick="window.location.href='student-profile.html?id=${s.id}'">
+      <div class="rs-avatar">${initials(s.firstname, s.lastname)}</div>
+      <div>
+        <div class="rs-name">${s.firstname} ${s.lastname}</div>
+        <div class="rs-meta">${s.level} — ${s.section}</div>
+      </div>
+      <div class="rs-card">${s.cardNumber}</div>
+    </div>
+  `).join('');
+}
+
+/* ============ NOTIFICATIONS DROPDOWN ============ */
+function renderNotifDropdown(){
+  const requests = getData(K.requests).filter(r => r.status === 'جديد');
+  const payments = getData(K.payments).slice(0,3);
+  const attendance = getData(K.attendance).filter(a => a.status === 'غائب' && a.date === new Date().toISOString().split('T')[0]);
+
+  const items = [];
+  requests.forEach(r => items.push({ icon:'fa-file-lines', text:`طلب تسجيل جديد: ${r.student.firstname} ${r.student.lastname}`, time:r.createdAt }));
+  if(attendance.length) items.push({ icon:'fa-calendar-xmark', text:`تنبيه غياب: ${attendance.length} تلميذ غائب اليوم`, time:'اليوم' });
+  payments.slice(0,2).forEach(p => items.push({ icon:'fa-sack-dollar', text:`دفعة جديدة من ${p.studentName}`, time:p.date }));
+
+  document.getElementById('notifDot').style.display = items.length ? 'block' : 'none';
+
+  const listEl = document.getElementById('notifDropdownList');
+  listEl.innerHTML = items.length ? items.slice(0,8).map(n => `
+    <div class="notif-item"><i class="fa-solid ${n.icon}"></i><div><p>${n.text}</p><span>${n.time}</span></div></div>
+  `).join('') : `<div class="empty-state" style="padding:24px;"><i class="fa-solid fa-bell-slash"></i><p>لا توجد إشعارات جديدة</p></div>`;
+}
+
+document.getElementById('notifBell').addEventListener('click', function(e){
+  document.getElementById('notifDropdown').classList.toggle('active');
+  e.stopPropagation();
+});
+document.addEventListener('click', () => document.getElementById('notifDropdown').classList.remove('active'));
+
+/* ============ INLINE GLOBAL SEARCH (no page navigation required) ============ */
+const searchInput = document.getElementById('topSearchInput');
+const searchDropdown = document.getElementById('searchResultsDropdown');
+
+searchInput.addEventListener('input', function(){
+  const q = this.value.trim();
+  if(!q){ searchDropdown.classList.remove('active'); return; }
+
+  const results = EliteAcademy.search.globalSearch(q);
+  const groups = [
+    { key:'students', label:'التلاميذ', icon:'fa-user-graduate', linkFn:(item)=>`student-profile.html?id=${item.id}`, renderFn:(item)=>`${item.firstname} ${item.lastname} — ${item.cardNumber}` },
+    { key:'requests', label:'طلبات التسجيل', icon:'fa-file-lines', linkFn:()=>`requests.html`, renderFn:(item)=>`${item.regNumber} — ${item.student.firstname} ${item.student.lastname}` },
+    { key:'parents', label:'الأولياء', icon:'fa-people-roof', linkFn:()=>`parents.html`, renderFn:(item)=>`${item.firstname} ${item.lastname} — ${item.phone}` },
+    { key:'teachers', label:'الأساتذة', icon:'fa-chalkboard-user', linkFn:()=>`teachers.html`, renderFn:(item)=>`${item.firstname} ${item.lastname}` },
+    { key:'staff', label:'الموظفون', icon:'fa-id-badge', linkFn:()=>`staff.html`, renderFn:(item)=>`${item.firstname} ${item.lastname}` }
+  ];
+
+  let html = '';
+  let totalResults = 0;
+  groups.forEach(g => {
+    const items = results[g.key] || [];
+    if(items.length === 0) return;
+    totalResults += items.length;
+    html += `<div class="sr-group"><div class="sr-group-title">${g.label}</div>`;
+    html += items.slice(0,4).map(item => `
+      <div class="sr-item" onclick="window.location.href='${g.linkFn(item)}'">
+        <i class="fa-solid ${g.icon}"></i> <span>${g.renderFn(item)}</span>
+      </div>
+    `).join('');
+    html += `</div>`;
+  });
+
+  searchDropdown.innerHTML = totalResults ? html : `<div class="sr-empty">لا توجد نتائج مطابقة لـ "${q}"</div>`;
+  searchDropdown.classList.add('active');
+});
+
+searchInput.addEventListener('keypress', function(e){
   if(e.key === 'Enter' && this.value.trim()){
-    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+    EliteAcademy.search.goToGlobalSearch(this.value.trim());
   }
 });
-</script>
 
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.topbar-search')) searchDropdown.classList.remove('active');
+});
+
+/* ============ INITIAL RENDER ============ */
+renderWelcome();
+renderKpis();
+renderRequestsWidget();
+renderAttendanceOverview();
+renderFinancialOverview();
+renderStudentDistribution();
+renderAlerts();
+renderActivity();
+renderRecentStudents();
+renderNotifDropdown();
+</script>
 </body>
 </html>
