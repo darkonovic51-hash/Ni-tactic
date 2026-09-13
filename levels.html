@@ -8,20 +8,69 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="style.css">
 <style>
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-@media(max-width:900px){ .two-col{grid-template-columns:1fr;} }
-.mini-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);font-size:13px;}
-.mini-row:first-child{border-top:none;}
-.mini-actions button{background:none;border:none;cursor:pointer;color:var(--text-gray);font-size:14px;margin-right:8px;}
-.mini-actions button:hover{color:var(--primary);}
-.add-inline{display:flex;gap:8px;padding:14px 18px;border-top:1px solid var(--border);}
-.add-inline input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;}
+.page-actions-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:20px;}
+.page-actions-btns{display:flex;gap:8px;flex-wrap:wrap;}
+.mini-stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;}
+@media(max-width:1100px){ .mini-stats-row{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:600px){ .mini-stats-row{grid-template-columns:1fr 1fr;} }
+.mini-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;text-align:center;}
+.mini-stat b{display:block;font-size:19px;font-weight:800;}
+.mini-stat span{font-size:10.5px;color:var(--text-muted);font-weight:600;}
+
+.year-selector-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:12px 16px;flex-wrap:wrap;}
+.year-chip{padding:7px 16px;border-radius:20px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--surface-soft);}
+.year-chip.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.year-chip.archived-year{opacity:.55;}
+
+.section-block-head{display:flex;justify-content:space-between;align-items:center;margin:26px 0 14px;}
+.section-block-head h3{font-size:16px;font-weight:800;}
+
+.levels-grid-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+.level-card-item{background:var(--surface);border-radius:var(--radius-md);padding:18px;box-shadow:var(--shadow-sm);border:1px solid var(--border);border-top:4px solid var(--accent);cursor:pointer;transition:.2s;}
+.level-card-item:hover{box-shadow:var(--shadow-md);}
+.level-card-item .lci-icon{width:42px;height:42px;background:var(--surface-soft);color:var(--primary);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:12px;}
+.level-card-item h4{font-size:14.5px;font-weight:800;margin-bottom:3px;}
+.level-card-item .lci-fr{font-size:10.5px;color:var(--text-muted);direction:ltr;margin-bottom:10px;}
+.level-card-item .lci-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);padding-top:10px;border-top:1px dashed var(--border);}
+.level-card-item .lci-actions{display:flex;gap:6px;margin-top:10px;}
+.level-card-item .lci-actions button{flex:1;padding:6px;border-radius:7px;border:1px solid var(--border);background:var(--surface-soft);cursor:pointer;font-size:10.5px;color:var(--text-muted);}
+
+.classes-grid-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+.class-card-item{background:var(--surface);border-radius:var(--radius-md);padding:16px;box-shadow:var(--shadow-sm);border:1px solid var(--border);cursor:pointer;transition:.2s;}
+.class-card-item:hover{box-shadow:var(--shadow-md);border-color:var(--accent);}
+.cci-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.cci-name{font-size:15px;font-weight:800;direction:ltr;text-align:right;}
+.cci-level{font-size:11px;color:var(--text-muted);}
+.capacity-bar-track{height:8px;background:var(--surface-soft);border-radius:6px;overflow:hidden;margin:8px 0 6px;}
+.capacity-bar-fill{height:100%;border-radius:6px;}
+.cci-meta-row{display:flex;justify-content:space-between;font-size:10.8px;color:var(--text-muted);}
+.cci-room{font-size:10.8px;color:var(--text-muted);margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+
+.wide-modal{max-width:640px !important;}
+.modal-section-title{display:flex;align-items:center;gap:10px;margin:22px 0 14px;padding-bottom:10px;border-bottom:2px solid var(--surface-soft);}
+.modal-section-title:first-child{margin-top:0;}
+.modal-section-title i{width:32px;height:32px;background:var(--warning-soft);color:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.modal-section-title h4{font-size:14.5px;font-weight:800;color:var(--primary);}
+
+.drawer-overlay{position:fixed;inset:0;background:rgba(10,39,56,0.5);z-index:1900;display:none;}
+.drawer-overlay.active{display:block;}
+.drawer-panel{position:fixed;top:0;left:0;height:100%;width:520px;max-width:94vw;background:var(--surface);z-index:1950;box-shadow:var(--shadow-lg);transform:translateX(-100%);transition:.28s ease;overflow-y:auto;}
+.drawer-panel.active{transform:translateX(0);}
+.drawer-head{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--surface);z-index:2;}
+.drawer-close{background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer;}
+.drawer-body{padding:20px 22px;}
+.drawer-student-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;cursor:pointer;}
+.drawer-student-row:hover{border-color:var(--accent);}
+.drawer-student-avatar{width:32px;height:32px;border-radius:50%;background:var(--surface-soft);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:11px;flex-shrink:0;}
+
+@media(max-width:900px){ .year-selector-row{flex-direction:column;align-items:flex-start;} }
 </style>
 </head>
 <body>
 
 <div class="admin-layout">
   <aside class="sidebar" id="sidebar"></aside>
+
   <div class="main-panel">
     <div class="topbar">
       <div class="topbar-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="topSearchInput" placeholder="بحث شامل..."></div>
@@ -32,120 +81,528 @@
     </div>
 
     <div class="dash-content">
-      <div class="dash-header">
-        <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
-        <h2>المستويات والأقسام</h2>
-        <p>إضافة أو تعديل أو حذف المستويات والأقسام الدراسية</p>
-      </div>
+      <div class="breadcrumb"><a href="dashboard.html">الرئيسية</a><i class="fa-solid fa-chevron-left"></i><span>المستويات والأقسام</span></div>
 
-      <div class="two-col">
-        <div class="panel">
-          <div class="panel-head"><h3>المستويات الدراسية</h3></div>
-          <div id="levelsList"></div>
-          <div class="add-inline">
-            <input type="text" id="newLevelName" placeholder="اسم المستوى الجديد...">
-            <button class="btn btn-sm btn-primary" onclick="addLevel()"><i class="fa-solid fa-plus"></i></button>
-          </div>
+      <div class="page-actions-row">
+        <div>
+          <span class="demo-tag"><i class="fa-solid fa-flask"></i> بيانات تجريبية — Demo Data</span>
+          <h2 style="font-size:22px;font-weight:800;">المستويات والأقسام</h2>
+          <p style="font-size:13px;color:var(--text-muted);">إدارة الهيكل الدراسي والمستويات والأقسام التابعة للأكاديمية</p>
         </div>
-
-        <div class="panel">
-          <div class="panel-head"><h3>الأقسام</h3></div>
-          <div id="sectionsList"></div>
-          <div class="add-inline">
-            <input type="text" id="newSectionName" placeholder="اسم القسم الجديد (مثال: 5P-C)...">
-            <button class="btn btn-sm btn-primary" onclick="addSection()"><i class="fa-solid fa-plus"></i></button>
-          </div>
+        <div class="page-actions-btns">
+          <button class="btn btn-outline btn-sm" onclick="openYearsModal()"><i class="fa-solid fa-calendar-days"></i> إدارة السنوات الدراسية</button>
+          <button class="btn btn-outline btn-sm" onclick="openAddLevelModal()"><i class="fa-solid fa-layer-group"></i> إضافة مستوى</button>
+          <button class="btn btn-primary" onclick="openAddClassModal()"><i class="fa-solid fa-door-open"></i> إضافة قسم</button>
         </div>
       </div>
+
+      <!-- ACADEMIC YEAR SELECTOR -->
+      <div class="year-selector-row" id="yearSelectorRow"></div>
+
+      <!-- STATISTICS -->
+      <div class="mini-stats-row" id="miniStatsRow"></div>
+
+      <!-- LEVELS -->
+      <div class="section-block-head"><h3>المستويات التعليمية</h3></div>
+      <div class="levels-grid-view" id="levelsGrid"></div>
+
+      <!-- CLASSES -->
+      <div class="section-block-head">
+        <h3>الأقسام / الشعب</h3>
+        <select id="classesLevelFilter" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Cairo',sans-serif;font-size:12.5px;background:var(--surface);">
+          <option value="">كل المستويات</option>
+        </select>
+      </div>
+      <div class="classes-grid-view" id="classesGrid"></div>
+
     </div>
   </div>
 </div>
 
+<!-- ============ CLASS DETAILS DRAWER ============ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer-panel" id="drawerPanel">
+  <div class="drawer-head"><h3>تفاصيل القسم</h3><button class="drawer-close" onclick="closeDrawer()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+</div>
+
+<!-- ============ ADD/EDIT LEVEL MODAL ============ -->
+<div class="modal-overlay" id="levelFormModal">
+  <div class="success-modal wide-modal" style="text-align:right;max-height:88vh;overflow-y:auto;">
+    <h3 id="levelFormTitle" style="margin-bottom:16px;">إضافة مستوى جديد</h3>
+    <form id="levelForm">
+      <input type="hidden" id="editingLevelId">
+      <div class="form-grid">
+        <div class="form-field" data-field="name"><label>الاسم بالعربية <span class="req">*</span></label><input type="text" name="name"><span class="error-text">مطلوب</span></div>
+        <div class="form-field"><label>الاسم بالفرنسية</label><input type="text" name="frenchName" class="ltr"></div>
+        <div class="form-field"><label>الرمز المختصر</label><input type="text" name="code" class="ltr" placeholder="مثال: 4M"></div>
+        <div class="form-field"><label>ترتيب العرض</label><input type="number" name="order" min="0"></div>
+        <div class="form-field"><label>المرحلة</label>
+          <select name="stage"><option>تحضيري</option><option>ابتدائي</option><option>متوسط</option><option>ثانوي</option><option>دعم وتكوين</option></select>
+        </div>
+        <div class="form-field"><label>الحالة</label><select name="status"><option value="نشط">نشط</option><option value="غير نشط">غير نشط</option></select></div>
+        <div class="form-field full"><label>الوصف</label><textarea name="description"></textarea></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;" id="levelFormSubmitBtn">حفظ المستوى</button>
+        <button type="button" class="btn btn-danger" onclick="closeLevelFormModal()">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ ADD/EDIT CLASS MODAL ============ -->
+<div class="modal-overlay" id="classFormModal">
+  <div class="success-modal wide-modal" style="text-align:right;max-height:88vh;overflow-y:auto;">
+    <h3 id="classFormTitle" style="margin-bottom:16px;">إضافة قسم جديد</h3>
+    <form id="classForm">
+      <input type="hidden" id="editingClassId">
+      <div class="form-grid">
+        <div class="form-field" data-field="name"><label>اسم القسم <span class="req">*</span></label><input type="text" name="name" class="ltr" placeholder="مثال: 4M-C"><span class="error-text">مطلوب</span></div>
+        <div class="form-field" data-field="levelId"><label>المستوى <span class="req">*</span></label><select name="levelId" id="classLevelSelect"></select><span class="error-text">مطلوب</span></div>
+        <div class="form-field"><label>السنة الدراسية</label><select name="academicYearId" id="classYearSelect"></select></div>
+        <div class="form-field" data-field="capacity"><label>السعة القصوى <span class="req">*</span></label><input type="number" name="capacity" min="1" value="30"><span class="error-text">مطلوب</span></div>
+        <div class="form-field"><label>القاعة</label><input type="text" name="room" placeholder="مثال: قاعة 12"></div>
+        <div class="form-field"><label>الأستاذ الرئيسي</label><select name="mainTeacherId" id="classTeacherSelect"><option value="">بدون تخصيص</option></select></div>
+        <div class="form-field"><label>الحالة</label><select name="status"><option value="نشط">نشط</option><option value="غير نشط">غير نشط</option></select></div>
+        <div class="form-field full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
+      </div>
+      <div id="classDuplicateWarning" style="display:none;background:var(--danger-soft);color:var(--danger);border-radius:9px;padding:10px 14px;font-size:12px;margin-top:10px;"></div>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center;" id="classFormSubmitBtn">حفظ القسم</button>
+        <button type="button" class="btn btn-danger" onclick="closeClassFormModal()">إلغاء</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ ACADEMIC YEARS MODAL ============ -->
+<div class="modal-overlay" id="yearsModal">
+  <div class="success-modal" style="max-width:480px;text-align:right;">
+    <h3 style="margin-bottom:16px;">إدارة السنوات الدراسية</h3>
+    <div id="yearsList" style="margin-bottom:16px;"></div>
+    <div class="modal-section-title"><i class="fa-solid fa-plus"></i><h4>إضافة سنة دراسية جديدة</h4></div>
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="newYearInput" placeholder="مثال: 2028/2029" style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:9px;font-family:'Cairo',sans-serif;">
+      <button class="btn btn-dark btn-sm" onclick="addAcademicYear()"><i class="fa-solid fa-plus"></i></button>
+    </div>
+    <button class="btn btn-danger" style="width:100%;justify-content:center;margin-top:18px;" onclick="closeYearsModal()">إغلاق</button>
+  </div>
+</div>
+
+<!-- Firebase (optional realtime sync layer — must load BEFORE shared.js) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script src="shared.js"></script>
 <script>
-requireAdminAuth();
-renderSidebar('levels');
+EliteAcademy.auth.requireAuth();
+EliteAcademy.navigation.renderSidebar('levels');
 
-function loadLevels(){
-  const levels = DB.get('eliteLevels');
-  const list = document.getElementById('levelsList');
-  if(levels.length === 0){
-    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-layer-group"></i><p>لا توجد مستويات مضافة</p></div>`;
-    return;
-  }
-  list.innerHTML = levels.map(l => `
-    <div class="mini-row">
-      <span>${l.name} <small style="color:var(--text-gray);">(${l.stage})</small></span>
-      <span class="mini-actions">
-        <button onclick="deleteLevel('${l.id}')"><i class="fa-solid fa-trash"></i></button>
+const K = EliteAcademy.storage.keys;
+const getData = EliteAcademy.storage.getData;
+
+let activeYearId = null;
+const STAGE_ICONS = { 'تحضيري':'fa-child-reaching', 'ابتدائي':'fa-book-open', 'متوسط':'fa-book', 'ثانوي':'fa-graduation-cap', 'دعم وتكوين':'fa-language' };
+
+/* ============ ACADEMIC YEAR HELPERS ============ */
+function getCurrentYear(){
+  const years = getData(K.academicYears);
+  return years.find(y => y.isCurrent) || years[0];
+}
+function initActiveYear(){
+  const current = getCurrentYear();
+  activeYearId = current ? current.id : null;
+}
+
+/* ============ YEAR SELECTOR ROW ============ */
+function renderYearSelector(){
+  const years = getData(K.academicYears);
+  document.getElementById('yearSelectorRow').innerHTML = `
+    <span style="font-size:12.5px;font-weight:700;color:var(--text-muted);">السنة الدراسية:</span>
+    ${years.map(y => `
+      <span class="year-chip ${activeYearId===y.id?'active':''} ${y.status==='مؤرشف'?'archived-year':''}" onclick="setActiveYear('${y.id}')">
+        ${y.label} ${y.isCurrent ? '<i class="fa-solid fa-star" style="font-size:9px;"></i>' : ''}
       </span>
+    `).join('')}
+  `;
+}
+function setActiveYear(id){
+  activeYearId = id;
+  renderYearSelector();
+  refreshAll();
+}
+
+/* ============ STATISTICS ============ */
+function renderStats(){
+  const levels = getData(K.levels);
+  const classes = getData(K.classes).filter(c => !activeYearId || !c.academicYearId || c.academicYearId === activeYearId);
+  const students = getData(K.students).filter(s => s.status !== 'مؤرشف');
+  const years = getData(K.academicYears);
+
+  const totalSeats = classes.reduce((sum,c)=>sum+Number(c.capacity||c.seats||30),0);
+  const occupied = classes.reduce((sum,c)=>sum + students.filter(s=>s.section===c.name).length, 0);
+  const available = Math.max(totalSeats - occupied, 0);
+
+  const stats = [
+    { label:'عدد المستويات', value:levels.length },
+    { label:'عدد الأقسام', value:classes.length },
+    { label:'إجمالي المقاعد', value:totalSeats },
+    { label:'المقاعد المشغولة', value:occupied },
+    { label:'المقاعد المتاحة', value:available },
+    { label:'السنوات الدراسية', value:years.length }
+  ];
+  document.getElementById('miniStatsRow').innerHTML = stats.map(s=>`<div class="mini-stat"><b>${s.value}</b><span>${s.label}</span></div>`).join('');
+}
+
+/* ============ LEVELS GRID ============ */
+function studentCountForLevel(levelName){
+  return getData(K.students).filter(s => s.status!=='مؤرشف' && s.level===levelName).length;
+}
+function classCountForLevel(levelId, levelName){
+  return getData(K.classes).filter(c => (c.levelId===levelId || !c.levelId) && classBelongsToLevel(c, levelName)).length;
+}
+function classBelongsToLevel(cls, levelName){
+  // Legacy demo classes have no levelId, so fall back to counting all as unlinked
+  return !!cls.levelId || false;
+}
+
+function renderLevels(){
+  const levels = getData(K.levels).filter(l => l.status !== 'مؤرشف');
+  const grid = document.getElementById('levelsGrid');
+  if(levels.length === 0){ grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-layer-group"></i><p>لا توجد مستويات مضافة</p></div>`; return; }
+
+  grid.innerHTML = levels.slice().sort((a,b)=>(a.order||0)-(b.order||0)).map(l => {
+    const icon = STAGE_ICONS[l.stage] || 'fa-layer-group';
+    const studentCount = studentCountForLevel(l.name);
+    const classCount = getData(K.classes).filter(c => c.levelId === l.id).length;
+    return `
+    <div class="level-card-item">
+      <div class="lci-icon"><i class="fa-solid ${icon}"></i></div>
+      <h4>${l.name}</h4>
+      <div class="lci-fr">${l.frenchName||''}</div>
+      <div class="lci-meta"><span>${classCount} قسم</span><span>${studentCount} طالب</span></div>
+      <div class="lci-actions">
+        <button onclick="openEditLevelModal('${l.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
+        <button onclick="confirmArchiveLevel('${l.id}')"><i class="fa-solid fa-box-archive"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // populate level filter/select dropdowns
+  const filterSelect = document.getElementById('classesLevelFilter');
+  const currentFilterVal = filterSelect.value;
+  filterSelect.innerHTML = `<option value="">كل المستويات</option>` + levels.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
+  filterSelect.value = currentFilterVal;
+
+  const classLevelSelect = document.getElementById('classLevelSelect');
+  classLevelSelect.innerHTML = `<option value="">اختر المستوى</option>` + levels.map(l=>`<option value="${l.id}">${l.name}</option>`).join('');
+}
+
+/* ============ CLASSES GRID ============ */
+function capacityColor(pct){
+  if(pct >= 95) return 'var(--danger)';
+  if(pct >= 75) return 'var(--warning)';
+  return 'var(--success)';
+}
+
+function renderClasses(){
+  const levelFilter = document.getElementById('classesLevelFilter').value;
+  let classes = getData(K.classes).filter(c => !activeYearId || !c.academicYearId || c.academicYearId === activeYearId);
+  if(levelFilter) classes = classes.filter(c => c.levelId === levelFilter);
+
+  const students = getData(K.students).filter(s => s.status !== 'مؤرشف');
+  const levels = getData(K.levels);
+  const grid = document.getElementById('classesGrid');
+
+  if(classes.length === 0){ grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fa-solid fa-door-open"></i><p>لا توجد أقسام مطابقة</p></div>`; return; }
+
+  grid.innerHTML = classes.map(c => {
+    const level = levels.find(l => l.id === c.levelId);
+    const capacity = Number(c.capacity || c.seats || 30);
+    const occupied = students.filter(s => s.section === c.name).length;
+    const pct = Math.min(Math.round((occupied/capacity)*100), 100);
+    const available = Math.max(capacity - occupied, 0);
+
+    return `
+    <div class="class-card-item" onclick="openClassDrawer('${c.id}')">
+      <div class="cci-top">
+        <div><div class="cci-name">${c.name}</div><div class="cci-level">${level ? level.name : '—'}</div></div>
+        <span class="badge ${(c.status||'نشط')==='نشط'?'badge-accepted':'badge-archived'}">${c.status||'نشط'}</span>
+      </div>
+      <div class="capacity-bar-track"><div class="capacity-bar-fill" style="width:${pct}%;background:${capacityColor(pct)};"></div></div>
+      <div class="cci-meta-row"><span>${occupied} / ${capacity} طالب</span><span>${available} مقعد متاح</span></div>
+      ${c.room ? `<div class="cci-room"><i class="fa-solid fa-location-dot"></i> ${c.room}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('classesLevelFilter').addEventListener('change', renderClasses);
+
+/* ============ CLASS DETAILS DRAWER ============ */
+function openClassDrawer(classId){
+  const c = EliteAcademy.storage.findById(K.classes, classId);
+  if(!c) return;
+  const level = EliteAcademy.storage.findById(K.levels, c.levelId);
+  const years = getData(K.academicYears);
+  const year = years.find(y => y.id === c.academicYearId);
+  const teacher = c.mainTeacherId ? EliteAcademy.storage.findById(K.teachers, c.mainTeacherId) : null;
+  const students = getData(K.students).filter(s => s.status !== 'مؤرشف' && s.section === c.name);
+  const capacity = Number(c.capacity || c.seats || 30);
+  const pct = Math.min(Math.round((students.length/capacity)*100),100);
+
+  document.getElementById('drawerBody').innerHTML = `
+    <h2 style="font-size:19px;margin-bottom:4px;direction:ltr;text-align:right;">${c.name}</h2>
+    <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:18px;">${level ? level.name : '—'} — ${year ? year.label : '—'}</p>
+
+    <div class="info-grid-2" style="margin-bottom:18px;">
+      <div class="info-item"><span>القاعة</span><b>${c.room||'—'}</b></div>
+      <div class="info-item"><span>الحالة</span><b>${c.status||'نشط'}</b></div>
+      <div class="info-item"><span>السعة القصوى</span><b>${capacity}</b></div>
+      <div class="info-item"><span>المقاعد المتاحة</span><b>${Math.max(capacity-students.length,0)}</b></div>
     </div>
-  `).join('');
-}
 
-function loadSections(){
-  const sections = DB.get('eliteSections');
-  const list = document.getElementById('sectionsList');
-  if(sections.length === 0){
-    list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-door-open"></i><p>لا توجد أقسام مضافة</p></div>`;
-    return;
-  }
-  list.innerHTML = sections.map(s => `
-    <div class="mini-row">
-      <span>${s.name} <small style="color:var(--text-gray);">— ${s.seats} مقعد</small></span>
-      <span class="mini-actions">
-        <button onclick="deleteSection('${s.id}')"><i class="fa-solid fa-trash"></i></button>
-      </span>
+    <div style="margin-bottom:18px;">
+      <div class="capacity-bar-track"><div class="capacity-bar-fill" style="width:${pct}%;background:${capacityColor(pct)};"></div></div>
+      <p style="font-size:11.5px;color:var(--text-muted);margin-top:6px;">${students.length} / ${capacity} طالب مسجل</p>
     </div>
-  `).join('');
+
+    <h4 style="font-size:13.5px;margin-bottom:10px;">الأستاذ الرئيسي المسند</h4>
+    <p style="font-size:12.5px;margin-bottom:18px;">${teacher ? `${teacher.firstname} ${teacher.lastname} — ${teacher.subject||''}` : 'لا يوجد أستاذ مسند حاليًا'}</p>
+
+    ${c.notes ? `<h4 style="font-size:13.5px;margin-bottom:8px;">ملاحظات</h4><p style="font-size:12px;color:var(--text-muted);margin-bottom:18px;">${c.notes}</p>` : ''}
+
+    <h4 style="font-size:13.5px;margin-bottom:10px;">قائمة الطلبة (${students.length})</h4>
+    <div>
+      ${students.length ? students.map(s => `
+        <div class="drawer-student-row" onclick="window.location.href='student-profile.html?id=${s.id}'">
+          <div class="drawer-student-avatar">${(s.firstname[0]||'')+(s.lastname[0]||'')}</div>
+          <div><b style="font-size:12.5px;">${s.firstname} ${s.lastname}</b><div style="font-size:10.5px;color:var(--text-muted);direction:ltr;">${s.cardNumber}</div></div>
+          <i class="fa-solid fa-chevron-left" style="margin-right:auto;color:var(--text-muted);font-size:10px;"></i>
+        </div>
+      `).join('') : `<p style="font-size:11.5px;color:var(--text-muted);">لا يوجد طلبة في هذا القسم بعد</p>`}
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:20px;">
+      <button class="btn btn-sm btn-outline" onclick="openEditClassModal('${c.id}')"><i class="fa-solid fa-pen"></i> تعديل القسم</button>
+      <button class="btn btn-sm btn-danger" onclick="confirmArchiveClass('${c.id}')"><i class="fa-solid fa-box-archive"></i> أرشفة</button>
+    </div>
+  `;
+  document.getElementById('drawerOverlay').classList.add('active');
+  document.getElementById('drawerPanel').classList.add('active');
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('active');
+  document.getElementById('drawerPanel').classList.remove('active');
 }
 
-function addLevel(){
-  const input = document.getElementById('newLevelName');
-  const name = input.value.trim();
-  if(!name) return;
-  const levels = DB.get('eliteLevels');
-  levels.push({id: uid('lvl'), name, stage:'مخصص'});
-  DB.set('eliteLevels', levels);
-  logAction(`تمت إضافة مستوى جديد: ${name}`);
-  input.value = '';
-  loadLevels();
+/* ============ ADD/EDIT LEVEL ============ */
+function openAddLevelModal(){
+  document.getElementById('levelForm').reset();
+  document.getElementById('editingLevelId').value = '';
+  document.getElementById('levelFormTitle').textContent = 'إضافة مستوى جديد';
+  clearFormErrors(document.getElementById('levelForm'));
+  document.getElementById('levelFormModal').classList.add('active');
 }
-
-function deleteLevel(id){
-  let levels = DB.get('eliteLevels');
-  levels = levels.filter(l => l.id !== id);
-  DB.set('eliteLevels', levels);
-  loadLevels();
+function openEditLevelModal(id){
+  const l = EliteAcademy.storage.findById(K.levels, id);
+  if(!l) return;
+  const form = document.getElementById('levelForm');
+  form.reset();
+  document.getElementById('editingLevelId').value = id;
+  document.getElementById('levelFormTitle').textContent = `تعديل مستوى: ${l.name}`;
+  form.name.value = l.name;
+  form.frenchName.value = l.frenchName||'';
+  form.code.value = l.code||'';
+  form.order.value = l.order||0;
+  form.stage.value = l.stage||'ابتدائي';
+  form.status.value = l.status||'نشط';
+  form.description.value = l.description||'';
+  document.getElementById('levelFormModal').classList.add('active');
 }
+function closeLevelFormModal(){ document.getElementById('levelFormModal').classList.remove('active'); }
 
-function addSection(){
-  const input = document.getElementById('newSectionName');
-  const name = input.value.trim();
-  if(!name) return;
-  const sections = DB.get('eliteSections');
-  sections.push({id: uid('sec'), name, seats:30, mainTeacher:'—'});
-  DB.set('eliteSections', sections);
-  logAction(`تمت إضافة قسم جديد: ${name}`);
-  input.value = '';
-  loadSections();
-}
+document.getElementById('levelForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  clearFormErrors(this);
+  const nameInput = this.querySelector('[name="name"]');
+  if(EliteAcademy.utils.isEmpty(nameInput.value)){ nameInput.closest('.form-field').classList.add('has-error'); return; }
 
-function deleteSection(id){
-  let sections = DB.get('eliteSections');
-  sections = sections.filter(s => s.id !== id);
-  DB.set('eliteSections', sections);
-  loadSections();
-}
+  const data = EliteAcademy.utils.serializeForm(this);
+  const editingId = document.getElementById('editingLevelId').value;
+  const payload = { name:data.name, frenchName:data.frenchName||'', code:data.code||'', order:Number(data.order||0), stage:data.stage, status:data.status, description:data.description||'' };
 
-document.getElementById('topSearchInput').addEventListener('keypress', function(e){
-  if(e.key === 'Enter' && this.value.trim()){
-    window.location.href = `students.html?search=${encodeURIComponent(this.value.trim())}`;
+  if(editingId){
+    EliteAcademy.storage.updateRecord(K.levels, editingId, payload);
+    EliteAcademy.utils.logAction('update','levels', editingId, `تم تعديل المستوى ${data.name}`, 'info');
+    EliteAcademy.notifications.showSuccess('تم حفظ التعديلات');
+  } else {
+    const level = EliteAcademy.storage.saveRecord(K.levels, { ...payload, isDemo:false });
+    EliteAcademy.utils.logAction('create','levels', level.id, `تمت إضافة مستوى جديد: ${data.name}`, 'success');
+    EliteAcademy.notifications.showSuccess('تمت إضافة المستوى بنجاح');
   }
+  closeLevelFormModal();
+  refreshAll();
 });
 
-loadLevels();
-loadSections();
+function confirmArchiveLevel(id){
+  const l = EliteAcademy.storage.findById(K.levels, id);
+  EliteAcademy.modal.confirmAction(
+    `سيتم أرشفة المستوى "${l.name}". سيبقى مرتبطًا بالسجلات التاريخية للطلبة.`,
+    () => { EliteAcademy.storage.archiveRecord(K.levels, id, 'أرشفة مستوى'); EliteAcademy.notifications.showSuccess('تمت أرشفة المستوى'); refreshAll(); },
+    { title:'تأكيد أرشفة المستوى', confirmLabel:'أرشفة' }
+  );
+}
+
+/* ============ ADD/EDIT CLASS ============ */
+function initClassFormDropdowns(){
+  const years = getData(K.academicYears);
+  const teachers = getData(K.teachers).filter(t => (t.status||'نشط') !== 'مؤرشف');
+
+  const yearSelect = document.getElementById('classYearSelect');
+  yearSelect.innerHTML = years.map(y => `<option value="${y.id}" ${y.isCurrent?'selected':''}>${y.label}</option>`).join('');
+
+  const teacherSelect = document.getElementById('classTeacherSelect');
+  teacherSelect.innerHTML = `<option value="">بدون تخصيص</option>` + teachers.map(t=>`<option value="${t.id}">${t.firstname} ${t.lastname} — ${t.subject||''}</option>`).join('');
+}
+
+function openAddClassModal(){
+  document.getElementById('classForm').reset();
+  document.getElementById('editingClassId').value = '';
+  document.getElementById('classFormTitle').textContent = 'إضافة قسم جديد';
+  document.getElementById('classDuplicateWarning').style.display = 'none';
+  clearFormErrors(document.getElementById('classForm'));
+  initClassFormDropdowns();
+  document.getElementById('classFormModal').classList.add('active');
+}
+function openEditClassModal(id){
+  const c = EliteAcademy.storage.findById(K.classes, id);
+  if(!c) return;
+  const form = document.getElementById('classForm');
+  form.reset();
+  clearFormErrors(form);
+  initClassFormDropdowns();
+
+  document.getElementById('editingClassId').value = id;
+  document.getElementById('classFormTitle').textContent = `تعديل قسم: ${c.name}`;
+  form.name.value = c.name;
+  form.levelId.value = c.levelId||'';
+  form.academicYearId.value = c.academicYearId||'';
+  form.capacity.value = c.capacity||c.seats||30;
+  form.room.value = c.room||'';
+  form.mainTeacherId.value = c.mainTeacherId||'';
+  form.status.value = c.status||'نشط';
+  form.notes.value = c.notes||'';
+  document.getElementById('classFormModal').classList.add('active');
+  closeDrawer();
+}
+function closeClassFormModal(){ document.getElementById('classFormModal').classList.remove('active'); }
+
+document.getElementById('classForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  clearFormErrors(this);
+  let valid = true;
+  ['name','levelId','capacity'].forEach(name => {
+    const input = this.querySelector(`[name="${name}"]`);
+    if(EliteAcademy.utils.isEmpty(input.value)){ input.closest('.form-field').classList.add('has-error'); valid=false; }
+  });
+  if(!valid){ EliteAcademy.notifications.showError('يرجى تصحيح الحقول المظللة'); return; }
+
+  const data = EliteAcademy.utils.serializeForm(this);
+  const editingId = document.getElementById('editingClassId').value;
+
+  const duplicate = getData(K.classes).find(c => c.name===data.name && c.academicYearId===data.academicYearId && c.id!==editingId);
+  if(duplicate){
+    document.getElementById('classDuplicateWarning').style.display = 'block';
+    document.getElementById('classDuplicateWarning').textContent = 'يوجد قسم بنفس الاسم في نفس السنة الدراسية بالفعل.';
+    return;
+  }
+
+  const payload = { name:data.name, levelId:data.levelId, academicYearId:data.academicYearId, capacity:Number(data.capacity), room:data.room||'', mainTeacherId:data.mainTeacherId||'', status:data.status, notes:data.notes||'' };
+
+  if(editingId){
+    EliteAcademy.storage.updateRecord(K.classes, editingId, payload);
+    EliteAcademy.utils.logAction('update','classes', editingId, `تم تعديل القسم ${data.name}`, 'info');
+    EliteAcademy.notifications.showSuccess('تم حفظ التعديلات');
+  } else {
+    const cls = EliteAcademy.storage.saveRecord(K.classes, { ...payload, isDemo:false });
+    EliteAcademy.utils.logAction('create','classes', cls.id, `تمت إضافة قسم جديد: ${data.name}`, 'success');
+    EliteAcademy.notifications.showSuccess('تمت إضافة القسم بنجاح — سيكون متاحًا فورًا في إدارة الطلبة');
+  }
+  closeClassFormModal();
+  refreshAll();
+});
+
+function confirmArchiveClass(id){
+  const c = EliteAcademy.storage.findById(K.classes, id);
+  EliteAcademy.modal.confirmAction(
+    `سيتم أرشفة القسم "${c.name}". سجلات الطلبة التاريخية المرتبطة به لن تتأثر.`,
+    () => { EliteAcademy.storage.archiveRecord(K.classes, id, 'أرشفة قسم'); closeDrawer(); EliteAcademy.notifications.showSuccess('تمت أرشفة القسم'); refreshAll(); },
+    { title:'تأكيد أرشفة القسم', confirmLabel:'أرشفة' }
+  );
+}
+
+/* ============ ACADEMIC YEARS MODAL ============ */
+function openYearsModal(){ renderYearsModalList(); document.getElementById('yearsModal').classList.add('active'); }
+function closeYearsModal(){ document.getElementById('yearsModal').classList.remove('active'); }
+
+function renderYearsModalList(){
+  const years = getData(K.academicYears);
+  document.getElementById('yearsList').innerHTML = years.map(y => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);">
+      <span style="font-weight:700;font-size:13px;">${y.label} ${y.isCurrent?'<span class="badge badge-accepted">نشطة</span>':''} ${y.status==='مؤرشف'?'<span class="badge badge-archived">مؤرشفة</span>':''}</span>
+      <div style="display:flex;gap:6px;">
+        ${!y.isCurrent && y.status!=='مؤرشف' ? `<button class="btn btn-sm btn-outline" onclick="setCurrentYear('${y.id}')">تفعيل</button>` : ''}
+        ${!y.isCurrent ? `<button class="btn btn-sm btn-danger" onclick="toggleArchiveYear('${y.id}')">${y.status==='مؤرشف'?'استعادة':'أرشفة'}</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+function setCurrentYear(id){
+  const years = getData(K.academicYears);
+  years.forEach(y => y.isCurrent = (y.id === id));
+  EliteAcademy.storage.setData(K.academicYears, years);
+  EliteAcademy.utils.logAction('update','academicYears', id, 'تم تغيير السنة الدراسية النشطة', 'info');
+  EliteAcademy.notifications.showSuccess('تم تحديث السنة الدراسية النشطة');
+  renderYearsModalList();
+  initActiveYear();
+  refreshAll();
+}
+function toggleArchiveYear(id){
+  const years = getData(K.academicYears);
+  const y = years.find(x=>x.id===id);
+  y.status = y.status==='مؤرشف' ? 'نشط' : 'مؤرشف';
+  EliteAcademy.storage.setData(K.academicYears, years);
+  EliteAcademy.notifications.showSuccess(y.status==='مؤرشف' ? 'تمت أرشفة السنة الدراسية' : 'تمت استعادة السنة الدراسية');
+  renderYearsModalList();
+  renderYearSelector();
+}
+function addAcademicYear(){
+  const input = document.getElementById('newYearInput');
+  const label = input.value.trim();
+  if(!label){ EliteAcademy.notifications.showWarning('يرجى إدخال تسمية السنة الدراسية'); return; }
+  const years = getData(K.academicYears);
+  if(years.some(y=>y.label===label)){ EliteAcademy.notifications.showWarning('هذه السنة الدراسية موجودة بالفعل'); return; }
+  const year = EliteAcademy.storage.saveRecord(K.academicYears, { label, isCurrent:false, status:'نشط', isDemo:false });
+  EliteAcademy.utils.logAction('create','academicYears', year.id, `تمت إضافة سنة دراسية جديدة: ${label}`, 'success');
+  input.value = '';
+  renderYearsModalList();
+  renderYearSelector();
+}
+
+/* ============ HELPERS ============ */
+function clearFormErrors(form){ form.querySelectorAll('.form-field[data-field]').forEach(f=>f.classList.remove('has-error')); }
+
+/* ============ REFRESH ============ */
+function refreshAll(){
+  renderStats();
+  renderLevels();
+  renderClasses();
+}
+
+/* ============ INIT ============ */
+initActiveYear();
+renderYearSelector();
+refreshAll();
 </script>
 </body>
 </html>
